@@ -1,0 +1,2154 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   FIGMA ONBOARDING — fg- namespace
+   Replication: Figma node 4000-7178 / "Setup Flow for Ambient 26"
+
+   Key rules:
+   · Very dark navy background + purple radial center glow
+   · "glance ✦" lowercase brand SVG icon top-left (Figma exact)
+   · All text center-aligned
+   · Instrument Sans for monologue / typewriter text
+   · Mascot center → slides top on exit; question screens use top-center
+   · Typewriter cursor: thin blinking line
+   · CTA: white pill, dark text
+   · Progress: 4 thin vertical dashes left edge
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* ── Screen base ─────────────────────────────────────────────────────────────── */
+
+.fg-screen {
+  width: 1920px;
+  height: 1080px;
+  position: relative;
+  overflow: hidden;
+  background: #070515;
+  color: #ffffff;
+  font-family: var(--sans);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+/* Film grain */
+.fg-screen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.025;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Background glow ─────────────────────────────────────────────────────────── */
+
+.fg-bg-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 1400px 1000px at 50% 45%,
+      rgba(78, 28, 180, 0.45) 0%, transparent 68%),
+    radial-gradient(ellipse 800px 600px at 50% 18%,
+      rgba(55, 10, 130, 0.20) 0%, transparent 60%),
+    linear-gradient(180deg, #0b0622 0%, #060112 100%);
+}
+
+.fg-bg-glow--q1 {
+  background:
+    radial-gradient(ellipse 1200px 880px at 50% 40%,
+      rgba(70, 22, 165, 0.40) 0%, transparent 66%),
+    linear-gradient(180deg, #090420 0%, #050110 100%);
+}
+
+.fg-bg-glow--q2 {
+  background:
+    radial-gradient(ellipse 1300px 900px at 50% 42%,
+      rgba(80, 30, 175, 0.38) 0%, transparent 68%),
+    linear-gradient(180deg, #0b0622 0%, #050112 100%);
+}
+
+.fg-bg-glow--selfie {
+  background:
+    radial-gradient(ellipse 1100px 800px at 50% 38%,
+      rgba(68, 20, 158, 0.35) 0%, transparent 66%),
+    linear-gradient(180deg, #090420 0%, #050110 100%);
+}
+
+/* ── Brand — "glance ✦" matching video/Figma exactly ───────────────────────── */
+
+.fg-brand {
+  position: absolute;
+  top: 48px;
+  left: 64px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fg-logo-word {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: #ffffff;
+  font-family: 'Instrument Sans', 'Plus Jakarta Sans', sans-serif;
+}
+
+.fg-logo-star {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1;
+  /* subtle sparkle glow */
+  filter: drop-shadow(0 0 4px rgba(255,255,255,0.5));
+}
+
+/* Legacy — keep for any remaining SVG logo references */
+.fg-logo-icon {
+  display: block;
+  flex-shrink: 0;
+  border-radius: 7px;
+}
+
+/* ── Left-edge vertical progress bar ───────────────────────────────────────── */
+
+.fg-progress-bar {
+  position: absolute;
+  left: 48px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 10;
+}
+
+.fg-pip {
+  width: 3px;
+  height: 22px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  transition: background 0.4s ease, height 0.3s ease, box-shadow 0.3s ease;
+}
+
+.fg-pip--active {
+  background: #ffffff;
+  height: 30px;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.55);
+}
+
+.fg-pip--done {
+  background: rgba(255, 255, 255, 0.50);
+}
+
+/* ── Welcome screen — center stage ──────────────────────────────────────────── */
+
+.fg-welcome-stage {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  width: 100%;
+  padding-bottom: 60px;
+}
+
+.fg-welcome-mascot {
+  margin-bottom: 48px;
+}
+
+/* ── Two-line intro hierarchy ────────────────────────────────────────────────── */
+
+.fg-intro-lines {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 32px;
+  text-align: center;
+}
+
+.fg-intro-line1 {
+  font-family: 'Instrument Sans', 'Plus Jakarta Sans', sans-serif;
+  font-size: 52px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: rgba(255, 255, 255, 0.96);
+  line-height: 1.1;
+}
+
+.fg-intro-line2 {
+  font-family: 'Instrument Sans', 'Plus Jakarta Sans', sans-serif;
+  font-size: 34px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: rgba(255, 255, 255, 0.62);
+  line-height: 1.2;
+}
+
+/* Third typewriter line — below the two-line group */
+.fg-third-line-area {
+  position: relative;
+  min-height: 80px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 52px;
+  text-align: center;
+}
+
+.fg-third-line-text {
+  font-family: 'Instrument Sans', 'Plus Jakarta Sans', sans-serif !important;
+  font-size: 28px !important;
+  font-weight: 400 !important;
+  color: rgba(255, 255, 255, 0.60) !important;
+  max-width: 1000px;
+  text-align: center;
+}
+
+/* ── Agent response near mascot ─────────────────────────────────────────────── */
+
+/* On welcome screen — sits just below mascot in the stage column */
+.fg-welcome-response {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 56px;
+  width: 100%;
+  margin-top: -8px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* On question screens — directly below mascot, before question in DOM.
+   Tight top margin so it reads as the mascot speaking. */
+.fg-q-response {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 56px;
+  width: 100%;
+  padding: 0 280px;
+  margin-top: -12px;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+/* ── Monologue text area — fixed height, fully centered ─────────────────────── */
+
+.fg-monologue-area {
+  position: relative;
+  min-height: 140px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 64px;
+}
+
+/* Wrapper div that gets animated in/out as a unit */
+.fg-monologue-line-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  text-align: center;
+}
+
+/* ── Typewriter text (tw- namespace) ────────────────────────────────────────── */
+
+.tw-text {
+  /* Inherit all typography from parent — no overrides */
+  display: inline;
+  font-size: inherit;
+  font-family: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+  text-align: inherit;
+}
+
+/* Wide variant for the 3rd line (longer text) */
+.tw-text.fg-mono-wide {
+  font-size: 33px;
+  max-width: 1160px;
+  display: inline-block;
+}
+
+.tw-char {
+  will-change: opacity, filter;
+}
+
+/* Blinking line cursor */
+.tw-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1.1em;
+  background: rgba(255, 255, 255, 0.85);
+  vertical-align: text-bottom;
+  margin-left: 3px;
+  border-radius: 1px;
+  animation: tw-blink 0.95s step-end infinite;
+}
+
+@keyframes tw-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* ── CTA pill ────────────────────────────────────────────────────────────────── */
+
+.fg-cta-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.fg-cta-pill {
+  background: #ffffff;
+  color: #111111;
+  border: none;
+  border-radius: 999px;
+  padding: 0 68px;
+  height: 78px;
+  font-size: 26px;
+  font-weight: 600;
+  font-family: 'Instrument Sans', 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  outline: none;
+  box-shadow:
+    0 8px 40px rgba(255, 255, 255, 0.16),
+    0 2px 10px rgba(0, 0, 0, 0.3);
+  transition: transform 0.15s var(--ease-spring), box-shadow 0.15s ease;
+  will-change: transform;
+}
+
+.fg-cta-pill:hover {
+  transform: scale(1.03);
+  box-shadow:
+    0 12px 52px rgba(255, 255, 255, 0.24),
+    0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* ── Question screens — mascot top-center ────────────────────────────────────── */
+
+.fg-q-mascot {
+  position: relative;
+  z-index: 2;
+  margin-top: 78px;
+  margin-bottom: 30px;
+  /* keep mascot horizontally centered always */
+  align-self: center;
+}
+
+.fg-q-title {
+  position: relative;
+  z-index: 2;
+  font-size: 42px;
+  font-weight: 500;
+  font-family: 'Instrument Sans', 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  text-align: center;
+  width: 100%;
+  max-width: 1400px;
+  padding: 0 200px;
+  margin-bottom: 18px;
+  line-height: 1.25;
+}
+
+.fg-q-subtitle {
+  position: relative;
+  z-index: 2;
+  font-size: 22px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.48);
+  text-align: center;
+  width: 100%;
+  margin-bottom: 52px;
+  letter-spacing: 0.01em;
+}
+
+/* ── Image cards — 2-up (location screen) ────────────────────────────────────── */
+
+.fg-cards-row {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  align-items: center;
+}
+
+.fg-img-card {
+  position: relative;
+  width: 484px;
+  height: 298px;
+  border-radius: 20px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  transform: scale(0.94);
+  transition:
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+  will-change: transform;
+  background: #0d0820;
+}
+
+.fg-img-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.75s var(--ease-gentle);
+}
+
+.fg-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(4, 2, 14, 0.88) 0%,
+    rgba(4, 2, 14, 0.22) 50%,
+    transparent 72%
+  );
+  z-index: 1;
+}
+
+.fg-card-label {
+  position: absolute;
+  bottom: 20px;
+  left: 22px;
+  right: 22px;
+  z-index: 2;
+  font-size: 22px;
+  font-weight: 700;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.8);
+}
+
+/* Focused — white ring, scaled up */
+.fg-img-card--focused:not(.fg-img-card--selected) {
+  transform: scale(1.06);
+  border: 2.5px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6);
+}
+
+/* Selected — white ring, scaled up */
+.fg-img-card--selected {
+  transform: scale(1.06) !important;
+  border: 2.5px solid rgba(255, 255, 255, 0.9) !important;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* ── Bridge area (post-confirm text) ────────────────────────────────────────── */
+
+.fg-bridge-area {
+  position: absolute;
+  /* center vertically in screen */
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  pointer-events: none;
+  min-height: 120px;
+}
+
+/* Reuse monologue styling for bridge lines */
+.fg-bridge-area .fg-monologue-line {
+  font-family: 'Instrument Sans', 'Plus Jakarta Sans', sans-serif;
+  font-size: 36px;
+  font-weight: 400;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.90);
+  text-align: center;
+  max-width: 1100px;
+  padding: 0 160px;
+  letter-spacing: -0.01em;
+}
+
+/* ── Horizontal carousel (topics + discovery screens) ───────────────────────── */
+
+.fg-carousel-viewport {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  /* overflow hidden clips cards but NOT their focus ring — use padding to compensate */
+  overflow: hidden;
+  /* top/bottom padding to prevent focus ring clipping */
+  padding: 12px 0 16px;
+}
+
+.fg-carousel-track {
+  display: flex;
+  gap: 24px;
+  /* left padding shows peek from edge; right handled by natural overflow */
+  padding-left: 160px;
+  padding-right: 160px;
+  /* ensure track doesn't wrap */
+  flex-wrap: nowrap;
+  will-change: transform;
+}
+
+.fg-topic-card {
+  position: relative;
+  width: 460px;
+  height: 290px;
+  border-radius: 20px;
+  overflow: hidden;
+  flex-shrink: 0;
+  cursor: pointer;
+  border: 2px solid rgba(255, 255, 255, 0.10);
+  background: rgba(32, 12, 68, 0.6);
+  transition:
+    transform 0.25s var(--ease-spring),
+    border-color 0.22s ease,
+    box-shadow 0.22s ease;
+  will-change: transform;
+}
+
+.fg-topic-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: scale(1.05);
+  transition: transform 0.7s var(--ease-gentle);
+}
+
+.fg-topic-card--focused:not(.fg-topic-card--selected) {
+  transform: scale(1.03);
+  border-color: rgba(255, 255, 255, 0.86);
+  box-shadow:
+    0 0 0 3px rgba(5, 2, 16, 0.82),
+    0 0 0 6px rgba(255, 255, 255, 0.78),
+    0 28px 80px rgba(0, 0, 0, 0.50);
+}
+
+.fg-topic-card--focused img {
+  transform: scale(1.10);
+}
+
+/* Selected — single border, bigger, glow only */
+.fg-topic-card--selected {
+  transform: scale(1.038) !important;
+  border-color: #ffffff !important;
+  box-shadow:
+    0 0 28px 8px rgba(210, 180, 255, 0.25),
+    0 24px 65px rgba(0, 0, 0, 0.48) !important;
+}
+
+.fg-topic-card--selected img {
+  transform: scale(1.10);
+}
+
+/* Discovery card variant — taller with text at bottom */
+.fg-disc-card {
+  height: 320px !important;
+}
+
+.fg-disc-card-body {
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  right: 24px;
+  z-index: 2;
+  text-align: left;
+}
+
+.fg-disc-card-label {
+  font-size: 26px;
+  font-weight: 700;
+  font-family: 'Instrument Sans', 'Plus Jakarta Sans', sans-serif;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin-bottom: 6px;
+}
+
+.fg-disc-card-desc {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.58);
+  line-height: 1.4;
+}
+
+/* Discovery carousel — 4 bigger cards fill width nicely */
+.fg-carousel-viewport--discovery .fg-carousel-track {
+  padding-left: 140px;
+}
+
+.fg-carousel-viewport--discovery .fg-disc-card {
+  width: 420px !important;
+}
+
+/* Radio circle top-right */
+.fg-radio {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.60);
+  background: transparent;
+  z-index: 3;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.fg-radio--selected {
+  background: #ffffff;
+  border-color: #ffffff;
+  display: grid;
+  place-items: center;
+}
+
+.fg-radio--selected::after {
+  content: '✓';
+  font-size: 14px;
+  font-weight: 900;
+  color: #111111;
+  line-height: 1;
+}
+
+/* ── Pill action buttons ─────────────────────────────────────────────────────── */
+
+.fg-pill-row {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 36px;
+}
+
+.fg-pill-btn {
+  height: 66px;
+  padding: 0 52px;
+  font-size: 24px;
+  font-weight: 600;
+  font-family: 'Instrument Sans', 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: -0.01em;
+  border-radius: 999px;
+  cursor: pointer;
+  outline: none;
+  border: 2px solid rgba(255, 255, 255, 0.20);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.78);
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.18s var(--ease-spring),
+    box-shadow 0.18s ease;
+}
+
+.fg-pill-btn--focused {
+  background: #ffffff;
+  color: #111111;
+  border-color: #ffffff;
+  transform: scale(1.04);
+  box-shadow:
+    0 0 0 4px rgba(5, 2, 16, 0.82),
+    0 0 0 7px #ffffff,
+    0 20px 60px rgba(255, 255, 255, 0.18);
+}
+
+.fg-pill-btn--disabled {
+  opacity: 0.30;
+  pointer-events: none;
+}
+
+.fg-pill-btn--ghost {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.10);
+  color: rgba(255, 255, 255, 0.42);
+}
+
+/* ── Input bubble — user's choice flies up to agent ─────────────────────────── */
+
+.fg-input-bubble {
+  max-width: 640px;
+  padding: 14px 28px;
+  background: rgba(255, 255, 255, 0.10);
+  border: 1.5px solid rgba(255, 255, 255, 0.26);
+  border-radius: 24px 24px 6px 24px;
+  font-family: 'Instrument Sans', sans-serif;
+  font-size: 22px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.88);
+  text-align: center;
+  pointer-events: none;
+  z-index: 20;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  backdrop-filter: blur(12px);
+}
+
+/* ── Agent response — below mascot, typed ──────────────────────────────────── */
+
+.fg-response-area {
+  position: relative;
+  z-index: 2;
+  margin-top: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80px;
+  width: 100%;
+}
+
+.fg-response-text {
+  font-family: 'Instrument Sans', 'Plus Jakarta Sans', sans-serif;
+  font-size: 32px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.80);
+  text-align: center;
+  letter-spacing: -0.01em;
+  display: inline;
+}
+
+/* ── Card focus/selected rules are defined inline per card type above ──────── */
+/* This section intentionally left empty to avoid conflicting overrides */
+
+/* ── Selfie screen layout ───────────────────────────────────────────────────── */
+
+.fg-selfie-panels {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  gap: 40px;
+  justify-content: center;
+  align-items: flex-start;
+  margin-top: 4px;
+}
+
+/* Left: portrait preview card */
+.fg-selfie-preview-card {
+  position: relative;
+  width: 380px;
+  height: 480px;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1.5px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 32px 100px rgba(0, 0, 0, 0.55);
+  flex-shrink: 0;
+  background: rgba(30, 14, 70, 0.7);
+}
+
+.fg-selfie-preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: scale(1.06);
+}
+
+.fg-selfie-preview-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(6, 2, 18, 0.88) 0%,
+    rgba(6, 2, 18, 0.10) 50%,
+    transparent 75%
+  );
+}
+
+.fg-selfie-preview-caption {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  bottom: 28px;
+  z-index: 2;
+}
+
+.fg-selfie-preview-tag {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: rgba(192, 132, 252, 0.85);
+  margin-bottom: 8px;
+}
+
+.fg-selfie-preview-title {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  color: #ffffff;
+}
+
+/* Right: QR / upload area */
+.fg-selfie-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 480px;
+  padding-top: 12px;
+}
+
+.fg-selfie-right-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  text-align: center;
+}
+
+.fg-selfie-right-desc {
+  font-size: 18px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.50);
+  text-align: center;
+  max-width: 420px;
+}
+
+/* QR code block */
+.fg-qr-block {
+  width: 200px;
+  height: 200px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1.5px solid rgba(255, 255, 255, 0.14);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.fg-qr-block:hover {
+  border-color: rgba(255, 255, 255, 0.38);
+  background: rgba(255, 255, 255, 0.10);
+}
+
+.fg-qr-hint {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.40);
+  text-align: center;
+  letter-spacing: 0.04em;
+}
+
+.fg-selfie-upload-btn {
+  width: 100%;
+  max-width: 320px;
+}
+
+/* Uploaded photo */
+.fg-photo-uploaded {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.80);
+  box-shadow: 0 0 30px 8px rgba(160, 100, 255, 0.28);
+}
+
+.fg-uploaded-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.fg-uploaded-check {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #111111;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  font-weight: 900;
+}
+
+/* Selfie action buttons */
+.fg-selfie-actions {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 28px;
+}
+
+/* ── QR scan popup overlay ──────────────────────────────────────────────────── */
+
+.fg-qr-popup {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 30;
+  background: rgba(5, 2, 18, 0.72);
+  backdrop-filter: blur(20px);
+}
+
+.fg-qr-popup-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 52px 64px;
+  background: rgba(18, 8, 45, 0.90);
+  border: 1.5px solid rgba(255, 255, 255, 0.14);
+  border-radius: 32px;
+  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.60);
+  max-width: 560px;
+}
+
+.fg-qr-popup-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.03em;
+  text-align: center;
+}
+
+.fg-qr-popup-subtitle {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.52);
+  text-align: center;
+  line-height: 1.55;
+  max-width: 420px;
+}
+
+.fg-qr-popup-code {
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+
+/* ── fg-bg-glow--generation ─────────────────────────────────────────────────── */
+
+.fg-bg-glow--generation {
+  background:
+    radial-gradient(ellipse 1400px 1000px at 50% 50%,
+      rgba(90, 35, 190, 0.48) 0%, transparent 66%),
+    linear-gradient(180deg, #0c0625 0%, #060112 100%);
+}
+
+/* ── DiscoveryAppetite option rows ──────────────────────────────────────────── */
+
+.fg-discovery-options {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  max-width: 960px;
+  padding: 0 40px;
+}
+
+.fg-discovery-option {
+  display: grid;
+  grid-template-columns: 100px 1fr 36px;
+  align-items: center;
+  gap: 24px;
+  padding: 16px 22px;
+  border-radius: 20px;
+  border: 1.5px solid rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  text-align: left;
+  cursor: pointer;
+  outline: none;
+  font-family: var(--sans);
+  transition:
+    transform 0.22s var(--ease-spring),
+    border-color 0.22s ease,
+    box-shadow 0.22s ease,
+    background 0.22s ease;
+}
+
+.fg-disc-thumb {
+  width: 100px;
+  height: 68px;
+  border-radius: 12px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: rgba(40, 16, 80, 0.6);
+}
+
+.fg-disc-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.fg-disc-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fg-disc-label {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+.fg-disc-desc {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.52);
+  line-height: 1.4;
+}
+
+.fg-discovery-option--focused {
+  transform: scale(1.022);
+  border-color: rgba(255, 255, 255, 0.85);
+  box-shadow:
+    0 0 0 3px rgba(5, 2, 16, 0.80),
+    0 0 0 6px rgba(255, 255, 255, 0.75),
+    0 0 36px 10px rgba(160, 100, 255, 0.26),
+    0 20px 60px rgba(0, 0, 0, 0.45);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.fg-discovery-option--selected {
+  border-color: rgba(255, 255, 255, 0.88);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 0 24px 6px rgba(200, 160, 255, 0.20),
+    0 16px 50px rgba(0, 0, 0, 0.40);
+}
+
+/* ── SelfieScreen top section ───────────────────────────────────────────────── */
+
+.fg-selfie-top {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+/* Response sits right below question, not at bottom */
+.fg-selfie-response {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60px;
+  width: 100%;
+  padding: 0 200px;
+  margin-bottom: 4px;
+}
+
+/* ── QR popup close button ──────────────────────────────────────────────────── */
+
+.fg-qr-popup {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 30;
+  background: rgba(4, 2, 14, 0.75);
+  backdrop-filter: blur(24px);
+  pointer-events: auto;
+}
+
+.fg-qr-popup-inner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 52px 72px 44px;
+  background: rgba(14, 6, 38, 0.95);
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  border-radius: 36px;
+  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255,255,255,0.04);
+  max-width: 600px;
+  min-width: 520px;
+}
+
+.fg-qr-close {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 14px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.fg-qr-close:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+
+.fg-qr-popup-eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(192, 132, 252, 0.80);
+}
+
+.fg-qr-popup-title {
+  font-size: 34px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.035em;
+  text-align: center;
+  margin-top: -4px;
+}
+
+.fg-qr-popup-subtitle {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.50);
+  text-align: center;
+  line-height: 1.6;
+  max-width: 400px;
+}
+
+.fg-qr-popup-code {
+  padding: 28px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.fg-qr-popup-note {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.30);
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+
+/* ── TuningTransition ────────────────────────────────────────────────────────── */
+
+.fg-tuning-screen {
+  justify-content: center;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   SelfieScreen redesign — sv- namespace (Figma 4065-6358)
+   Value proposition layout: mascot → headline → card fan → selfie → CTA
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* Screen: full 1920×1080 flex column, distributed vertically */
+.sv-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0 40px;
+  overflow: hidden;
+}
+
+/* ── Top: mascot + headline ──────────────────────────────────────────────────── */
+
+.sv-top {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  padding-top: 64px;
+}
+
+.sv-headline {
+  font-family: 'Instrument Sans', 'Plus Jakarta Sans', sans-serif;
+  font-size: 46px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: rgba(255, 255, 255, 0.95);
+  text-align: center;
+  line-height: 1.15;
+  margin: 0;
+  max-width: 860px;
+}
+
+/* ── Card stage ──────────────────────────────────────────────────────────────── */
+
+/* Stage takes the majority of the vertical space — flex-grow fills the gap */
+.sv-stage {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  flex: 1;
+  min-height: 380px;
+  max-height: 460px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+}
+
+/* Base card */
+.sv-card {
+  position: absolute;
+  border-radius: 20px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sv-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.sv-card-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(4, 2, 18, 0.50) 0%, transparent 55%);
+  pointer-events: none;
+}
+
+/* Left background card — tilted left, peeking from behind */
+.sv-card--left {
+  width: 340px;
+  height: 320px;
+  left: calc(50% - 460px);
+  top: 50%;
+  translate: 0 -50%;
+  transform: rotate(-8deg);
+  transform-origin: bottom right;
+  opacity: 0.82;
+  z-index: 1;
+}
+
+/* Right background card — tilted right */
+.sv-card--right {
+  width: 340px;
+  height: 320px;
+  right: calc(50% - 460px);
+  top: 50%;
+  translate: 0 -50%;
+  transform: rotate(8deg);
+  transform-origin: bottom left;
+  opacity: 0.82;
+  z-index: 1;
+}
+
+/* Centre hero card — tallest, upright, front */
+.sv-card--centre {
+  width: 460px;
+  height: 380px;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  z-index: 3;
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  box-shadow:
+    0 32px 100px rgba(0, 0, 0, 0.65),
+    0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+.sv-card-badge {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.92);
+  letter-spacing: 0.05em;
+  z-index: 4;
+}
+
+/* ── Selfie polaroid ─────────────────────────────────────────────────────────── */
+
+.sv-selfie-card {
+  position: absolute;
+  left: calc(50% - 370px);
+  top: 50%;
+  translate: 0 -10%;
+  z-index: 5;
+  width: 160px;
+  /* no background/padding — PNG already has the polaroid frame */
+  box-shadow:
+    0 20px 70px rgba(0, 0, 0, 0.55),
+    0 3px 14px rgba(0, 0, 0, 0.30);
+  transform: rotate(-6deg);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.sv-selfie-img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ── Transformation arrow ────────────────────────────────────────────────────── */
+
+.sv-arrow {
+  position: absolute;
+  left: calc(50% - 218px);
+  top: 50%;
+  translate: 0 30%;
+  z-index: 6;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
+}
+
+/* ── CTA row ─────────────────────────────────────────────────────────────────── */
+
+.sv-cta-row {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: center;
+  padding-top: 8px;
+}
+
+.sv-btn {
+  height: 68px;
+  padding: 0 52px;
+  border-radius: 999px;
+  border: none;
+  font-size: 22px;
+  font-weight: 600;
+  font-family: 'Instrument Sans', 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  outline: none;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.sv-btn--ghost {
+  background: rgba(255, 255, 255, 0.11);
+  color: rgba(255, 255, 255, 0.78);
+  border: 1.5px solid rgba(255, 255, 255, 0.20);
+}
+
+.sv-btn--primary {
+  background: #ffffff;
+  color: #111111;
+  box-shadow: 0 8px 36px rgba(255, 255, 255, 0.18), 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.sv-btn--focused {
+  transform: scale(1.05);
+  box-shadow:
+    0 0 0 3px rgba(4, 2, 18, 0.80),
+    0 0 0 6px rgba(255, 255, 255, 0.80),
+    0 12px 48px rgba(0, 0, 0, 0.30);
+}
+
+.sv-btn--ghost.sv-btn--focused {
+  background: rgba(255, 255, 255, 0.20);
+  border-color: rgba(255, 255, 255, 0.70);
+}
+
+/* ── Privacy note ────────────────────────────────────────────────────────────── */
+
+.sv-privacy {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.36);
+  text-align: center;
+  font-family: 'Instrument Sans', 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: 0.01em;
+  margin-top: 12px;
+}
+
+.sv-privacy-icon {
+  font-size: 14px;
+  opacity: 0.65;
+}
+
+.fg-tuning-flash {
+  position: absolute;
+  inset: 0;
+  background: #ffffff;
+  pointer-events: none;
+  z-index: 50;
+}
+
+.fg-tuning-layout {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 0;
+  padding: 0 200px;
+}
+
+.fg-tuning-eyebrow {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(245, 243, 247, 0.38);
+  margin-bottom: 32px;
+}
+
+/* Data tiles — horizontal row */
+.fg-tuning-tiles {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+  max-width: 1400px;
+  margin-bottom: 40px;
+}
+
+.fg-tuning-tile {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 28px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  min-width: 260px;
+  will-change: transform, opacity, filter;
+}
+
+.fg-tuning-tile-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+  width: 36px;
+  text-align: center;
+}
+
+.fg-tuning-tile-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.fg-tuning-tile-label {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(245, 243, 247, 0.40);
+}
+
+.fg-tuning-tile-value {
+  font-size: 18px;
+  font-weight: 600;
+  color: rgba(245, 243, 247, 0.92);
+  letter-spacing: -0.01em;
+}
+
+.fg-tuning-tile-check {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #0e0820;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 900;
+  flex-shrink: 0;
+}
+
+/* Progress bar */
+.fg-tuning-progress-wrap {
+  width: 640px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+  margin-bottom: 40px;
+  transform-origin: center;
+}
+
+.fg-tuning-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #7047E2 0%, #A786E5 50%, #c084fc 100%);
+  border-radius: 999px;
+  transform-origin: left center;
+  box-shadow: 0 0 12px rgba(167, 134, 229, 0.6);
+}
+
+/* Ready state */
+.fg-tuning-ready {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.fg-tuning-ready-label {
+  font-size: 56px;
+  font-weight: 800;
+  letter-spacing: -0.055em;
+  color: #ffffff;
+  line-height: 1;
+}
+
+.fg-tuning-ready-sub {
+  font-size: 22px;
+  color: rgba(245, 243, 247, 0.55);
+  max-width: 760px;
+  line-height: 1.5;
+}
+
+/* Selfie screen photo uploaded badge */
+.fg-selfie-photo-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(255,255,255,0.92);
+  color: #111111;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 999px;
+  z-index: 3;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   TuningTransition redesign — bt- namespace (Building your feed)
+   Agentic assembly experience: headline → mascot + narration → checklist
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.bt-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* ── Layout: centred column with generous breathing room ──────────────────── */
+
+.bt-layout {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  max-width: 1100px;
+  padding: 0 0 0 120px;
+  gap: 0;
+}
+
+/* ── Headline ─────────────────────────────────────────────────────────────── */
+
+.bt-headline {
+  font-family: 'Instrument Sans', 'Plus Jakarta Sans', sans-serif;
+  font-size: 86px;
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  color: rgba(255, 255, 255, 0.97);
+  line-height: 1.0;
+  margin: 0 0 56px 0;
+  max-width: 900px;
+}
+
+/* ── Agent row: mascot left, narration right ──────────────────────────────── */
+
+.bt-agent-row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 56px;
+  max-width: 860px;
+}
+
+.bt-mascot {
+  flex-shrink: 0;
+  /* slight nudge up to align with text cap height */
+  margin-top: -6px;
+}
+
+.bt-narration {
+  position: relative;
+  min-height: 36px;
+}
+
+.bt-narration-text {
+  font-family: 'Instrument Sans', 'Plus Jakarta Sans', sans-serif !important;
+  font-size: 26px !important;
+  font-weight: 400 !important;
+  color: rgba(255, 255, 255, 0.55) !important;
+  line-height: 1.5 !important;
+  letter-spacing: -0.01em !important;
+  max-width: 720px;
+  display: block;
+}
+
+/* ── Checklist ────────────────────────────────────────────────────────────── */
+
+.bt-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.bt-check-item {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  will-change: opacity, transform, filter;
+}
+
+.bt-check-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  color: #0e0820;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 900;
+  flex-shrink: 0;
+  will-change: transform, opacity, box-shadow;
+  box-shadow: 0 0 0 0 rgba(160, 100, 255, 0);
+  transition: box-shadow 0.2s ease;
+}
+
+.bt-check-text {
+  font-family: 'Instrument Sans', 'Plus Jakarta Sans', sans-serif;
+  font-size: 22px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.78);
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   CinematicText — cr- namespace
+   Characters resolve blur→sharp. No cursor. No typewriter feel.
+   This is the approved Glance agent text animation language.
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+.cr-text {
+  /* Structural only — do NOT redeclare typography properties here.
+     Inheriting via cascade from the parent container is correct behavior.
+     Any co-applied class (fg-response-text, fg-q-title, fg-intro-line1 etc.)
+     must set font-size/weight on the PARENT element, not on .cr-text. */
+  display: inline;
+}
+
+.cr-char {
+  will-change: opacity, filter;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   BangaloreConfirm — bc- namespace
+   Multi-phrase acknowledgement + history stack
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* Acknowledgement container — stacks lines vertically, close to mascot */
+.bc-ack-area {
+  flex-direction: column;
+  gap: 6px;
+  min-height: 100px;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 280px;
+}
+
+/* Each ack line wrapper */
+.bc-ack-line {
+  text-align: center;
+  line-height: 1.3;
+}
+
+/* Primary line — larger, more prominent */
+.bc-ack-text--primary {
+  font-size: 36px !important;
+  font-weight: 600 !important;
+  color: rgba(255, 255, 255, 0.96) !important;
+  letter-spacing: -0.02em !important;
+}
+
+/* Tertiary line — softer, conversational aside */
+.bc-ack-text--tertiary {
+  font-size: 26px !important;
+  font-weight: 400 !important;
+  color: rgba(255, 255, 255, 0.54) !important;
+  letter-spacing: -0.01em !important;
+}
+
+/* History ghost — selected card lingers top-left as context */
+.bc-history-ghost {
+  position: absolute;
+  top: 88px;
+  left: 120px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  pointer-events: none;
+}
+
+.bc-history-card {
+  position: relative;
+  width: 140px;
+  height: 88px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1.5px solid rgba(255, 255, 255, 0.55);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45),
+              0 0 20px 4px rgba(160, 100, 255, 0.18);
+  flex-shrink: 0;
+}
+
+.bc-history-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.bc-history-label {
+  position: absolute;
+  bottom: 8px;
+  left: 10px;
+  right: 10px;
+  font-family: 'Instrument Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  z-index: 2;
+}
+
+/* Green check badge on history ghost */
+.bc-history-check {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(160, 255, 160, 0.22);
+  border: 1.5px solid rgba(160, 255, 160, 0.55);
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  color: rgba(160, 255, 160, 0.90);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   Q1Scenario — q1s- namespace
+   2×2 grid of full-bleed image cards. Same card language as fg-img-card.
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+.q1s-grid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 20px;
+  width: 1100px;
+  height: 580px;
+}
+
+.q1s-card {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid rgba(255, 255, 255, 0.10);
+  background: rgba(32, 12, 68, 0.6);
+  transition:
+    transform 0.25s var(--ease-spring),
+    border-color 0.22s ease,
+    box-shadow 0.22s ease,
+    opacity 0.3s ease;
+  will-change: transform;
+}
+
+.q1s-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: scale(1.05);
+  transition: transform 0.7s var(--ease-gentle);
+}
+
+.q1s-card--focused:not(.q1s-card--selected) {
+  transform: scale(1.028);
+  border-color: rgba(255, 255, 255, 0.88);
+  box-shadow:
+    0 0 0 3px rgba(5, 2, 16, 0.82),
+    0 0 0 6px rgba(255, 255, 255, 0.80),
+    0 28px 80px rgba(0, 0, 0, 0.55);
+}
+
+.q1s-card--focused img {
+  transform: scale(1.10);
+}
+
+.q1s-card--selected {
+  transform: scale(1.035) !important;
+  border-color: #ffffff !important;
+  box-shadow:
+    0 0 28px 8px rgba(210, 180, 255, 0.25),
+    0 24px 65px rgba(0, 0, 0, 0.48) !important;
+}
+
+.q1s-card--selected img {
+  transform: scale(1.10);
+}
+
+/* Selected checkmark badge */
+.q1s-card-check {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #111111;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  font-weight: 900;
+  z-index: 3;
+}
+
+.q1s-card-body {
+  position: absolute;
+  bottom: 22px;
+  left: 24px;
+  right: 24px;
+  z-index: 2;
+}
+
+.q1s-card-label {
+  font-family: 'Instrument Sans', 'Plus Jakarta Sans', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  line-height: 1.15;
+  margin-bottom: 5px;
+}
+
+.q1s-card-sublabel {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.60);
+  line-height: 1.4;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   WorldsQuestion / VibesQuestion — wq-history-ghost
+   Multi-select history: pills instead of a card thumbnail.
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* Override bc-history-ghost layout for pill-based history */
+.wq-history-ghost {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.wq-history-pills {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.wq-history-pill {
+  font-family: 'Instrument Sans', 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.10);
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  padding: 5px 14px;
+  white-space: nowrap;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   Setup Questions Q1–Q5 — sq- namespace
+   Vertical stacked cards: image area on top, text label below. NOT overlaid.
+   One option per row, large TV-friendly cards.
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* Card list wrapper — centered column */
+.sq-card-list {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 860px;
+  align-items: stretch;
+}
+
+/* Individual option card — image above, text below */
+.sq-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-radius: 20px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid rgba(255, 255, 255, 0.10);
+  background: rgba(32, 12, 68, 0.60);
+  transition:
+    transform 0.22s var(--ease-spring),
+    border-color 0.20s ease,
+    box-shadow 0.20s ease,
+    opacity 0.28s ease;
+  will-change: transform;
+  flex-shrink: 0;
+}
+
+/* Image container — fixed height, no text overlay */
+.sq-card-image {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.sq-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: scale(1.05);
+  transition: transform 0.65s var(--ease-gentle);
+}
+
+/* Placeholder when image missing */
+.sq-card-image--placeholder {
+  background: linear-gradient(135deg, rgba(60, 20, 120, 0.7) 0%, rgba(30, 10, 60, 0.9) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sq-card-image--placeholder::after {
+  content: '';
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1.5px solid rgba(255, 255, 255, 0.14);
+}
+
+/* Text area — sits BELOW the image, never overlaid */
+.sq-card-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 18px 24px 20px;
+  background: rgba(16, 6, 40, 0.90);
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  flex-shrink: 0;
+}
+
+.sq-card-label {
+  font-family: 'Instrument Sans', 'Plus Jakarta Sans', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+.sq-card-sublabel {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.50);
+  line-height: 1.4;
+  font-weight: 400;
+}
+
+/* Radio indicator top-right, INSIDE image area */
+.sq-card-radio {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.55);
+  background: transparent;
+  z-index: 3;
+  transition: background 0.18s ease, border-color 0.18s ease;
+  pointer-events: none;
+}
+
+.sq-card-radio--selected {
+  background: #ffffff;
+  border-color: #ffffff;
+  display: grid;
+  place-items: center;
+}
+
+.sq-card-radio--selected::after {
+  content: '✓';
+  font-size: 13px;
+  font-weight: 900;
+  color: #111111;
+  line-height: 1;
+}
+
+/* Focus state — white ring */
+.sq-card--focused:not(.sq-card--selected) {
+  transform: scale(1.022);
+  border-color: rgba(255, 255, 255, 0.86);
+  box-shadow:
+    0 0 0 3px rgba(5, 2, 16, 0.82),
+    0 0 0 5px rgba(255, 255, 255, 0.76),
+    0 24px 70px rgba(0, 0, 0, 0.50);
+}
+
+.sq-card--focused img {
+  transform: scale(1.08);
+}
+
+/* Selected state */
+.sq-card--selected {
+  transform: scale(1.025) !important;
+  border-color: #ffffff !important;
+  box-shadow:
+    0 0 24px 8px rgba(210, 180, 255, 0.22),
+    0 20px 60px rgba(0, 0, 0, 0.45) !important;
+}
+
+.sq-card--selected img {
+  transform: scale(1.08);
+}
+
+/* Progress indicator text — "Question X of 6" */
+.sq-progress-label {
+  position: absolute;
+  top: 52px;
+  right: 72px;
+  z-index: 10;
+  font-family: 'Instrument Sans', 'Plus Jakarta Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.32);
+}
+
+/* Explore More button — inline expander for Q3 */
+.sq-explore-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 24px;
+  border-radius: 20px;
+  border: 1.5px dashed rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+  outline: none;
+  color: rgba(255, 255, 255, 0.55);
+  font-family: 'Instrument Sans', 'Plus Jakarta Sans', sans-serif;
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+  width: 100%;
+}
+
+.sq-explore-btn:hover,
+.sq-explore-btn--focused {
+  border-color: rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.sq-explore-icon {
+  font-size: 16px;
+  opacity: 0.6;
+  transition: transform 0.25s ease;
+}
+
+.sq-explore-btn--open .sq-explore-icon {
+  transform: rotate(180deg);
+}
+
+/* Scrollable viewport for tall card lists */
+.sq-scroll-viewport {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-height: 580px;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+  /* hide scrollbar */
+  scrollbar-width: none;
+}
+
+.sq-scroll-viewport::-webkit-scrollbar {
+  display: none;
+}

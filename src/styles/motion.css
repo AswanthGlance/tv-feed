@@ -1,0 +1,335 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   GLANCE MOTION SYSTEM
+   Reusable primitives for the entire onboarding + feed experience.
+   All animations are intentional, restrained, cinematic.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* ── Easing library ─────────────────────────────────────────────────────────── */
+:root {
+  --ease-out:        cubic-bezier(0.16, 1, 0.3, 1);       /* snap-to-rest */
+  --ease-in-out:     cubic-bezier(0.45, 0, 0.15, 1);      /* controlled arc */
+  --ease-spring:     cubic-bezier(0.34, 1.56, 0.64, 1);   /* gentle overshoot */
+  --ease-cinematic:  cubic-bezier(0.22, 1, 0.36, 1);      /* film-quality */
+  --ease-gentle:     cubic-bezier(0.4, 0, 0.2, 1);        /* material-smooth */
+
+  /* Durations */
+  --dur-confirm:     200ms;   /* micro: button press, selection confirm */
+  --dur-ack:         300ms;   /* agent acknowledges */
+  --dur-transition:  500ms;   /* question transition */
+  --dur-reveal:      700ms;   /* cinematic reveal */
+  --dur-ambient:     2800ms;  /* breathing / idle loops */
+  --dur-slow-ambient: 8000ms; /* background gradient shifts */
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   KEYFRAMES
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* fadeUp — content entrance from below */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(28px) scale(0.984); filter: blur(8px); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);     filter: blur(0); }
+}
+
+/* fadeIn — pure opacity, no movement */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* fadeDown — for history items receding upward */
+@keyframes fadeDown {
+  from { opacity: 1; transform: translateY(0)    scale(1);     filter: blur(0); }
+  to   { opacity: 0; transform: translateY(-20px) scale(0.97); filter: blur(6px); }
+}
+
+/* cardReveal — surface slides up and sharpens */
+@keyframes cardReveal {
+  from { opacity: 0; transform: translateY(36px) scale(0.97); filter: blur(12px); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);    filter: blur(0); }
+}
+
+/* focusExpand — selection rings outward */
+@keyframes focusExpand {
+  0%   { transform: scale(0.92); opacity: 0.6; }
+  60%  { transform: scale(1.06); opacity: 1; }
+  100% { transform: scale(1);    opacity: 1; }
+}
+
+/* agentAppear — mascot entrance, drops in with spring */
+@keyframes agentAppear {
+  from { opacity: 0; transform: scale(0.72) translateY(16px); filter: blur(14px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0);    filter: blur(0); }
+}
+
+/* agentRespond — subtle pulse when agent acknowledges */
+@keyframes agentRespond {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(1.14); }
+  60%  { transform: scale(0.97); }
+  100% { transform: scale(1); }
+}
+
+/* agentIdle — slow breathing, organic */
+@keyframes agentIdle {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 44px 14px rgba(112, 71, 226, 0.38),
+                0 0 88px 30px rgba(112, 71, 226, 0.12);
+    opacity: 0.82;
+  }
+  50% {
+    transform: scale(1.10);
+    box-shadow: 0 0 80px 36px rgba(167, 134, 229, 0.62),
+                0 0 160px 70px rgba(112, 71, 226, 0.18);
+    opacity: 1;
+  }
+}
+
+/* agentSpeak — more intense, breathing accelerates */
+@keyframes agentSpeak {
+  0%   { transform: scale(1);    box-shadow: 0 0 60px 22px rgba(192, 132, 252, 0.55); }
+  35%  { transform: scale(1.16); box-shadow: 0 0 110px 55px rgba(192, 132, 252, 0.82); }
+  70%  { transform: scale(1.06); box-shadow: 0 0 80px 34px rgba(192, 132, 252, 0.65); }
+  100% { transform: scale(1);    box-shadow: 0 0 60px 22px rgba(192, 132, 252, 0.55); }
+}
+
+/* agentThink — dots animate, orb is still */
+@keyframes agentThinkDot {
+  0%, 80%, 100% { opacity: 0.18; transform: scale(0.75) translateY(0); }
+  40%           { opacity: 1;    transform: scale(1.2)  translateY(-4px); }
+}
+
+/* agentListen — ring expands outward gently */
+@keyframes agentListen {
+  0%   { transform: scale(1);    box-shadow: 0 0 0 0 rgba(167, 134, 229, 0); }
+  50%  { transform: scale(1.04); box-shadow: 0 0 0 22px rgba(167, 134, 229, 0.12); }
+  100% { transform: scale(1);    box-shadow: 0 0 0 42px rgba(167, 134, 229, 0); }
+}
+
+/* staggerChildren — used by parent, children delay themselves */
+@keyframes staggerIn {
+  from { opacity: 0; transform: translateY(20px); filter: blur(6px); }
+  to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
+}
+
+/* backgroundShift — gradient hue evolution */
+@keyframes backgroundShift {
+  0%   { opacity: 0; }
+  20%  { opacity: 1; }
+  80%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* pulseRing — confirmation feedback ring */
+@keyframes pulseRing {
+  0%   { transform: scale(0.88); opacity: 0.8; }
+  100% { transform: scale(1.55); opacity: 0; }
+}
+
+/* shimmer — premium loading state */
+@keyframes shimmer {
+  from { background-position: -400px 0; }
+  to   { background-position: 400px 0; }
+}
+
+/* floatOrb — ambient background elements (also referenced as float-orb) */
+@keyframes floatOrb {
+  0%   { transform: translate3d(-36px, 18px, 0) scale(0.94); }
+  100% { transform: translate3d(30px, -24px, 0) scale(1.08); }
+}
+/* alias for legacy premium.css */
+@keyframes float-orb {
+  0%   { transform: translate3d(-36px, 18px, 0) scale(0.94); }
+  100% { transform: translate3d(30px, -24px, 0) scale(1.08); }
+}
+
+/* agentIdle — used by .ob-generation-orb in premium.css */
+@keyframes agentIdle {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow:
+      0 0 80px 36px rgba(112, 71, 226, 0.42),
+      0 0 0 1px rgba(255, 255, 255, 0.06);
+    opacity: 0.88;
+  }
+  50% {
+    transform: scale(1.09);
+    box-shadow:
+      0 0 140px 70px rgba(167, 134, 229, 0.62),
+      0 0 0 1px rgba(255, 255, 255, 0.10);
+    opacity: 1;
+  }
+}
+
+/* selectionConfirm — check mark entrance */
+@keyframes selectionConfirm {
+  from { transform: scale(0) rotate(-20deg); opacity: 0; }
+  to   { transform: scale(1) rotate(0deg);   opacity: 1; }
+}
+
+/* progressFill — progress bar sweeps in */
+@keyframes progressFill {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+/* selectionConfirm — check mark appears */
+@keyframes selectionConfirm {
+  from { transform: scale(0) rotate(-20deg); opacity: 0; }
+  to   { transform: scale(1) rotate(0deg);   opacity: 1; }
+}
+
+/* revealWord — for Made For You reveal */
+@keyframes revealWord {
+  from { opacity: 0; transform: translateY(12px) scale(0.96); filter: blur(6px); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);    filter: blur(0); }
+}
+
+/* particleFloat — ambient particles on generation screen */
+@keyframes particleFloat {
+  0%   { transform: translate(0, 0) scale(1); opacity: 0; }
+  15%  { opacity: 0.6; }
+  85%  { opacity: 0.3; }
+  100% { transform: translate(var(--px, 40px), var(--py, -80px)) scale(0.6); opacity: 0; }
+}
+
+/* typedCursor — blinking text insertion cursor */
+@keyframes typedCursor {
+  0%, 48%  { opacity: 1; }
+  52%, 100% { opacity: 0; }
+}
+
+/* revealFlash — white frame flash for Made For You reveal */
+@keyframes revealFlash {
+  0%   { opacity: 1; }
+  40%  { opacity: 0.6; }
+  100% { opacity: 0; }
+}
+
+/* fadeUp — named without prefix for use in inline styles */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(28px) scale(0.984); filter: blur(8px); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);     filter: blur(0); }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   UTILITY CLASSES
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Base entrance classes */
+.m-fade-up  { animation: fadeUp      var(--dur-reveal)  var(--ease-cinematic) both; }
+.m-fade-in  { animation: fadeIn      var(--dur-ack)     var(--ease-out)       both; }
+.m-fade-down { animation: fadeDown   var(--dur-transition) var(--ease-in-out) forwards; }
+.m-card-reveal { animation: cardReveal var(--dur-reveal) var(--ease-cinematic) both; }
+.m-agent-appear { animation: agentAppear 0.9s var(--ease-spring) both; }
+
+/* Stagger delays — attach to children */
+.m-d0  { animation-delay: 0ms; }
+.m-d1  { animation-delay: 80ms; }
+.m-d2  { animation-delay: 160ms; }
+.m-d3  { animation-delay: 240ms; }
+.m-d4  { animation-delay: 340ms; }
+.m-d5  { animation-delay: 440ms; }
+.m-d6  { animation-delay: 560ms; }
+.m-d7  { animation-delay: 700ms; }
+
+/* Screen-level transitions */
+.m-screen-enter {
+  animation: fadeUp 0.65s var(--ease-cinematic) both;
+}
+.m-screen-exit {
+  animation: fadeDown 0.4s var(--ease-in-out) forwards;
+  pointer-events: none;
+}
+
+/* Focus state — TV remote ring */
+.m-focus-ring {
+  transition:
+    transform      var(--dur-confirm) var(--ease-spring),
+    box-shadow     var(--dur-confirm) var(--ease-out),
+    border-color   var(--dur-confirm) var(--ease-out);
+}
+.m-focus-ring:focus,
+.m-focus-ring.focused {
+  transform: scale(1.04);
+  box-shadow:
+    0 0 0 4px rgba(1, 1, 1, 0.85),
+    0 0 0 8px #ffffff,
+    0 28px 80px rgba(255, 255, 255, 0.18);
+}
+
+/* Selection confirm ring */
+.m-selection-ring {
+  position: relative;
+  overflow: visible;
+}
+.m-selection-ring::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: inherit;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  animation: pulseRing 0.6s var(--ease-out) forwards;
+  pointer-events: none;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   L0 GLANCE ANIMATION SYSTEM — Phase 2
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Mascot spring entrance */
+@keyframes l0-mascot-appear {
+  0%   { opacity: 0; transform: scale(0.72) translateY(-8px); filter: blur(6px); }
+  60%  { opacity: 1; transform: scale(1.06) translateY(0);   filter: blur(0); }
+  100% { opacity: 1; transform: scale(1)    translateY(0);   filter: blur(0); }
+}
+
+/* Shared fade-up used by Why this? and legacy l0 panels */
+@keyframes l0-fadeup {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* CTA focus ring pulse — plays once when focus activates */
+@keyframes l0-focus-ring {
+  0%   { box-shadow: 0 0 0 0px rgba(255,255,255,0.6); }
+  50%  { box-shadow: 0 0 0 8px rgba(255,255,255,0.12); }
+  100% { box-shadow: 0 0 0 5px rgba(255,255,255,0), 0 0 0 3px #fff; }
+}
+
+/* Product card entrance */
+@keyframes l0-card-reveal {
+  from { opacity: 0; transform: translateY(20px) scale(0.96); filter: blur(4px); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);    filter: blur(0); }
+}
+
+/* Background gradient vignette fade-in */
+@keyframes l0-bg-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* TV focus ring for L0 cards — white ring, 2px, spring */
+.l0-focus-ring {
+  outline: none;
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 0 4px rgba(255,255,255,0.18);
+  transform: scale(1.04);
+  transition:
+    box-shadow 0.15s cubic-bezier(0.34,1.56,0.64,1),
+    transform  0.15s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+/* Product card TV focus */
+.l0-card-focus {
+  outline: none;
+  border-color: rgba(255,255,255,0.6) !important;
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.35), 0 20px 60px rgba(0,0,0,0.35);
+  transform: scale(1.04) translateY(-2px);
+  transition:
+    border-color 0.15s ease,
+    box-shadow   0.15s cubic-bezier(0.34,1.56,0.64,1),
+    transform    0.15s cubic-bezier(0.34,1.56,0.64,1);
+}

@@ -1,0 +1,1081 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   GLANCE ONBOARDING — PREMIUM VISUAL LANGUAGE
+   Phase 1 redesign: Apple TV / visionOS quality
+
+   Design principles:
+   · Large breathing space, no card overload
+   · Translucent surfaces with subtle depth
+   · White as dominant accent (focus, selection, CTA)
+   · Brand purple in ambient/background layer only
+   · Cinematic transitions, no web-app animations
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* ─── Screen container ──────────────────────────────────────────────────────── */
+
+.ob-screen {
+  width: 1920px;
+  height: 1080px;
+  position: relative;
+  overflow: hidden;
+  color: var(--text-primary);
+  font-family: var(--sans);
+  background: var(--bg-welcome); /* overridden per step via data-step */
+}
+
+/* Per-step backgrounds — evolve naturally across the conversation */
+.ob-screen[data-step="welcome"]    { background: var(--bg-welcome); }
+.ob-screen[data-step="q1"]         { background: var(--bg-q1); }
+.ob-screen[data-step="q2"]         { background: var(--bg-q2); }
+.ob-screen[data-step="q3"]         { background: var(--bg-q3); }
+.ob-screen[data-step="selfie"]     { background: var(--bg-selfie); }
+.ob-screen[data-step="generation"] { background: var(--bg-generation); }
+
+/* Subtle film grain overlay */
+.ob-screen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.028;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Light leak from top-left — sense of depth */
+.ob-screen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    122deg,
+    rgba(255, 255, 255, 0.055) 0%,
+    transparent 18%,
+    transparent 78%,
+    rgba(112, 71, 226, 0.06) 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─── Ambient orbs ──────────────────────────────────────────────────────────── */
+
+.ob-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(48px);
+  pointer-events: none;
+  z-index: 1;
+  background: radial-gradient(
+    circle,
+    rgba(167, 134, 229, 0.18),
+    rgba(112, 71, 226, 0.07) 52%,
+    transparent 72%
+  );
+  animation: floatOrb var(--dur-slow-ambient) var(--ease-gentle) infinite alternate;
+}
+
+.ob-orb--a {
+  width: 540px;
+  height: 540px;
+  left: -80px;
+  top: 60px;
+  animation-delay: 0s;
+}
+
+.ob-orb--b {
+  width: 480px;
+  height: 480px;
+  right: -140px;
+  top: 80px;
+  animation-delay: -3s;
+}
+
+.ob-orb--c {
+  width: 420px;
+  height: 420px;
+  left: 30%;
+  bottom: -120px;
+  animation-delay: -5.5s;
+  background: radial-gradient(
+    circle,
+    rgba(194, 77, 255, 0.10),
+    rgba(112, 71, 226, 0.05) 55%,
+    transparent 72%
+  );
+}
+
+/* ─── Topbar ────────────────────────────────────────────────────────────────── */
+
+.ob-topbar {
+  position: absolute;
+  top: 54px;
+  left: 80px;
+  right: 80px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+}
+
+.ob-brand {
+  display: flex;
+  gap: 13px;
+  align-items: center;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+}
+
+.ob-brand-spark {
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+  background: #ffffff;
+  color: #0e0820;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  font-weight: 900;
+  box-shadow: 0 8px 28px rgba(255, 255, 255, 0.22),
+              0 0 0 1px rgba(255, 255, 255, 0.14);
+}
+
+/* ─── Progress indicator ────────────────────────────────────────────────────── */
+
+.ob-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ob-progress__steps {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.ob-step-pip {
+  width: 36px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  transition: background 0.4s var(--ease-out), width 0.4s var(--ease-out),
+              box-shadow 0.4s var(--ease-out);
+}
+
+.ob-step-pip.active {
+  background: #ffffff;
+  width: 48px;
+  box-shadow: 0 0 18px rgba(255, 255, 255, 0.44);
+}
+
+.ob-step-pip.done {
+  background: rgba(255, 255, 255, 0.52);
+}
+
+.ob-progress__label {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: rgba(245, 243, 247, 0.45);
+}
+
+/* ─── Welcome layout — centered, full-screen poetry ───────────────────────── */
+
+.ob-welcome-layout {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  padding: 140px 200px 120px;
+  gap: 0;
+}
+
+.ob-hero-agent {
+  margin-bottom: 44px;
+}
+
+.ob-eyebrow {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(245, 243, 247, 0.42);
+  margin-bottom: 28px;
+}
+
+.ob-hero-title {
+  font-size: 96px;
+  line-height: 0.94;
+  letter-spacing: -0.065em;
+  font-weight: 900;
+  margin: 0 0 32px;
+  text-wrap: balance;
+  max-width: 1100px;
+}
+
+.ob-hero-subtitle {
+  font-size: 28px;
+  line-height: 1.48;
+  color: rgba(245, 243, 247, 0.66);
+  max-width: 820px;
+  margin: 0 0 60px;
+}
+
+.ob-actions {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+/* ─── Step layout — split: agent panel left, content right ─────────────────── */
+
+.ob-step-layout {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: grid;
+  grid-template-columns: 500px 1fr;
+  gap: 0;
+  padding: 120px 80px 80px 80px;
+  align-items: center;
+}
+
+/* ─── Agent panel (left column in step layout) ─────────────────────────────── */
+
+.ob-agent-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  padding-right: 60px;
+  align-self: center;
+}
+
+.ob-agent-avatar {
+  /* contains Mascot component */
+  display: flex;
+  align-items: center;
+}
+
+.ob-conversation {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.ob-agent-utterance {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 24px;
+  border-bottom-left-radius: 6px;
+  padding: 20px 24px;
+  backdrop-filter: blur(20px);
+}
+
+.ob-question-title {
+  font-size: 52px;
+  line-height: 1.04;
+  letter-spacing: -0.05em;
+  font-weight: 900;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.ob-agent-copy {
+  font-size: 20px;
+  line-height: 1.52;
+  color: rgba(245, 243, 247, 0.64);
+  margin: 0;
+}
+
+.ob-history-item {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 18px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.ob-history-label {
+  font-size: 15px;
+  color: rgba(245, 243, 247, 0.44);
+  flex: 1;
+}
+
+.ob-history-answer {
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(245, 243, 247, 0.72);
+}
+
+/* ─── Content area (right column) ──────────────────────────────────────────── */
+
+.ob-content-area {
+  align-self: center;
+  padding-left: 60px;
+  border-left: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+/* ─── Button system — Phase 1.1 ─────────────────────────────────────────────
+   All buttons share identical height (72px).
+   Focus rule: focused button becomes primary (white fill, dark text).
+   Non-focused buttons become secondary (outline, low-emphasis).
+   Only the focus state transitions animate — not both buttons simultaneously.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+.ob-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-radius: var(--r-btn);
+  font-family: var(--sans);
+  font-weight: 750;
+  font-size: 22px;
+  height: 72px;
+  padding: 0 52px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  position: relative;
+  outline: none;
+  /* Only transition the focus-state properties, not dimensions */
+  transition:
+    background    180ms var(--ease-out),
+    border-color  180ms var(--ease-out),
+    color         180ms var(--ease-out),
+    box-shadow    180ms var(--ease-out),
+    transform     180ms var(--ease-spring);
+}
+
+/* Default (unfocused) state — all buttons are low-emphasis outlines */
+.ob-btn--primary {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(245, 243, 247, 0.80);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.ob-btn--secondary {
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(245, 243, 247, 0.62);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.ob-btn--ghost {
+  background: transparent;
+  color: rgba(245, 243, 247, 0.38);
+  border-color: rgba(255, 255, 255, 0.07);
+}
+
+/* Focused — becomes white-filled primary regardless of button type */
+.ob-btn.focused,
+.ob-btn:focus-visible {
+  outline: none;
+  background: #ffffff;
+  color: #0e0820;
+  border-color: #ffffff;
+  transform: scale(1.03);
+  box-shadow:
+    0 0 0 4px rgba(2, 1, 8, 0.90),
+    0 0 0 7px #ffffff,
+    0 24px 70px rgba(255, 255, 255, 0.18);
+}
+
+.ob-btn-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.ob-btn-row {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+}
+
+/* ─── World selection tiles ─────────────────────────────────────────────────── */
+
+.ob-tile-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  width: 100%;
+}
+
+.ob-tile {
+  position: relative;
+  height: 244px;
+  border-radius: var(--r-tile-lg);
+  overflow: hidden;
+  border: 1.5px solid rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  outline: none;
+  transition:
+    transform      0.26s var(--ease-spring),
+    border-color   0.26s var(--ease-out),
+    box-shadow     0.26s var(--ease-out);
+}
+
+.ob-tile img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.06);
+  transition: transform 0.8s var(--ease-gentle);
+  display: block;
+}
+
+.ob-tile::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to top, rgba(4, 2, 9, 0.90) 0%, rgba(4, 2, 9, 0.12) 56%, transparent 80%),
+    linear-gradient(to right, rgba(4, 2, 9, 0.30) 0%, transparent 40%);
+  z-index: 1;
+}
+
+.ob-tile-body {
+  position: absolute;
+  left: 22px;
+  right: 22px;
+  bottom: 20px;
+  z-index: 3;
+}
+
+.ob-tile-body h3 {
+  font-size: 26px;
+  font-weight: 850;
+  letter-spacing: -0.03em;
+  margin: 0 0 5px;
+  line-height: 1.1;
+}
+
+.ob-tile-body p {
+  font-size: 15px;
+  line-height: 1.38;
+  color: rgba(245, 243, 247, 0.68);
+  margin: 0;
+}
+
+/* Focus state */
+.ob-tile.focused {
+  transform: scale(1.034);
+  border-color: #ffffff;
+  box-shadow:
+    0 0 0 4px rgba(1, 1, 1, 0.80),
+    0 0 0 8px #ffffff,
+    0 32px 90px rgba(112, 71, 226, 0.40);
+}
+
+.ob-tile.focused img {
+  transform: scale(1.10);
+}
+
+/* Selected state — white check */
+.ob-tile.selected {
+  border-color: rgba(255, 255, 255, 0.85);
+}
+
+.ob-tile.selected::before {
+  content: "";
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #ffffff;
+  z-index: 4;
+  animation: selectionConfirm 0.25s var(--ease-spring) forwards;
+}
+
+.ob-tile-check {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #0e0820;
+  display: grid;
+  place-items: center;
+  font-size: 15px;
+  font-weight: 900;
+  z-index: 4;
+  animation: selectionConfirm 0.25s var(--ease-spring) forwards;
+}
+
+/* ─── Discovery option rows ─────────────────────────────────────────────────── */
+
+.ob-option-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+
+.ob-option {
+  display: grid;
+  grid-template-columns: 120px 1fr 36px;
+  align-items: center;
+  gap: 22px;
+  padding: 18px 24px;
+  border-radius: var(--r-tile-lg);
+  border: 1.5px solid rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary);
+  text-align: left;
+  cursor: pointer;
+  outline: none;
+  transition:
+    transform      0.22s var(--ease-spring),
+    border-color   0.22s var(--ease-out),
+    box-shadow     0.22s var(--ease-out),
+    background     0.22s var(--ease-out);
+}
+
+.ob-option img {
+  width: 120px;
+  height: 84px;
+  object-fit: cover;
+  border-radius: 16px;
+  flex-shrink: 0;
+  display: block;
+}
+
+.ob-option-text strong {
+  display: block;
+  font-size: 26px;
+  font-weight: 850;
+  letter-spacing: -0.03em;
+  margin-bottom: 5px;
+}
+
+.ob-option-text span {
+  display: block;
+  font-size: 16px;
+  color: rgba(245, 243, 247, 0.60);
+  line-height: 1.4;
+}
+
+.ob-option-radio {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.40);
+  display: grid;
+  place-items: center;
+  transition: background 0.2s var(--ease-out), border-color 0.2s var(--ease-out);
+  flex-shrink: 0;
+}
+
+.ob-option.selected .ob-option-radio {
+  background: #ffffff;
+  border-color: #ffffff;
+}
+
+.ob-option.selected .ob-option-radio::after {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #0e0820;
+}
+
+.ob-option.focused {
+  transform: scale(1.022);
+  border-color: #ffffff;
+  box-shadow:
+    0 0 0 4px rgba(1, 1, 1, 0.80),
+    0 0 0 8px #ffffff,
+    0 24px 70px rgba(112, 71, 226, 0.32);
+}
+
+.ob-option.selected {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.75);
+}
+
+/* ─── Selfie screen ─────────────────────────────────────────────────────────── */
+
+.ob-selfie-layout {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: grid;
+  grid-template-columns: 560px 1fr;
+  gap: 0;
+  padding: 120px 80px 80px;
+  align-items: center;
+}
+
+.ob-selfie-preview {
+  position: relative;
+  overflow: hidden;
+  border-radius: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 44px 140px rgba(0, 0, 0, 0.50);
+  height: 720px;
+  margin-left: 60px;
+}
+
+.ob-selfie-preview img.ob-preview-bg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: scale(1.04);
+}
+
+.ob-selfie-preview-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to top, rgba(4, 2, 9, 0.82) 0%, transparent 50%),
+    linear-gradient(to right, rgba(4, 2, 9, 0.38) 0%, transparent 40%);
+}
+
+.ob-selfie-preview-caption {
+  position: absolute;
+  left: 28px;
+  right: 28px;
+  bottom: 28px;
+}
+
+.ob-selfie-preview-caption h2 {
+  font-size: 42px;
+  font-weight: 900;
+  letter-spacing: -0.045em;
+  line-height: 1.06;
+  margin: 12px 0 0;
+}
+
+.ob-benefit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 4px 0 24px;
+}
+
+.ob-benefit-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.ob-benefit-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(167, 134, 229, 0.7);
+  margin-top: 9px;
+  flex-shrink: 0;
+}
+
+.ob-benefit-item span {
+  font-size: 18px;
+  line-height: 1.48;
+  color: rgba(245, 243, 247, 0.68);
+}
+
+.ob-qr-panel {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  padding: 18px 20px;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  background: rgba(255, 255, 255, 0.05);
+  margin-top: 6px;
+}
+
+.ob-qr-panel p {
+  font-size: 16px;
+  line-height: 1.48;
+  color: rgba(245, 243, 247, 0.64);
+  margin: 0;
+}
+
+/* ─── Generation / Made For You screen ─────────────────────────────────────── */
+
+.ob-generation-layout {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0;
+  padding: 140px 200px 120px;
+}
+
+.ob-generation-orb {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #f0e8ff 0%, #c8b6ff 30%, #7047E2 68%, #3a1270 100%);
+  display: grid;
+  place-items: center;
+  margin-bottom: 48px;
+  animation: agentIdle 2.6s ease-in-out infinite;
+  box-shadow:
+    0 0 80px 36px rgba(112, 71, 226, 0.42),
+    0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.ob-generation-orb span {
+  font-size: 72px;
+  color: #0e0820;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.ob-generation-eyebrow {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(245, 243, 247, 0.38);
+  margin-bottom: 22px;
+}
+
+.ob-generation-title {
+  font-size: 78px;
+  line-height: 0.96;
+  letter-spacing: -0.06em;
+  font-weight: 900;
+  margin: 0 0 24px;
+  max-width: 1100px;
+}
+
+.ob-generation-subtitle {
+  font-size: 24px;
+  line-height: 1.52;
+  color: rgba(245, 243, 247, 0.60);
+  max-width: 760px;
+  margin: 0 0 48px;
+}
+
+.ob-build-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 580px;
+  text-align: left;
+}
+
+.ob-build-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 20px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  opacity: 0;
+  animation: fadeUp 0.6s var(--ease-cinematic) forwards;
+}
+
+.ob-build-item.checked {
+  background: rgba(255, 255, 255, 0.10);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+.ob-build-check {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.30);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  transition: background 0.3s var(--ease-out), border-color 0.3s var(--ease-out);
+  font-size: 13px;
+  font-weight: 900;
+  color: #0e0820;
+}
+
+.ob-build-check.done {
+  background: #ffffff;
+  border-color: #ffffff;
+}
+
+.ob-build-label {
+  font-size: 18px;
+  font-weight: 600;
+  color: rgba(245, 243, 247, 0.54);
+  transition: color 0.3s var(--ease-out);
+}
+
+.ob-build-label.done {
+  color: rgba(245, 243, 247, 0.92);
+}
+
+/* ─── Kicker chip ───────────────────────────────────────────────────────────── */
+
+.ob-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(16px);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: rgba(245, 243, 247, 0.55);
+}
+
+/* ─── Footer hint — hidden Phase 1.1 (no controller education) ──────────── */
+
+.ob-hint {
+  display: none;
+}
+
+/* ─── Single-column question layout — Phase 1.1 ─────────────────────────────
+   Replaces two-column ob-step-layout for conversation flow.
+   Agent + question + options stacked vertically, center-aligned.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+.ob-convo-layout {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120px 240px 100px;
+  gap: 0;
+  text-align: center;
+}
+
+.ob-convo-agent {
+  margin-bottom: 40px;
+}
+
+.ob-convo-title {
+  font-size: 64px;
+  line-height: 1.02;
+  letter-spacing: -0.055em;
+  font-weight: 900;
+  margin: 0 0 20px;
+  text-wrap: balance;
+  max-width: 1100px;
+}
+
+.ob-convo-desc {
+  font-size: 24px;
+  line-height: 1.52;
+  color: rgba(245, 243, 247, 0.60);
+  max-width: 860px;
+  margin: 0 0 52px;
+}
+
+/* Answer options — vertical list, centered */
+.ob-convo-options {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  max-width: 920px;
+  margin-bottom: 52px;
+}
+
+/* Tile grid for world selection — 2 cols, centered */
+.ob-convo-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  width: 100%;
+  max-width: 1440px;
+  margin-bottom: 52px;
+}
+
+/* Actions at bottom, centered */
+.ob-convo-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: center;
+  min-width: 480px;
+}
+
+/* History — previous question shown above current, fading upward */
+.ob-convo-history {
+  font-size: 18px;
+  color: rgba(245, 243, 247, 0.28);
+  margin-bottom: 32px;
+  letter-spacing: -0.01em;
+}
+
+.ob-convo-history strong {
+  color: rgba(245, 243, 247, 0.52);
+  font-weight: 600;
+}
+
+/* Slide-up transition for history items entering from below */
+@keyframes ob-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ob-recede {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+  to {
+    opacity: 0.22;
+    transform: translateY(-28px) scale(0.97);
+    filter: blur(1px);
+  }
+}
+
+.ob-convo-enter {
+  animation: ob-slide-up 0.7s var(--ease-cinematic) forwards;
+}
+
+.ob-convo-recede {
+  animation: ob-recede 0.5s var(--ease-cinematic) forwards;
+}
+
+/* ─── Selected answer summary (agent panel) ────────────────────────────────── */
+
+.ob-answer-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(245, 243, 247, 0.9);
+  flex-wrap: wrap;
+}
+
+.ob-answer-badge-check {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #0e0820;
+  display: grid;
+  place-items: center;
+  font-size: 10px;
+  font-weight: 900;
+  flex-shrink: 0;
+}
+
+/* ─── Stagger animation helpers — slowed for TV reading distance ─────────── */
+
+.ob-stagger {
+  opacity: 0;
+  animation: fadeUp 0.9s var(--ease-cinematic) forwards;
+}
+
+/* Each step waits for the prior element to finish reading before entering.
+   Target: agent(0) → 600ms pause → greeting(600ms) → 1200ms pause →
+           secondary(1800ms) → 1200ms pause → CTA(3000ms) */
+.ob-stagger.d0 { animation-delay: 0ms; }
+.ob-stagger.d1 { animation-delay: 600ms; }
+.ob-stagger.d2 { animation-delay: 1800ms; }
+.ob-stagger.d3 { animation-delay: 3000ms; }
+.ob-stagger.d4 { animation-delay: 3600ms; }
+.ob-stagger.d5 { animation-delay: 4800ms; }
+.ob-stagger.d6 { animation-delay: 5400ms; }
+.ob-stagger.d7 { animation-delay: 6000ms; }
+
+/* Question-screen stagger — slightly faster since content is already shown */
+.ob-stagger.qs0 { animation-delay: 0ms; }
+.ob-stagger.qs1 { animation-delay: 200ms; }
+.ob-stagger.qs2 { animation-delay: 420ms; }
+.ob-stagger.qs3 { animation-delay: 660ms; }
+.ob-stagger.qs4 { animation-delay: 920ms; }
+.ob-stagger.qs5 { animation-delay: 1180ms; }
+.ob-stagger.qs6 { animation-delay: 1460ms; }
+.ob-stagger.qs7 { animation-delay: 1740ms; }
+
+/* ─── Legacy compat (feed + other screens still use these) ──────────────────── */
+
+/* Keep old premium-* classes functional for non-redesigned screens */
+.premium-screen { width: 1920px; height: 1080px; position: relative; overflow: hidden; background: radial-gradient(900px 520px at 14% 18%, rgba(132,74,255,.34), transparent 66%), radial-gradient(980px 640px at 86% 18%, rgba(94,35,175,.28), transparent 62%), linear-gradient(135deg,#05020b 0%,#120728 48%,#07020f 100%); color: var(--text-primary); }
+.premium-screen::before { content: ""; position: absolute; inset: 0; background: linear-gradient(115deg,rgba(255,255,255,.08),transparent 22%,transparent 72%,rgba(167,134,229,.08)); opacity: .78; pointer-events: none; }
+.premium-orb { position: absolute; width: 520px; height: 520px; border-radius: 50%; filter: blur(34px); background: radial-gradient(circle, rgba(167,134,229,.22), rgba(112,71,226,.08) 48%, transparent 70%); animation: floatOrb 8s var(--ease) infinite alternate; }
+.premium-topbar { position: absolute; top: 54px; left: 72px; right: 72px; display: flex; justify-content: space-between; align-items: center; z-index: 5; }
+.premium-brand { display: flex; gap: 12px; align-items: center; font-size: 23px; font-weight: 800; letter-spacing: -.02em; }
+.premium-spark { width: 34px; height: 34px; border-radius: 12px; background: #fff; color: #171020; display: grid; place-items: center; box-shadow: 0 16px 44px rgba(255,255,255,.18); }
+.premium-progress { display: flex; align-items: center; gap: 10px; color: rgba(245,243,247,.55); font-size: 15px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.premium-progress i { width: 38px; height: 5px; border-radius: 999px; background: rgba(255,255,255,.16); overflow: hidden; }
+.premium-progress i.on { background: #fff; box-shadow: 0 0 22px rgba(255,255,255,.42); }
+.premium-hero { position: relative; z-index: 2; height: 100%; display: flex; align-items: center; justify-content: center; text-align: center; padding: 120px 140px 110px; }
+.premium-panel { max-width: 980px; display: flex; flex-direction: column; align-items: center; gap: 28px; }
+.premium-kicker { display: inline-flex; gap: 10px; align-items: center; padding: 9px 18px; border: 1px solid rgba(255,255,255,.16); border-radius: 999px; background: rgba(255,255,255,.06); backdrop-filter: blur(18px); font-size: 15px; color: rgba(245,243,247,.75); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.premium-title { font-size: 84px; line-height: .96; letter-spacing: -.06em; font-weight: 900; margin: 0; text-wrap: balance; }
+.premium-copy { font-size: 26px; line-height: 1.45; color: rgba(245,243,247,.72); max-width: 780px; margin: 0; }
+.premium-actions { display: flex; gap: 18px; margin-top: 14px; }
+.premium-btn { border-radius: 999px; padding: 21px 46px; font-size: 22px; font-weight: 850; transition: transform .22s var(--ease), box-shadow .22s var(--ease), background .22s var(--ease); border: 2px solid transparent; }
+.premium-btn.primary { background: #fff; color: #111; box-shadow: 0 20px 70px rgba(255,255,255,.16), 0 0 0 1px rgba(255,255,255,.2); }
+.premium-btn.secondary { background: rgba(255,255,255,.07); color: rgba(245,243,247,.75); border-color: rgba(255,255,255,.16); }
+.premium-btn.focused { transform: scale(1.055); box-shadow: 0 0 0 5px rgba(1,1,1,.8), 0 0 0 9px #fff, 0 24px 80px rgba(255,255,255,.2); }
+.premium-note { position: absolute; left: 50%; bottom: 48px; transform: translateX(-50%); font-size: 16px; color: rgba(245,243,247,.48); letter-spacing: .04em; z-index: 3; }
+.premium-step-layout { position: relative; z-index: 2; height: 100%; display: grid; grid-template-columns: 520px 1fr; gap: 54px; padding: 136px 90px 86px; }
+.premium-agent-card { align-self: center; border: 1px solid rgba(255,255,255,.13); border-radius: 34px; background: linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.045)); box-shadow: 0 40px 120px rgba(0,0,0,.4); backdrop-filter: blur(28px); padding: 42px; display: flex; flex-direction: column; gap: 22px; }
+.premium-step-title { font-size: 54px; line-height: 1.02; letter-spacing: -.05em; margin: 0; font-weight: 900; }
+.premium-step-copy { font-size: 21px; line-height: 1.45; color: rgba(245,243,247,.68); margin: 0; }
+.premium-grid { align-self: center; display: grid; grid-template-columns: repeat(2,1fr); gap: 20px; }
+.premium-tile { position: relative; height: 250px; border-radius: 30px; overflow: hidden; border: 1px solid rgba(255,255,255,.13); background: rgba(255,255,255,.06); box-shadow: 0 24px 70px rgba(0,0,0,.32); transition: transform .24s var(--ease), border-color .24s var(--ease), box-shadow .24s var(--ease); }
+.premium-tile img { width: 100%; height: 100%; object-fit: cover; display: block; transform: scale(1.04); transition: transform .7s var(--ease); }
+.premium-tile::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top,rgba(4,2,9,.88),rgba(4,2,9,.08) 62%); }
+.premium-tile.focused { transform: scale(1.035); border-color: #fff; box-shadow: 0 0 0 4px rgba(0,0,0,.75), 0 0 0 8px #fff, 0 30px 90px rgba(112,71,226,.42); }
+.premium-tile.selected { border-color: #fff; }
+.premium-tile.selected::before { content: "✓"; position: absolute; top: 18px; right: 18px; width: 34px; height: 34px; border-radius: 50%; background: #fff; color: #111; display: grid; place-items: center; font-weight: 900; z-index: 4; }
+.premium-tile-text { position: absolute; left: 22px; right: 22px; bottom: 22px; z-index: 3; }
+.premium-tile-text h3 { font-size: 28px; letter-spacing: -.03em; margin: 0 0 6px; font-weight: 850; }
+.premium-tile-text p { font-size: 16px; line-height: 1.35; color: rgba(245,243,247,.72); margin: 0; }
+.premium-cta-stack { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 8px; }
+
+/* Stagger (keep for legacy) */
+.stagger-in { opacity: 0; animation: premium-rise .74s var(--ease) forwards; }
+.delay-1 { animation-delay: .08s; }
+.delay-2 { animation-delay: .18s; }
+.delay-3 { animation-delay: .28s; }
+.delay-4 { animation-delay: .38s; }
+.delay-5 { animation-delay: .48s; }
+
+@keyframes premium-rise {
+  from { opacity: 0; transform: translateY(22px) scale(.985); filter: blur(10px); }
+  to   { opacity: 1; transform: none; filter: blur(0); }
+}
+@keyframes float-orb {
+  from { transform: translate3d(-40px, 20px, 0) scale(.95); }
+  to   { transform: translate3d(36px, -28px, 0) scale(1.08); }
+}

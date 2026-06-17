@@ -1,0 +1,902 @@
+{
+  "demographics": {
+    "age": {
+      "min": 22,
+      "max": 25,
+      "avg": 23,
+      "confidence_score": 0.92
+    },
+    "head": {
+      "value": "shoulder-length wavy hair with colour-tipped ends, often half-up",
+      "confidence_score": 0.9
+    },
+    "skin": {
+      "value": "fresh, combination, lightly freckled",
+      "confidence_score": 0.9
+    },
+    "tone": {
+      "value": "medium-deep, warm undertones",
+      "confidence_score": 1.0
+    },
+    "gender": {
+      "value": "feminine",
+      "confidence_score": 1.0
+    },
+    "location": {
+      "value": "Bangalore",
+      "confidence_score": 0.97
+    },
+    "profession": {
+      "value": "Junior UX Designer",
+      "confidence_score": 0.88
+    },
+    "education_level": {
+      "value": "undergraduate (design)",
+      "confidence_score": 0.82
+    },
+    "income_range": {
+      "min": 700000,
+      "max": 1100000,
+      "avg": 850000,
+      "confidence_score": 0.82
+    },
+    "languages_spoken": {
+      "primary": "English",
+      "secondary": [
+        "Hindi",
+        "Kannada",
+        "Malayalam"
+      ],
+      "confidence_score": 0.8
+    },
+    "household": {
+      "relationship_status": {
+        "value": "single, lives with flatmates",
+        "confidence_score": 0.6
+      },
+      "kids": {
+        "has_kids": false,
+        "count": 0,
+        "ages": [],
+        "genders": [],
+        "confidence_score": 0.85
+      },
+      "pets": {
+        "has_pets": true,
+        "count": 1,
+        "pet_types": [
+          "cat"
+        ],
+        "confidence_score": 0.55
+      }
+    },
+    "wealth": {
+      "value": "emerging / value-conscious",
+      "category": "Early-Career Creative",
+      "confidence_score": 0.85
+    },
+    "body_type": {
+      "value": "petite, slim",
+      "confidence_score": 0.8
+    },
+    "hair": {
+      "color": {
+        "value": "dark brown with dyed ends",
+        "confidence_score": 0.85
+      },
+      "length": {
+        "value": "shoulder-length",
+        "confidence_score": 0.9
+      },
+      "style": {
+        "value": "wavy, colour-tipped",
+        "confidence_score": 0.8
+      }
+    },
+    "height": {
+      "category": "petite",
+      "measurement": null,
+      "confidence_score": 0.75
+    },
+    "device_preferences": {
+      "primary": "Android (mid-premium)",
+      "secondary": [
+        "iPad (for design)",
+        "secondhand laptop"
+      ],
+      "confidence_score": 0.8
+    },
+    "social_media_activity": {
+      "level": "very high",
+      "platforms": [
+        "Instagram",
+        "Pinterest",
+        "TikTok/Reels",
+        "Behance"
+      ],
+      "confidence_score": 0.88
+    }
+  },
+  "category_interests": {
+    "primary_category_interests": [
+      {
+        "category": "Thrift & Sustainable Fashion",
+        "confidence_score": 0.9,
+        "engagement_ratio": 0.44,
+        "brand_preferences": [
+          "Bunko Junko",
+          "Doodlage",
+          "thrift stores",
+          "Cord",
+          "No Nasties"
+        ],
+        "price_range": {
+          "min": 400,
+          "max": 4500,
+          "avg": 1450,
+          "currency": "INR",
+          "confidence_score": 0.85
+        }
+      },
+      {
+        "category": "Statement & Indie Apparel",
+        "confidence_score": 0.87,
+        "engagement_ratio": 0.36,
+        "brand_preferences": [
+          "The Souled Store",
+          "Bewakoof",
+          "Urban Outfitters (sale)",
+          "local Instagram labels"
+        ],
+        "price_range": {
+          "min": 599,
+          "max": 3500,
+          "avg": 1299,
+          "currency": "INR",
+          "confidence_score": 0.83
+        }
+      },
+      {
+        "category": "Accessories & Trinkets",
+        "confidence_score": 0.84,
+        "engagement_ratio": 0.3,
+        "brand_preferences": [
+          "local artisans",
+          "Suta",
+          "Etsy sellers"
+        ],
+        "price_range": {
+          "min": 199,
+          "max": 2500,
+          "avg": 799,
+          "currency": "INR",
+          "confidence_score": 0.8
+        }
+      }
+    ],
+    "secondary_category_interests": [
+      {
+        "category": "Indie Beauty & Skincare",
+        "parent": "Beauty",
+        "confidence_score": 0.78,
+        "engagement_ratio": 0.2,
+        "brand_preferences": [
+          "Plum",
+          "The Ordinary",
+          "Juicy Chemistry"
+        ],
+        "price_range": {
+          "min": 299,
+          "max": 2200,
+          "avg": 899,
+          "currency": "INR",
+          "confidence_score": 0.76
+        }
+      },
+      {
+        "category": "Vinyl & Music Merch",
+        "parent": "Entertainment",
+        "confidence_score": 0.72,
+        "engagement_ratio": 0.16,
+        "brand_preferences": [
+          "indie labels",
+          "band merch"
+        ],
+        "price_range": {
+          "min": 500,
+          "max": 4000,
+          "avg": 1600,
+          "currency": "INR",
+          "confidence_score": 0.65
+        }
+      }
+    ],
+    "categories": [
+      {
+        "path": "Apparel/Topwear/Tshirt",
+        "confidence_score": 0.86,
+        "engagement_ratio": 0.34,
+        "brand_preferences": [
+          "The Souled Store",
+          "Bewakoof",
+          "thrift"
+        ],
+        "price_range": {
+          "min": 399,
+          "max": 2200,
+          "avg": 999,
+          "currency": "INR",
+          "confidence_score": 0.85
+        }
+      },
+      {
+        "path": "Apparel/IndianWear/Fusion",
+        "confidence_score": 0.8,
+        "engagement_ratio": 0.22,
+        "brand_preferences": [
+          "Suta",
+          "local labels"
+        ],
+        "price_range": {
+          "min": 800,
+          "max": 4500,
+          "avg": 2100,
+          "currency": "INR",
+          "confidence_score": 0.78
+        }
+      }
+    ],
+    "interest_evolution": {
+      "long_term_interests": [
+        {
+          "category": "Sustainable / Slow Fashion",
+          "duration_months": 18,
+          "consistency_score": 0.9
+        },
+        {
+          "category": "Eclectic Self-Expression",
+          "duration_months": 18,
+          "consistency_score": 0.88
+        }
+      ],
+      "short_term_interests": [
+        {
+          "category": "Y2K Revival",
+          "duration_months": 2,
+          "intensity_score": 0.85
+        }
+      ],
+      "trending_up": [
+        {
+          "category": "Upcycled / DIY Fashion",
+          "growth_rate": 0.55,
+          "confidence_score": 0.8
+        }
+      ],
+      "trending_down": [
+        {
+          "category": "Branded Logo Wear",
+          "growth_rate": -0.3,
+          "confidence_score": 0.62
+        }
+      ]
+    }
+  },
+  "shopping_behavior": {
+    "purchase_patterns": {
+      "overall": {
+        "min_purchase_value": 199,
+        "max_purchase_value": 4500,
+        "avg_purchase_value": 1250,
+        "confidence_score": 0.85
+      },
+      "category_specific": [
+        {
+          "category": "Thrift & Sustainable Fashion",
+          "min_purchase_value": 400,
+          "max_purchase_value": 4500,
+          "avg_purchase_value": 1450,
+          "price_segment_preferred": "value/conscious",
+          "confidence_score": 0.85
+        },
+        {
+          "category": "Statement & Indie Apparel",
+          "min_purchase_value": 599,
+          "max_purchase_value": 3500,
+          "avg_purchase_value": 1299,
+          "price_segment_preferred": "affordable",
+          "confidence_score": 0.83
+        }
+      ],
+      "purchase_frequency": {
+        "monthly": {
+          "min": 2,
+          "max": 6,
+          "avg": 3
+        },
+        "weekly": {
+          "min": null,
+          "max": null,
+          "avg": null
+        },
+        "preferred_months": [
+          "sale events",
+          "thrift drops"
+        ],
+        "weekday_preferences": [
+          "weekend"
+        ],
+        "time_of_day_preference": "Late-night",
+        "confidence_score": 0.72
+      }
+    },
+    "brand_preferences": {
+      "brand_loyalty_behavior": "very low - discovery-driven, novelty-seeking",
+      "brand_exploration_tendency": 0.92,
+      "preferred_brands": [
+        {
+          "brand": "The Souled Store",
+          "interaction_count": 7,
+          "confidence_score": 0.85
+        },
+        {
+          "brand": "Suta",
+          "interaction_count": 5,
+          "confidence_score": 0.8
+        },
+        {
+          "brand": "Doodlage",
+          "interaction_count": 4,
+          "confidence_score": 0.78
+        },
+        {
+          "brand": "The Ordinary",
+          "interaction_count": 3,
+          "confidence_score": 0.72
+        },
+        {
+          "brand": "Bewakoof",
+          "interaction_count": 3,
+          "confidence_score": 0.7
+        }
+      ],
+      "avoided_brands": [
+        "fast-fashion mega-brands (ethically avoided)"
+      ]
+    },
+    "payment_preferences": {
+      "methods": [
+        "UPI",
+        "debit card",
+        "BNPL"
+      ],
+      "buy_now_pay_later_usage": "frequent",
+      "confidence_score": 0.75
+    },
+    "shopping_channel_preferences": {
+      "primary": "online + offline thrift",
+      "preferred_platforms": [
+        "Instagram boutiques",
+        "Myntra (sale)",
+        "thrift pop-ups",
+        "Etsy"
+      ],
+      "device_usage": {
+        "mobile": "very high"
+      },
+      "confidence_score": 0.85
+    },
+    "discount_sensitivity": {
+      "level": "high",
+      "minimum_discount_threshold": 0.3,
+      "promo_code_usage_frequency": "always",
+      "confidence_score": 0.8
+    },
+    "return_behavior": {
+      "return_rate": 0.18,
+      "common_return_reasons": [
+        "fit",
+        "quality not as expected",
+        "changed mind"
+      ],
+      "confidence_score": 0.65
+    },
+    "occasion_preferences": [
+      "Casual Daily",
+      "College / Co-working",
+      "Indie Gigs & Festivals",
+      "Brunch & Cafe Hopping",
+      "Thrift Markets"
+    ],
+    "surface_preferences": []
+  },
+  "fashion_preferences": {
+    "topwear": {
+      "size_preferences": {
+        "value": "XS/S",
+        "confidence_score": 0.78
+      },
+      "fit_preferences": [
+        "oversized",
+        "cropped",
+        "boxy",
+        "relaxed fit"
+      ],
+      "color_preferences": [
+        "mustard",
+        "rust",
+        "sage green",
+        "cobalt",
+        "lilac",
+        "tie-dye",
+        "earthy multicolour"
+      ],
+      "brand_preferences": [
+        {
+          "rank": 1,
+          "brand": "The Souled Store",
+          "total_score": 80,
+          "confidence_score": 0.84,
+          "breakdown": {
+            "physical_fit": 20,
+            "demographic_match": 22,
+            "economic_fit": 20,
+            "lifestyle_alignment": 18
+          }
+        },
+        {
+          "rank": 2,
+          "brand": "Suta",
+          "total_score": 76,
+          "confidence_score": 0.8,
+          "breakdown": {
+            "physical_fit": 19,
+            "demographic_match": 20,
+            "economic_fit": 19,
+            "lifestyle_alignment": 18
+          }
+        }
+      ],
+      "price_range": {
+        "min": 399,
+        "max": 4500,
+        "avg": 1450,
+        "currency": "INR",
+        "confidence_score": 0.84
+      },
+      "material_preferences": [
+        "organic cotton",
+        "handloom cotton",
+        "upcycled fabric",
+        "khadi"
+      ],
+      "style_preferences": [
+        "eclectic",
+        "bohemian",
+        "indie",
+        "sustainable casual",
+        "Y2K"
+      ],
+      "pattern_preferences": [
+        "graphic print",
+        "tie-dye",
+        "floral",
+        "patchwork",
+        "abstract"
+      ],
+      "texture_preferences": [
+        "soft cotton",
+        "crochet",
+        "handwoven",
+        "distressed"
+      ],
+      "design_details": [
+        "crop",
+        "puff sleeves",
+        "tie-front",
+        "patchwork panels"
+      ],
+      "occasion_styling": [
+        "casual daily",
+        "gigs",
+        "cafe hopping",
+        "college"
+      ],
+      "seasonal_preferences": [
+        "all-season",
+        "monsoon layering"
+      ],
+      "neckline_preferences": [
+        "scoop neck",
+        "square neck",
+        "halter",
+        "crew neck"
+      ],
+      "sleeve_preferences": [
+        "sleeveless",
+        "puff sleeves",
+        "short sleeves",
+        "full sleeves"
+      ]
+    },
+    "outerwear": {
+      "size_preferences": {
+        "value": "S",
+        "confidence_score": 0.7
+      },
+      "fit_preferences": [
+        "oversized",
+        "cropped",
+        "relaxed"
+      ],
+      "color_preferences": [
+        "denim blue",
+        "rust",
+        "olive",
+        "patchwork"
+      ],
+      "brand_preferences": [
+        {
+          "rank": 1,
+          "brand": "thrift / vintage",
+          "total_score": 78,
+          "confidence_score": 0.8,
+          "breakdown": {
+            "physical_fit": 20,
+            "demographic_match": 21,
+            "economic_fit": 21,
+            "lifestyle_alignment": 16
+          }
+        }
+      ],
+      "price_range": {
+        "min": 600,
+        "max": 4000,
+        "avg": 1800,
+        "currency": "INR",
+        "confidence_score": 0.72
+      },
+      "material_preferences": [
+        "denim",
+        "upcycled fabric",
+        "corduroy",
+        "cotton canvas"
+      ],
+      "pattern_preferences": [
+        "solid",
+        "patchwork",
+        "embroidered"
+      ],
+      "texture_preferences": [
+        "distressed denim",
+        "corduroy",
+        "embroidered"
+      ],
+      "design_details": [
+        "cropped denim jacket",
+        "oversized shacket",
+        "embroidered patches"
+      ],
+      "seasonal_preferences": [
+        "monsoon",
+        "mild winter"
+      ],
+      "length_preferences": [
+        "cropped",
+        "hip length"
+      ]
+    },
+    "bottomwear": {
+      "size_preferences": {
+        "value": "26-27 waist",
+        "confidence_score": 0.72
+      },
+      "fit_preferences": [
+        "wide leg",
+        "high-waisted",
+        "baggy",
+        "flared"
+      ],
+      "color_preferences": [
+        "indigo",
+        "olive",
+        "rust",
+        "cream",
+        "printed"
+      ],
+      "brand_preferences": [
+        {
+          "rank": 1,
+          "brand": "thrift / Bewakoof",
+          "total_score": 72,
+          "confidence_score": 0.74,
+          "breakdown": {
+            "physical_fit": 18,
+            "demographic_match": 19,
+            "economic_fit": 20,
+            "lifestyle_alignment": 15
+          }
+        }
+      ],
+      "price_range": {
+        "min": 599,
+        "max": 3500,
+        "avg": 1500,
+        "currency": "INR",
+        "confidence_score": 0.7
+      },
+      "style_preferences": [
+        "eclectic",
+        "bohemian",
+        "Y2K",
+        "streetwear"
+      ],
+      "pattern_preferences": [
+        "solid",
+        "printed",
+        "patchwork"
+      ],
+      "texture_preferences": [
+        "denim",
+        "cotton",
+        "corduroy",
+        "handloom"
+      ],
+      "design_details": [
+        "high-rise",
+        "wide-leg",
+        "flared",
+        "cargo pockets",
+        "drawstring"
+      ],
+      "length_preferences": [
+        "full length",
+        "ankle length",
+        "maxi (skirts)"
+      ],
+      "rise_preferences": [
+        "high-rise"
+      ]
+    },
+    "footwear": {
+      "size_preferences": {
+        "value": "UK 4",
+        "confidence_score": 0.7
+      },
+      "type_preferences": [
+        "chunky sneakers",
+        "combat boots",
+        "kolhapuris",
+        "platform sandals",
+        "thrifted shoes"
+      ],
+      "brand_preferences": [],
+      "price_range": {
+        "min": 699,
+        "max": 5500,
+        "avg": 2200,
+        "currency": "INR",
+        "confidence_score": 0.6
+      },
+      "color_preferences": [
+        "white",
+        "black",
+        "tan",
+        "multicolour",
+        "metallic"
+      ],
+      "material_preferences": [
+        "canvas",
+        "vegan leather",
+        "fabric"
+      ],
+      "occasion_styling": [
+        "everyday",
+        "gigs",
+        "college",
+        "markets"
+      ],
+      "fit_preferences": [
+        "chunky sole",
+        "flat",
+        "platform"
+      ]
+    },
+    "accessories": {
+      "type_preferences": [
+        "beaded jewellery",
+        "tote bags",
+        "scrunchies",
+        "layered necklaces",
+        "quirky earrings",
+        "tote/jhola bags"
+      ],
+      "brand_preferences": [
+        {
+          "rank": 1,
+          "brand": "local artisans / Etsy",
+          "total_score": 74,
+          "confidence_score": 0.72,
+          "breakdown": {
+            "physical_fit": 17,
+            "demographic_match": 20,
+            "economic_fit": 21,
+            "lifestyle_alignment": 16
+          }
+        }
+      ],
+      "price_range": {
+        "min": 149,
+        "max": 3000,
+        "avg": 749,
+        "currency": "INR",
+        "confidence_score": 0.68
+      },
+      "material_preferences": [
+        "beads",
+        "fabric",
+        "oxidised silver",
+        "upcycled"
+      ],
+      "style_preferences": [
+        "quirky & statement",
+        "handmade",
+        "eclectic"
+      ],
+      "size_preferences": null
+    }
+  },
+  "lifestyle_preferences": {
+    "health_and_fitness": {
+      "activity_level": "lightly active",
+      "workout_frequency": "1-2x/week",
+      "fitness_interests": [
+        "dance",
+        "cycling",
+        "casual yoga"
+      ],
+      "gym_membership_type": null,
+      "health_tracking_devices": [],
+      "dietary_preferences": [
+        "vegetarian",
+        "trying vegan"
+      ],
+      "sleep_duration": null,
+      "wellness_spending": "low-medium",
+      "confidence_score": 0.72
+    },
+    "travel_patterns": {
+      "annual_trips": null,
+      "trip_duration": null,
+      "booking_window": null,
+      "destination_types": [
+        "backpacking",
+        "hill stations",
+        "indie/offbeat",
+        "budget travel"
+      ],
+      "travel_budget": "budget",
+      "accommodation_preferences": [
+        "hostels",
+        "homestays"
+      ],
+      "travel_party_size": "friends group",
+      "solo_travel_frequency": "occasional",
+      "confidence_score": 0.78
+    },
+    "food_and_dining": {
+      "restaurant_visits": "frequent",
+      "cuisine_preferences": [
+        "street food",
+        "cafe culture",
+        "pan-asian",
+        "experimental/indie cafes"
+      ],
+      "dietary_restrictions": [
+        "vegetarian"
+      ],
+      "cooking_frequency": "medium",
+      "food_delivery_orders": "high",
+      "preferred_dining_time": "evening/late-night",
+      "average_meal_spend": "low-medium",
+      "confidence_score": 0.78
+    },
+    "social_life": {
+      "social_outings": "very frequent",
+      "preferred_venues": [
+        "indie cafes",
+        "live-music venues",
+        "flea/thrift markets",
+        "art collectives"
+      ],
+      "event_attendance": "very regular",
+      "group_size_preference": "friends group",
+      "social_media_engagement": "highly active/creator",
+      "confidence_score": 0.88
+    },
+    "financial_habits": {
+      "savings_rate": null,
+      "investment_behavior": "minimal - early saver",
+      "budget_consciousness": "high",
+      "financial_app_usage": [
+        "UPI apps",
+        "splitwise"
+      ],
+      "discretionary_spending": {
+        "fashion": "medium",
+        "experiences": "high"
+      },
+      "financial_goals": [],
+      "confidence_score": 0.78
+    },
+    "hobbies_and_interests": {
+      "categories": [
+        "design/illustration",
+        "thrifting",
+        "indie music",
+        "photography",
+        "journaling",
+        "pottery"
+      ],
+      "time_investment": null,
+      "hobby_spending": "medium",
+      "skill_level": null,
+      "confidence_score": 0.82
+    },
+    "social_values": {
+      "environmental_consciousness": "high",
+      "social_causes": [
+        "sustainability",
+        "ethical fashion",
+        "local artisans"
+      ],
+      "brand_ethics_importance": "high",
+      "volunteering_frequency": "occasional",
+      "political_engagement": "moderate",
+      "confidence_score": 0.7
+    },
+    "entertainment_preferences": {
+      "streaming_services": [
+        "Spotify",
+        "Netflix",
+        "YouTube"
+      ],
+      "content_genres": [
+        "indie/alt music",
+        "anime",
+        "indie films",
+        "design content"
+      ],
+      "gaming_interest": "casual",
+      "event_attendance": {
+        "concerts": "very likely",
+        "indie_gigs": "very likely",
+        "art_workshops": "likely"
+      },
+      "entertainment_budget": "medium",
+      "confidence_score": 0.78
+    }
+  },
+  "chat_preferences": {
+    "user_summary": "Bangalore early-career UX designer, 23. Eclectic, sustainability-driven wardrobe built on thrift, indie labels and upcycled pieces in vibrant colour. Highly discovery-driven and value-conscious; loves street food, indie gigs and flea markets. Avoids fast fashion on principle; a heavy social/creator user.",
+    "user_intents": [
+      "DISCOVER_NEW_STYLES",
+      "STYLE_FOCUSED",
+      "OCCASION_CASUAL_DAILY",
+      "VALUE_CONSCIOUS",
+      "SUSTAINABLE_SHOPPING"
+    ]
+  },
+  "_metadata": {
+    "total_interactions": 103,
+    "total_impressions": 540,
+    "overall_engagement_ratio": 0.19,
+    "data_quality": "rich",
+    "primary_signal_source": "interactions",
+    "time_windows_used": [
+      "0_1_days",
+      "2_7_days",
+      "8_30_days"
+    ]
+  }
+}

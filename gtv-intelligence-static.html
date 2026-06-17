@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GTV Feed Intelligence — Bangalore L0</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+
+    <div class="wordmark">
+      <div class="wordmark-icon" id="wordmark-icon" style="background: rgba(59,130,246,0.13);">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <circle id="wordmark-dot" cx="8" cy="8" r="5" fill="#3b82f6"/>
+          <circle cx="8" cy="8" r="2.5" fill="rgba(0,0,0,0.4)"/>
+        </svg>
+      </div>
+      <span class="wordmark-text">GTV Intelligence</span>
+    </div>
+
+    <div class="layer-toggle">
+      <button class="layer-btn active" data-layer="L1">L1 &nbsp;Cold Start</button>
+      <button class="layer-btn" data-layer="L2">L2 &nbsp;Warm Start</button>
+      <button class="layer-btn" data-layer="L3">L3 &nbsp;Enriched</button>
+    </div>
+
+    <button class="signals-toggle-btn" id="signals-toggle-btn">
+      <span class="signals-dot" id="signals-dot" style="background: #3b82f6;"></span>
+      <span>Signals</span>
+    </button>
+
+  </div>
+</header>
+
+<!-- CONTEXT BAR -->
+<div class="context-bar">
+  <span class="context-badge l1" id="context-badge">L1</span>
+  <span class="context-desc" id="context-desc">
+    Context-only reasoning — Bangalore, weekday morning, 27°C partly cloudy. No user signals available.
+  </span>
+</div>
+
+<!-- SIGNALS PANEL -->
+<div class="signals-panel" id="signals-panel">
+  <div class="signals-panel-inner" id="signals-panel-inner">
+    <!-- populated by app.js -->
+  </div>
+</div>
+
+<!-- FEED GRID -->
+<div class="feed-grid" id="feed-grid">
+  <!-- populated by app.js -->
+</div>
+
+<!-- VALIDATION BANNER -->
+<div class="validation-banner" id="validation-banner">
+  <span class="validation-status-dot"></span>
+  <span>Running validation...</span>
+</div>
+
+<script src="js/validate.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

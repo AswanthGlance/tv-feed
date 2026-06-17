@@ -1,0 +1,859 @@
+{
+    "demographics": {
+        "age": {
+            "min": 30,
+            "max": 35,
+            "avg": 32,
+            "confidence_score": 0.98
+        },
+        "head": {
+            "value": "brunette bob, dark brown straight hair styled with side bangs",
+            "confidence_score": 1.0
+        },
+        "skin": {
+            "value": "radiant, dewy-glow, smooth texture",
+            "confidence_score": 1.0
+        },
+        "tone": {
+            "value": "warm-medium, golden undertones",
+            "confidence_score": 1.0
+        },
+        "gender": {
+            "value": "feminine",
+            "confidence_score": 1.0
+        },
+        "location": {
+            "value": null,
+            "confidence_score": null
+        },
+        "profession": {
+            "value": "creative executive",
+            "confidence_score": 0.92
+        },
+        "education_level": {
+            "value": null,
+            "confidence_score": null
+        },
+        "income_range": {
+            "min": null,
+            "max": null,
+            "avg": null,
+            "confidence_score": null
+        },
+        "languages_spoken": {
+            "primary": "English",
+            "secondary": [],
+            "confidence_score": 0.6
+        },
+        "household": {
+            "relationship_status": {
+                "value": null,
+                "confidence_score": null
+            },
+            "kids": {
+                "has_kids": null,
+                "count": null,
+                "ages": [],
+                "genders": [],
+                "confidence_score": null
+            },
+            "pets": {
+                "has_pets": null,
+                "count": null,
+                "pet_types": [],
+                "confidence_score": null
+            }
+        },
+        "wealth": {
+            "value": "high-income",
+            "category": "Creative Leader / Corporate",
+            "confidence_score": 0.92
+        },
+        "body_type": {
+            "value": "slender-petite, narrow shoulders",
+            "confidence_score": 1.0
+        },
+        "hair": {
+            "color": {
+                "value": "dark brown",
+                "confidence_score": 1.0
+            },
+            "length": {
+                "value": "chin-length",
+                "confidence_score": 1.0
+            },
+            "style": {
+                "value": "straight bob with side bangs",
+                "confidence_score": 1.0
+            }
+        },
+        "height": {
+            "category": "petite",
+            "measurement": null,
+            "confidence_score": 0.85
+        },
+        "device_preferences": {
+            "primary": "iPhone (latest)",
+            "secondary": [],
+            "confidence_score": 0.9
+        },
+        "social_media_activity": {
+            "level": null,
+            "platforms": [],
+            "confidence_score": null
+        }
+    },
+    "category_interests": {
+        "primary_category_interests": [
+            {
+                "category": "Topwear",
+                "confidence_score": 0.92,
+                "engagement_ratio": 0.35,
+                "brand_preferences": [
+                    "L'AGENCE",
+                    "ELIE TAHARI",
+                    "NYDJ Apparel",
+                    "THREADS 4 THOUGHT",
+                    "NAADAM",
+                    "EILEEN FISHER"
+                ],
+                "price_range": {
+                    "min": 13.44,
+                    "max": 385.0,
+                    "avg": 199.22,
+                    "currency": "USD",
+                    "confidence_score": 0.88
+                }
+            },
+            {
+                "category": "Outerwear",
+                "confidence_score": 0.92,
+                "engagement_ratio": 0.32,
+                "brand_preferences": [
+                    "KARL LAGERFELD",
+                    "M.M.LAFLEUR",
+                    "WHITE FOX",
+                    "THE NORMAL BRAND",
+                    "JONES NEW YORK"
+                ],
+                "price_range": {
+                    "min": 55.0,
+                    "max": 146.3,
+                    "avg": 98.7,
+                    "currency": "USD",
+                    "confidence_score": 0.88
+                }
+            },
+            {
+                "category": "Activewear",
+                "confidence_score": 0.85,
+                "engagement_ratio": 0.45,
+                "brand_preferences": [
+                    "NIKE"
+                ],
+                "price_range": {
+                    "min": null,
+                    "max": null,
+                    "avg": null,
+                    "currency": "USD",
+                    "confidence_score": null
+                }
+            }
+        ],
+        "secondary_category_interests": [
+            {
+                "category": "Dresses",
+                "parent": "Apparel",
+                "confidence_score": 0.85,
+                "engagement_ratio": 0.22,
+                "brand_preferences": [
+                    "WINDSOR",
+                    "M.M.LAFLEUR",
+                    "REBECCA MINKOFF"
+                ],
+                "price_range": {
+                    "min": 35.9,
+                    "max": 135.0,
+                    "avg": 85.45,
+                    "currency": "USD",
+                    "confidence_score": 0.85
+                }
+            },
+            {
+                "category": "Footwear",
+                "parent": "Accessories",
+                "confidence_score": 0.75,
+                "engagement_ratio": 0.15,
+                "brand_preferences": [],
+                "price_range": {
+                    "min": 59.66,
+                    "max": 59.66,
+                    "avg": 59.66,
+                    "currency": "USD",
+                    "confidence_score": 0.78
+                }
+            }
+        ],
+        "categories": [
+            {
+                "path": "Apparel/Topwear/Blouse",
+                "confidence_score": 0.9,
+                "engagement_ratio": 0.38,
+                "brand_preferences": [
+                    "L'AGENCE",
+                    "ELIE TAHARI",
+                    "Eva Franco"
+                ],
+                "price_range": {
+                    "min": 27.98,
+                    "max": 385.0,
+                    "avg": 206.49,
+                    "currency": "USD",
+                    "confidence_score": 0.9
+                }
+            },
+            {
+                "path": "Apparel/Outerwear/Blazer",
+                "confidence_score": 0.88,
+                "engagement_ratio": 0.3,
+                "brand_preferences": [
+                    "KARL LAGERFELD",
+                    "M.M.LAFLEUR",
+                    "The Normal Brand",
+                    "Jones New York"
+                ],
+                "price_range": {
+                    "min": 94.0,
+                    "max": 498.0,
+                    "avg": 234.5,
+                    "currency": "USD",
+                    "confidence_score": 0.88
+                }
+            }
+        ],
+        "interest_evolution": {
+            "long_term_interests": [
+                {
+                    "category": "Modern Classic Tailoring",
+                    "duration_months": 12,
+                    "consistency_score": 0.95
+                },
+                {
+                    "category": "Minimalist Chic",
+                    "duration_months": 12,
+                    "consistency_score": 0.92
+                }
+            ],
+            "short_term_interests": [
+                {
+                    "category": "Athleisure",
+                    "duration_months": 1,
+                    "intensity_score": 0.88
+                }
+            ],
+            "trending_up": [
+                {
+                    "category": "Performance Sportswear",
+                    "growth_rate": 0.5,
+                    "confidence_score": 0.82
+                }
+            ],
+            "trending_down": []
+        }
+    },
+    "shopping_behavior": {
+        "purchase_patterns": {
+            "overall": {
+                "min_purchase_value": 35.9,
+                "max_purchase_value": 385.0,
+                "avg_purchase_value": 150.31,
+                "confidence_score": 0.88
+            },
+            "category_specific": [
+                {
+                    "category": "Topwear",
+                    "min_purchase_value": 13.44,
+                    "max_purchase_value": 385.0,
+                    "avg_purchase_value": 199.22,
+                    "price_segment_preferred": "affordable_luxury",
+                    "confidence_score": 0.88
+                },
+                {
+                    "category": "Outerwear",
+                    "min_purchase_value": 55.0,
+                    "max_purchase_value": 146.3,
+                    "avg_purchase_value": 98.7,
+                    "price_segment_preferred": "mass_fashion",
+                    "confidence_score": 0.88
+                }
+            ],
+            "purchase_frequency": {
+                "monthly": {
+                    "min": null,
+                    "max": null,
+                    "avg": null
+                },
+                "weekly": {
+                    "min": null,
+                    "max": null,
+                    "avg": null
+                },
+                "preferred_months": [],
+                "weekday_preferences": [],
+                "time_of_day_preference": "Morning to Mid-day",
+                "confidence_score": 0.6
+            }
+        },
+        "brand_preferences": {
+            "brand_loyalty_behavior": "low - diversified exploration across contemporary brands",
+            "brand_exploration_tendency": 0.85,
+            "preferred_brands": [
+                {
+                    "brand": "L'AGENCE",
+                    "interaction_count": 6,
+                    "confidence_score": 0.9
+                },
+                {
+                    "brand": "ELIE TAHARI",
+                    "interaction_count": 5,
+                    "confidence_score": 0.85
+                },
+                {
+                    "brand": "M.M.LAFLEUR",
+                    "interaction_count": 4,
+                    "confidence_score": 0.8
+                },
+                {
+                    "brand": "KARL LAGERFELD",
+                    "interaction_count": 4,
+                    "confidence_score": 0.8
+                },
+                {
+                    "brand": "WHITE FOX",
+                    "interaction_count": 3,
+                    "confidence_score": 0.75
+                },
+                {
+                    "brand": "NYDJ Apparel",
+                    "interaction_count": 2,
+                    "confidence_score": 0.67
+                },
+                {
+                    "brand": "The Normal Brand",
+                    "interaction_count": 2,
+                    "confidence_score": 0.67
+                },
+                {
+                    "brand": "WINDSOR",
+                    "interaction_count": 1,
+                    "confidence_score": 0.5
+                }
+            ],
+            "avoided_brands": []
+        },
+        "payment_preferences": {
+            "methods": [],
+            "buy_now_pay_later_usage": null,
+            "confidence_score": null
+        },
+        "shopping_channel_preferences": {
+            "primary": "online",
+            "preferred_platforms": [],
+            "device_usage": {
+                "mobile": "high"
+            },
+            "confidence_score": 0.8
+        },
+        "discount_sensitivity": {
+            "level": "low",
+            "minimum_discount_threshold": null,
+            "promo_code_usage_frequency": null,
+            "confidence_score": 0.6
+        },
+        "return_behavior": {
+            "return_rate": null,
+            "common_return_reasons": [],
+            "confidence_score": null
+        },
+        "occasion_preferences": [
+            "Business Casual",
+            "Brunch & Day Out",
+            "Creative Workplace",
+            "Cocktail Party",
+            "Active / Yoga",
+            "Formal Events"
+        ],
+        "surface_preferences": []
+    },
+    "fashion_preferences": {
+        "topwear": {
+            "size_preferences": {
+                "value": "Petite/Slender (implied)",
+                "confidence_score": 0.75
+            },
+            "fit_preferences": [
+                "slim fit",
+                "relaxed fit",
+                "draped"
+            ],
+            "color_preferences": [
+                "champagne",
+                "sage green",
+                "teal",
+                "off-white",
+                "jet black",
+                "dusty rose",
+                "mint green"
+            ],
+            "brand_preferences": [
+                {
+                    "rank": 1,
+                    "brand": "L'AGENCE",
+                    "total_score": 88,
+                    "confidence_score": 0.9,
+                    "breakdown": {
+                        "physical_fit": 22,
+                        "demographic_match": 22,
+                        "economic_fit": 20,
+                        "lifestyle_alignment": 24
+                    }
+                },
+                {
+                    "rank": 2,
+                    "brand": "ELIE TAHARI",
+                    "total_score": 82,
+                    "confidence_score": 0.85,
+                    "breakdown": {
+                        "physical_fit": 20,
+                        "demographic_match": 20,
+                        "economic_fit": 20,
+                        "lifestyle_alignment": 22
+                    }
+                }
+            ],
+            "price_range": {
+                "min": 13.44,
+                "max": 385.0,
+                "avg": 199.22,
+                "currency": "USD",
+                "confidence_score": 0.88
+            },
+            "material_preferences": [
+                "silk",
+                "satin",
+                "cashmere",
+                "organic cotton",
+                "linen"
+            ],
+            "style_preferences": [
+                "refined classic",
+                "minimalist",
+                "sophisticated fusion",
+                "bohemian"
+            ],
+            "pattern_preferences": [
+                "solid colors",
+                "geometric",
+                "floral"
+            ],
+            "texture_preferences": [
+                "satin sheen",
+                "ribbed",
+                "cable knit",
+                "eyelet lace"
+            ],
+            "design_details": [
+                "cowl neck",
+                "v-neck",
+                "turtleneck",
+                "asymmetrical side ruching",
+                "mandarin collar"
+            ],
+            "occasion_styling": [
+                "business casual",
+                "creative workplace",
+                "urban casual"
+            ],
+            "seasonal_preferences": [
+                "winter weight",
+                "spring transitional"
+            ],
+            "neckline_preferences": [
+                "v-neck",
+                "cowl neck",
+                "mandarin collar",
+                "mockneck",
+                "high neck"
+            ],
+            "sleeve_preferences": [
+                "full sleeves",
+                "3-4th sleeves",
+                "sleeveless",
+                "cap sleeves"
+            ]
+        },
+        "outerwear": {
+            "size_preferences": {
+                "value": null,
+                "confidence_score": null
+            },
+            "fit_preferences": [
+                "regular fit",
+                "structured",
+                "boxy",
+                "oversized"
+            ],
+            "color_preferences": [
+                "tan",
+                "charcoal grey",
+                "emerald green",
+                "mocha",
+                "off-white"
+            ],
+            "brand_preferences": [
+                {
+                    "rank": 1,
+                    "brand": "KARL LAGERFELD",
+                    "total_score": 78,
+                    "confidence_score": 0.8,
+                    "breakdown": {
+                        "physical_fit": 19,
+                        "demographic_match": 20,
+                        "economic_fit": 19,
+                        "lifestyle_alignment": 20
+                    }
+                },
+                {
+                    "rank": 2,
+                    "brand": "M.M.LAFLEUR",
+                    "total_score": 75,
+                    "confidence_score": 0.8,
+                    "breakdown": {
+                        "physical_fit": 18,
+                        "demographic_match": 19,
+                        "economic_fit": 18,
+                        "lifestyle_alignment": 20
+                    }
+                }
+            ],
+            "price_range": {
+                "min": 55.0,
+                "max": 498.0,
+                "avg": 215.3,
+                "currency": "USD",
+                "confidence_score": 0.88
+            },
+            "material_preferences": [
+                "faux leather",
+                "tweed",
+                "silk charmeuse",
+                "velveteen",
+                "wool"
+            ],
+            "pattern_preferences": [
+                "solid",
+                "plaid checks",
+                "gingham"
+            ],
+            "texture_preferences": [
+                "smooth leather texture",
+                "shimmer",
+                "tweed"
+            ],
+            "design_details": [
+                "double-breasted",
+                "notched collar",
+                "zip closure",
+                "belted waist",
+                "asymmetrical zipper"
+            ],
+            "seasonal_preferences": [
+                "winter",
+                "autumn transition"
+            ],
+            "length_preferences": [
+                "hip length",
+                "ankle length"
+            ]
+        },
+        "bottomwear": {
+            "size_preferences": {
+                "value": null,
+                "confidence_score": null
+            },
+            "fit_preferences": [
+                "wide leg",
+                "high-waisted compression leggings",
+                "straight leg",
+                "relaxed fit",
+                "slim fit"
+            ],
+            "color_preferences": [
+                "cream",
+                "navy",
+                "off-white",
+                "olive green",
+                "charcoal grey"
+            ],
+            "brand_preferences": [
+                {
+                    "rank": 1,
+                    "brand": "ELIE TAHARI",
+                    "total_score": 70,
+                    "confidence_score": 0.75,
+                    "breakdown": {
+                        "physical_fit": 17,
+                        "demographic_match": 18,
+                        "economic_fit": 17,
+                        "lifestyle_alignment": 18
+                    }
+                }
+            ],
+            "price_range": {
+                "min": 135.0,
+                "max": 475.0,
+                "avg": 253.0,
+                "currency": "USD",
+                "confidence_score": 0.65
+            },
+            "style_preferences": [
+                "modern classicist",
+                "athleisure",
+                "urban casual",
+                "minimalist"
+            ],
+            "pattern_preferences": [
+                "solid",
+                "pinstripes"
+            ],
+            "texture_preferences": [
+                "silk",
+                "lace",
+                "crepe",
+                "linen"
+            ],
+            "design_details": [
+                "high-rise",
+                "pleated",
+                "gathered waist",
+                "drawstring waist"
+            ],
+            "length_preferences": [
+                "maxi",
+                "ankle length",
+                "floor length"
+            ],
+            "rise_preferences": [
+                "high-rise",
+                "mid-rise"
+            ]
+        },
+        "footwear": {
+            "size_preferences": {
+                "value": null,
+                "confidence_score": null
+            },
+            "type_preferences": [
+                "pumps",
+                "mules",
+                "trainers",
+                "leather loafers",
+                "ankle boots"
+            ],
+            "brand_preferences": [],
+            "price_range": {
+                "min": 59.66,
+                "max": 59.66,
+                "avg": 59.66,
+                "currency": "USD",
+                "confidence_score": 0.65
+            },
+            "color_preferences": [
+                "metallic silver",
+                "gold",
+                "black/croc",
+                "leopard print",
+                "tan"
+            ],
+            "material_preferences": [
+                "leather",
+                "satin",
+                "suede",
+                "patent leather"
+            ],
+            "occasion_styling": [
+                "social active",
+                "work",
+                "brunch",
+                "evening formal"
+            ],
+            "fit_preferences": [
+                "pointed-toe",
+                "block heel",
+                "chunky heel"
+            ]
+        },
+        "accessories": {
+            "type_preferences": [
+                "chain necklace",
+                "bangle set",
+                "quilted leather handbag",
+                "briefcase",
+                "analog watches"
+            ],
+            "brand_preferences": [
+                {
+                    "rank": 1,
+                    "brand": "Lulus",
+                    "total_score": 68,
+                    "confidence_score": 0.68,
+                    "breakdown": {
+                        "physical_fit": 15,
+                        "demographic_match": 17,
+                        "economic_fit": 20,
+                        "lifestyle_alignment": 16
+                    }
+                }
+            ],
+            "price_range": {
+                "min": 22.95,
+                "max": 337.5,
+                "avg": 129.81,
+                "currency": "USD",
+                "confidence_score": 0.65
+            },
+            "material_preferences": [
+                "gold",
+                "silver",
+                "pearl"
+            ],
+            "style_preferences": [
+                "classic & timeless",
+                "statement"
+            ],
+            "size_preferences": null
+        }
+    },
+    "lifestyle_preferences": {
+        "health_and_fitness": {
+            "activity_level": "active",
+            "workout_frequency": null,
+            "fitness_interests": [
+                "yoga",
+                "running"
+            ],
+            "gym_membership_type": null,
+            "health_tracking_devices": [],
+            "dietary_preferences": [
+                "healthy eating"
+            ],
+            "sleep_duration": null,
+            "wellness_spending": null,
+            "confidence_score": 0.85
+        },
+        "travel_patterns": {
+            "annual_trips": null,
+            "trip_duration": null,
+            "booking_window": null,
+            "destination_types": [
+                "urban/city",
+                "luxury resorts"
+            ],
+            "travel_budget": "premium",
+            "accommodation_preferences": [
+                "luxury hotels"
+            ],
+            "travel_party_size": null,
+            "solo_travel_frequency": null,
+            "confidence_score": 0.85
+        },
+        "food_and_dining": {
+            "restaurant_visits": null,
+            "cuisine_preferences": [
+                "fine dining"
+            ],
+            "dietary_restrictions": [],
+            "cooking_frequency": null,
+            "food_delivery_orders": null,
+            "preferred_dining_time": null,
+            "average_meal_spend": null,
+            "confidence_score": 0.7
+        },
+        "social_life": {
+            "social_outings": "frequent",
+            "preferred_venues": [
+                "art galleries",
+                "upscale cafes"
+            ],
+            "event_attendance": null,
+            "group_size_preference": null,
+            "social_media_engagement": "aspirational",
+            "confidence_score": 0.85
+        },
+        "financial_habits": {
+            "savings_rate": null,
+            "investment_behavior": "high/investment pieces",
+            "budget_consciousness": "low",
+            "financial_app_usage": [],
+            "discretionary_spending": {
+                "fashion": "high",
+                "technology": "high"
+            },
+            "financial_goals": [],
+            "confidence_score": 0.88
+        },
+        "hobbies_and_interests": {
+            "categories": [
+                "cultural arts",
+                "fine dining",
+                "fitness",
+                "ukulele"
+            ],
+            "time_investment": null,
+            "hobby_spending": null,
+            "skill_level": null,
+            "confidence_score": 0.8
+        },
+        "social_values": {
+            "environmental_consciousness": "moderate",
+            "social_causes": [],
+            "brand_ethics_importance": "moderate",
+            "volunteering_frequency": null,
+            "political_engagement": null,
+            "confidence_score": 0.5
+        },
+        "entertainment_preferences": {
+            "streaming_services": [],
+            "content_genres": [],
+            "gaming_interest": null,
+            "event_attendance": {
+                "concerts": "likely",
+                "theatre": "likely"
+            },
+            "entertainment_budget": null,
+            "confidence_score": 0.6
+        }
+    },
+    "chat_preferences": {
+        "user_summary": "Professional user with warm skin tone and sleek bob hair. Prefers minimalist chic styles for urban work settings and formal evenings. Enjoys casual 'coffee run' outfits. Actively edits colors for personalization.",
+        "user_intents": [
+            "SEARCH_SPECIFIC_ITEM",
+            "STYLE_FOCUSED",
+            "OCCASION_CASUAL_DAILY",
+            "OCCASION_WORK",
+            "OCCASION_FORMAL"
+        ]
+    },
+    "_metadata": {
+        "total_interactions": 77,
+        "total_impressions": 412,
+        "overall_engagement_ratio": 0.19,
+        "data_quality": "rich",
+        "primary_signal_source": "interactions",
+        "time_windows_used": [
+            "0_1_days",
+            "2_7_days",
+            "8_30_days"
+        ]
+    }
+}

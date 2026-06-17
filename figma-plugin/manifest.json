@@ -1,0 +1,12 @@
+{
+  "name": "Glance L0 Templates",
+  "id": "glance-l0-templates-001",
+  "api": "1.0.0",
+  "main": "code.js",
+  "ui": "ui.html",
+  "editorType": ["figma"],
+  "networkAccess": {
+    "allowedDomains": ["none"],
+    "devAllowedDomains": ["http://localhost:5175", "http://localhost:5173"]
+  }
+}

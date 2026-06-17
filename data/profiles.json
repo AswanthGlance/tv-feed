@@ -1,0 +1,109 @@
+{
+  "L1": {
+    "label": "L1 — Cold Start",
+    "description": "No user data available. Feed is driven entirely by context signals.",
+    "context": {
+      "location": "Bangalore",
+      "time": "Weekday morning",
+      "weather": "27°C, partly cloudy, pleasant, outdoor-friendly",
+      "localSignals": [
+        "Coffee rituals",
+        "South Indian breakfast",
+        "Nandi Hills",
+        "Cubbon Park",
+        "Mysore silk",
+        "Bidriware",
+        "Palace Road heritage",
+        "Premium restaurants",
+        "Hybrid-work homes",
+        "Wellness upgrades"
+      ]
+    },
+    "userSignals": null,
+    "interactionData": null,
+    "householdData": null
+  },
+  "L2": {
+    "label": "L2 — Warm Start",
+    "description": "Context signals plus observed interaction history from opens, views, and dwell time.",
+    "context": {
+      "location": "Bangalore",
+      "time": "Weekday morning",
+      "weather": "27°C, partly cloudy, pleasant, outdoor-friendly"
+    },
+    "userSignals": null,
+    "interactionData": {
+      "note": "Open, view, and dwell history only. No NP save signal. Fashion wishlist only if fashion cards appear.",
+      "positivePatterns": [
+        "Bangalore-specific dining",
+        "Practical tech and home-workspace upgrades",
+        "Local heritage and craft",
+        "Wellness and recovery",
+        "Reading and productivity",
+        "Short weekend drives",
+        "Thoughtful hobbies"
+      ],
+      "negativePatterns": [
+        "Generic travel",
+        "Generic food visuals",
+        "Trend-only content without local or actionable angle"
+      ],
+      "recentOpens": [
+        { "cardId": 1,  "signal": "dwell", "count": 3 },
+        { "cardId": 2,  "signal": "open",  "count": 4 },
+        { "cardId": 8,  "signal": "dwell", "count": 5 },
+        { "cardId": 9,  "signal": "open",  "count": 2 },
+        { "cardId": 11, "signal": "open",  "count": 3 },
+        { "cardId": 14, "signal": "dwell", "count": 4 },
+        { "cardId": 16, "signal": "open",  "count": 5 },
+        { "cardId": 20, "signal": "dwell", "count": 3 },
+        { "cardId": 21, "signal": "open",  "count": 4 },
+        { "cardId": 10, "signal": "open",  "count": 2 }
+      ]
+    },
+    "householdData": null
+  },
+  "L3": {
+    "label": "L3 — Enriched Start",
+    "description": "Interaction history plus onboarded profile and safe derived household signals.",
+    "context": {
+      "location": "Bangalore",
+      "time": "Weekday morning",
+      "weather": "27°C, partly cloudy, pleasant, outdoor-friendly"
+    },
+    "userSignals": {
+      "onboardedProfile": true,
+      "note": "Safe derived signals only. No raw 3P attributes, income bands, provider names, or database IDs exposed."
+    },
+    "interactionData": {
+      "note": "Same as L2 — open, view, and dwell history. No NP save signal.",
+      "positivePatterns": [
+        "Bangalore-specific dining",
+        "Practical tech and home-workspace upgrades",
+        "Local heritage and craft",
+        "Wellness and recovery",
+        "Reading and productivity",
+        "Short weekend drives",
+        "Thoughtful hobbies"
+      ],
+      "negativePatterns": [
+        "Generic travel",
+        "Generic food visuals",
+        "Trend-only content without local or actionable angle"
+      ]
+    },
+    "householdData": {
+      "note": "Derived household signals — safely surfaced. No raw data exposed.",
+      "derivedSignals": [
+        "Bangalore household",
+        "Family-oriented planning",
+        "Vegetarian-friendly dining preference",
+        "Premium-but-practical purchase intent",
+        "Home and workspace upgrade intent",
+        "Wellness orientation",
+        "Short-drive leisure",
+        "Tech-forward lifestyle"
+      ]
+    }
+  }
+}

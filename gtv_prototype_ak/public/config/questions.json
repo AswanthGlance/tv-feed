@@ -1,0 +1,469 @@
+{
+  "_comment": "Glance TV V1 — preference question config. Runtime-loaded; swap for remote CMS in production. All signal mappings are token arrays (namespaced). Hardcoded fallback lives in src/config/questionsFallback.ts.",
+  "version": "1.0",
+
+  "setup": [
+    {
+      "id": "q-setup-scenario",
+      "surface": "setup",
+      "select": "single",
+      "prompt": "Which Sunday feels like yours?",
+      "subtext": "We'll start your feed with moments closer to your lifestyle.",
+      "options": [
+        {
+          "id": "slow-morning",
+          "label": "Slow Morning",
+          "sublabel": "Coffee, a good book, soft light through the window",
+          "image": "/images/q3/q3-01-keep-it-close-to-what-i-love.jpg",
+          "confirmationText": "More slow-living moments coming up.",
+          "mapping": [
+            { "token": "cat:home",      "delta": 2.0 },
+            { "token": "cat:wellness",  "delta": 1.5 },
+            { "token": "sub:slow-living","delta": 2.0 },
+            { "token": "sub:cozy-interiors","delta": 1.5 },
+            { "token": "sub:morning-ritual","delta": 1.5 },
+            { "token": "vibe:cozy",     "delta": 2.0 },
+            { "token": "vibe:calm",     "delta": 2.0 },
+            { "token": "vibe:warm",     "delta": 1.5 },
+            { "token": "vibe:slow",     "delta": 2.0 },
+            { "token": "pace:slow",     "delta": 1.5 }
+          ]
+        },
+        {
+          "id": "forest-trail",
+          "label": "Forest Trail",
+          "sublabel": "Misty trees, fresh air, and the world going quiet",
+          "image": "/images/q3/q3-02-mix-in-some-fresh-ideas.jpg",
+          "confirmationText": "More calm nature coming up.",
+          "mapping": [
+            { "token": "cat:travel",    "delta": 2.0 },
+            { "token": "cat:wellness",  "delta": 1.5 },
+            { "token": "sub:nature-travel","delta": 2.0 },
+            { "token": "sub:outdoor-wellness","delta": 1.5 },
+            { "token": "sub:forest",    "delta": 2.0 },
+            { "token": "vibe:nature-led","delta": 2.0 },
+            { "token": "vibe:calm",     "delta": 2.0 },
+            { "token": "vibe:fresh",    "delta": 1.5 },
+            { "token": "vibe:open-sky", "delta": 1.5 },
+            { "token": "pace:slow",     "delta": 1.5 }
+          ]
+        },
+        {
+          "id": "social-brunch",
+          "label": "Social Brunch",
+          "sublabel": "Good food, great company, a warm shared table",
+          "image": "/images/q3/q3-03-surprise-me-sometimes.jpg",
+          "confirmationText": "More food and social moments coming up.",
+          "mapping": [
+            { "token": "cat:food",       "delta": 2.0 },
+            { "token": "cat:entertainment","delta": 1.5 },
+            { "token": "sub:brunch",     "delta": 2.0 },
+            { "token": "sub:social-dining","delta": 2.0 },
+            { "token": "sub:food-culture","delta": 1.5 },
+            { "token": "vibe:warm",      "delta": 2.0 },
+            { "token": "vibe:social",    "delta": 2.0 },
+            { "token": "vibe:lively",    "delta": 1.5 },
+            { "token": "vibe:comfort",   "delta": 1.5 },
+            { "token": "pace:medium",    "delta": 1.0 }
+          ]
+        },
+        {
+          "id": "city-lights",
+          "label": "City Evening",
+          "sublabel": "Street food, city lights, and the buzz of being out",
+          "image": "/images/feed/feed_23-food-neon-night-market.jpg",
+          "confirmationText": "More city energy coming up.",
+          "mapping": [
+            { "token": "cat:food",       "delta": 1.5 },
+            { "token": "cat:travel",     "delta": 1.5 },
+            { "token": "cat:entertainment","delta": 2.0 },
+            { "token": "sub:street-food","delta": 2.0 },
+            { "token": "sub:night-market","delta": 2.0 },
+            { "token": "sub:city-nights","delta": 2.0 },
+            { "token": "vibe:neon",      "delta": 2.0 },
+            { "token": "vibe:high-energy","delta": 2.0 },
+            { "token": "vibe:urban",     "delta": 2.0 },
+            { "token": "pace:fast",      "delta": 1.5 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "q-setup-view",
+      "surface": "setup",
+      "select": "single",
+      "prompt": "Pick the view you'd wake up to.",
+      "subtext": "We'll show more destinations and visuals that match your taste.",
+      "options": [
+        {
+          "id": "heritage-route",
+          "label": "Ancient Temple Route",
+          "sublabel": "Stone corridors, incense, and centuries of stories",
+          "image": "/images/q1/q1-03-travel.jpg",
+          "confirmationText": "More heritage escapes coming up.",
+          "mapping": [
+            { "token": "cat:travel",     "delta": 2.0 },
+            { "token": "sub:heritage-travel","delta": 2.0 },
+            { "token": "sub:india-travel","delta": 1.5 },
+            { "token": "sub:cultural-exploration","delta": 1.5 },
+            { "token": "vibe:spiritual", "delta": 2.0 },
+            { "token": "vibe:timeless",  "delta": 2.0 },
+            { "token": "vibe:cultural",  "delta": 1.5 },
+            { "token": "region:india",   "delta": 1.5 },
+            { "token": "pace:slow",      "delta": 1.5 }
+          ]
+        },
+        {
+          "id": "nordic-cabin",
+          "label": "Nordic Winter Cabin",
+          "sublabel": "Snow outside, firelight inside, quiet all around",
+          "image": "/images/q3/q3-04-let-it-change-with-my-mood.jpg",
+          "confirmationText": "More cosy winter retreats coming up.",
+          "mapping": [
+            { "token": "cat:travel",     "delta": 2.0 },
+            { "token": "cat:home",       "delta": 1.5 },
+            { "token": "sub:winter-travel","delta": 2.0 },
+            { "token": "sub:cabin-escape","delta": 2.0 },
+            { "token": "sub:nordic-living","delta": 1.5 },
+            { "token": "vibe:cozy",      "delta": 2.0 },
+            { "token": "vibe:minimal",   "delta": 1.5 },
+            { "token": "vibe:calm",      "delta": 2.0 },
+            { "token": "region:nordic",  "delta": 1.5 },
+            { "token": "pace:slow",      "delta": 1.5 }
+          ]
+        },
+        {
+          "id": "mountain-road",
+          "label": "Mountain Road",
+          "sublabel": "High altitude, open sky, and nothing but the horizon",
+          "image": "/images/feed/feed_43-travel-ladakh-mountain-road.jpg",
+          "confirmationText": "More open-road mountain adventures coming up.",
+          "mapping": [
+            { "token": "cat:travel",     "delta": 2.0 },
+            { "token": "sub:road-trip",  "delta": 2.0 },
+            { "token": "sub:himalayan",  "delta": 2.0 },
+            { "token": "sub:india-travel","delta": 1.5 },
+            { "token": "vibe:open-sky",  "delta": 2.0 },
+            { "token": "vibe:cinematic", "delta": 1.5 },
+            { "token": "vibe:fresh",     "delta": 1.5 },
+            { "token": "region:india",   "delta": 1.0 },
+            { "token": "region:himalayas","delta": 1.5 },
+            { "token": "pace:medium",    "delta": 1.0 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "q-setup-discovery",
+      "surface": "setup",
+      "select": "single",
+      "prompt": "How adventurous should your Glance feed be?",
+      "subtext": "Pick one — change anytime.",
+      "options": [
+        {
+          "id": "familiar",
+          "label": "Keep it familiar",
+          "sublabel": "Stay close to what I already like.",
+          "image": "/images/q3/q3-01-keep-it-close-to-what-i-love.jpg",
+          "confirmationText": "Starting with what you love.",
+          "mapping": [{ "token": "discovery:low", "delta": 1.0 }]
+        },
+        {
+          "id": "related",
+          "label": "Mix in related ideas",
+          "sublabel": "More of what I like, plus nearby worlds.",
+          "image": "/images/q3/q3-02-mix-in-some-fresh-ideas.jpg",
+          "confirmationText": "Mixing in some nearby worlds.",
+          "mapping": [{ "token": "discovery:mix", "delta": 1.0 }]
+        },
+        {
+          "id": "surprise",
+          "label": "Surprise me sometimes",
+          "sublabel": "Bring in new worlds regularly.",
+          "image": "/images/q3/q3-03-surprise-me-sometimes.jpg",
+          "confirmationText": "Mixing in something new.",
+          "mapping": [{ "token": "discovery:high", "delta": 1.0 }]
+        },
+        {
+          "id": "new",
+          "label": "Take me somewhere new",
+          "sublabel": "A bolder feed with more fresh discoveries.",
+          "image": "/images/q3/q3-04-let-it-change-with-my-mood.jpg",
+          "confirmationText": "Your feed will push into new territory.",
+          "mapping": [{ "token": "discovery:high", "delta": 2.0 }]
+        }
+      ]
+    }
+  ],
+
+  "interstitials": [
+    {
+      "id": "int-dinner-table",
+      "surface": "interstitial",
+      "select": "single",
+      "prompt": "Which dinner table is yours tonight?",
+      "subtext": "We'll tune upcoming food and lifestyle content around this kind of moment.",
+      "gapAxis": "cat:food",
+      "triggerAfterCards": 6,
+      "autoDismissMs": 10000,
+      "options": [
+        {
+          "id": "home-table",
+          "label": "A home-cooked spread",
+          "sublabel": "Warm, slow, just the people you love",
+          "image": "/images/feed/feed_04-food-dinner-party-table.jpg",
+          "confirmationText": "More warm home moments coming up.",
+          "mapping": [
+            { "token": "cat:food",       "delta": 1.5 },
+            { "token": "cat:home",       "delta": 1.5 },
+            { "token": "sub:social-dining","delta": 2.0 },
+            { "token": "sub:slow-living","delta": 1.5 },
+            { "token": "vibe:warm",      "delta": 2.0 },
+            { "token": "vibe:cozy",      "delta": 2.0 },
+            { "token": "vibe:comfort",   "delta": 1.5 }
+          ]
+        },
+        {
+          "id": "street-stall",
+          "label": "Street food at a local stall",
+          "sublabel": "Chai, chaat, and the buzz of a local stall",
+          "image": "/images/feed/feed_47-food-monsoon-chai-stall.jpg",
+          "confirmationText": "More street food and local flavours coming up.",
+          "mapping": [
+            { "token": "cat:food",       "delta": 2.0 },
+            { "token": "sub:street-food","delta": 2.0 },
+            { "token": "sub:chai",       "delta": 1.5 },
+            { "token": "vibe:social",    "delta": 2.0 },
+            { "token": "vibe:warm",      "delta": 1.5 },
+            { "token": "vibe:urban",     "delta": 1.5 },
+            { "token": "region:india",   "delta": 1.0 }
+          ]
+        },
+        {
+          "id": "restaurant-counter",
+          "label": "A restaurant night",
+          "sublabel": "Reservations, good lighting, the full experience",
+          "image": "/images/feed/feed_53-food-fine-dining-chef-counter.jpg",
+          "confirmationText": "More premium dining moments coming up.",
+          "mapping": [
+            { "token": "cat:food",       "delta": 2.0 },
+            { "token": "cat:luxury",     "delta": 1.5 },
+            { "token": "sub:fine-dining","delta": 2.0 },
+            { "token": "sub:chef",       "delta": 1.5 },
+            { "token": "vibe:premium",   "delta": 2.0 },
+            { "token": "vibe:luxury",    "delta": 1.5 },
+            { "token": "vibe:calm",      "delta": 1.0 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "int-which-trip",
+      "surface": "interstitial",
+      "select": "single",
+      "prompt": "Which trip are you taking?",
+      "subtext": "We'll show more destinations and visuals that match your travel taste.",
+      "gapAxis": "cat:travel",
+      "triggerAfterCards": 10,
+      "autoDismissMs": 10000,
+      "options": [
+        {
+          "id": "heritage-escape",
+          "label": "Into heritage and history",
+          "sublabel": "Old cities, temples, stories in stone",
+          "image": "/images/feed/feed_05-travel-rajasthan-haveli.jpg",
+          "confirmationText": "More heritage escapes coming up.",
+          "mapping": [
+            { "token": "cat:travel",     "delta": 2.0 },
+            { "token": "sub:heritage-travel","delta": 2.0 },
+            { "token": "sub:india-travel","delta": 1.5 },
+            { "token": "sub:cultural-exploration","delta": 1.5 },
+            { "token": "vibe:spiritual", "delta": 2.0 },
+            { "token": "vibe:timeless",  "delta": 1.5 },
+            { "token": "region:india",   "delta": 1.5 },
+            { "token": "region:rajasthan","delta": 2.0 }
+          ]
+        },
+        {
+          "id": "nature-slow",
+          "label": "Into nature, slowly",
+          "sublabel": "Mountains, backwaters, forest trails",
+          "image": "/images/feed/feed_21-travel-tea-gardens-munnar.jpg",
+          "confirmationText": "More calm nature escapes coming up.",
+          "mapping": [
+            { "token": "cat:travel",     "delta": 2.0 },
+            { "token": "cat:wellness",   "delta": 1.0 },
+            { "token": "sub:nature-travel","delta": 2.0 },
+            { "token": "sub:kerala",     "delta": 1.5 },
+            { "token": "sub:himalayan",  "delta": 1.0 },
+            { "token": "vibe:calm",      "delta": 2.0 },
+            { "token": "vibe:nature-led","delta": 2.0 },
+            { "token": "vibe:slow",      "delta": 1.5 },
+            { "token": "region:kerala",  "delta": 2.0 }
+          ]
+        },
+        {
+          "id": "city-energy",
+          "label": "Into a city full of energy",
+          "sublabel": "New places, street life, the buzz of somewhere new",
+          "image": "/images/feed/feed_22-travel-seoul-cafe-street.jpg",
+          "confirmationText": "More city energy and urban travel coming up.",
+          "mapping": [
+            { "token": "cat:travel",     "delta": 2.0 },
+            { "token": "cat:food",       "delta": 1.0 },
+            { "token": "sub:urban-travel","delta": 2.0 },
+            { "token": "sub:cafe-culture","delta": 1.5 },
+            { "token": "vibe:urban",     "delta": 2.0 },
+            { "token": "vibe:social",    "delta": 1.5 },
+            { "token": "region:korea",   "delta": 1.5 },
+            { "token": "region:asia",    "delta": 1.0 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "int-evening-feel",
+      "surface": "interstitial",
+      "select": "single",
+      "prompt": "What kind of evening should Glance bring you?",
+      "subtext": "We'll tune your feed around this kind of energy.",
+      "gapAxis": "vibe:calm",
+      "triggerAfterCards": 14,
+      "autoDismissMs": 10000,
+      "options": [
+        {
+          "id": "calm-evening",
+          "label": "Calm and winding down",
+          "sublabel": "Soft light, slow content, nowhere to be",
+          "image": "/images/feed/feed_10-home-reading-nook.jpg",
+          "confirmationText": "More calm, slow moments coming up.",
+          "mapping": [
+            { "token": "cat:home",       "delta": 1.5 },
+            { "token": "cat:wellness",   "delta": 1.5 },
+            { "token": "sub:slow-living","delta": 2.0 },
+            { "token": "sub:reading-nook","delta": 1.5 },
+            { "token": "vibe:calm",      "delta": 2.0 },
+            { "token": "vibe:cozy",      "delta": 2.0 },
+            { "token": "vibe:slow",      "delta": 2.0 },
+            { "token": "pace:slow",      "delta": 1.5 }
+          ]
+        },
+        {
+          "id": "social-evening",
+          "label": "Out and social",
+          "sublabel": "Good company, something happening, the night alive",
+          "image": "/images/feed/feed_37-entertainment-outdoor-concert.jpg",
+          "confirmationText": "More social and lively energy coming up.",
+          "mapping": [
+            { "token": "cat:entertainment","delta": 2.0 },
+            { "token": "sub:concert",    "delta": 1.5 },
+            { "token": "sub:live",       "delta": 1.5 },
+            { "token": "sub:social-dining","delta": 1.0 },
+            { "token": "vibe:social",    "delta": 2.0 },
+            { "token": "vibe:high-energy","delta": 1.5 },
+            { "token": "vibe:festive",   "delta": 1.5 },
+            { "token": "pace:medium",    "delta": 1.0 }
+          ]
+        },
+        {
+          "id": "discovery-evening",
+          "label": "Something new to discover",
+          "sublabel": "Curious, a little unexpected, different from usual",
+          "image": "/images/feed/feed_66-travel-bangkok-floating-market.jpg",
+          "confirmationText": "Mixing in something new and unexpected.",
+          "mapping": [
+            { "token": "cat:travel",     "delta": 1.5 },
+            { "token": "sub:market",     "delta": 1.5 },
+            { "token": "sub:street-food","delta": 1.0 },
+            { "token": "vibe:social",    "delta": 1.5 },
+            { "token": "vibe:warm",      "delta": 1.0 },
+            { "token": "region:asia",    "delta": 1.5 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "int-home-space",
+      "surface": "interstitial",
+      "select": "single",
+      "prompt": "What kind of space are you drawn to right now?",
+      "subtext": "We'll show more home and lifestyle content that matches this feeling.",
+      "gapAxis": "cat:home",
+      "triggerAfterCards": 18,
+      "autoDismissMs": 10000,
+      "options": [
+        {
+          "id": "cozy-home",
+          "label": "Warm and cosy",
+          "sublabel": "Textures, candles, the lived-in feeling",
+          "image": "/images/feed/feed_09-home-kitchen-morning.jpg",
+          "confirmationText": "More cosy home inspiration coming up.",
+          "mapping": [
+            { "token": "cat:home",       "delta": 2.0 },
+            { "token": "sub:cozy-interiors","delta": 2.0 },
+            { "token": "sub:warm-interiors","delta": 1.5 },
+            { "token": "vibe:cozy",      "delta": 2.0 },
+            { "token": "vibe:warm",      "delta": 2.0 }
+          ]
+        },
+        {
+          "id": "minimal-home",
+          "label": "Minimal and clean",
+          "sublabel": "Less clutter, more calm, beautifully edited",
+          "image": "/images/feed/feed_28-home-japandi-minimal-living.jpg",
+          "confirmationText": "More minimal and clean spaces coming up.",
+          "mapping": [
+            { "token": "cat:home",       "delta": 2.0 },
+            { "token": "sub:japandi",    "delta": 2.0 },
+            { "token": "sub:minimal",    "delta": 1.5 },
+            { "token": "vibe:minimal",   "delta": 2.0 },
+            { "token": "vibe:calm",      "delta": 1.5 }
+          ]
+        },
+        {
+          "id": "outdoor-home",
+          "label": "Outside — a balcony or garden",
+          "sublabel": "Green, open, the outdoors brought in",
+          "image": "/images/feed/feed_44-home-modern-balcony-garden.jpg",
+          "confirmationText": "More outdoor and garden spaces coming up.",
+          "mapping": [
+            { "token": "cat:home",       "delta": 1.5 },
+            { "token": "cat:wellness",   "delta": 1.0 },
+            { "token": "sub:home-garden","delta": 2.0 },
+            { "token": "sub:plants",     "delta": 1.5 },
+            { "token": "vibe:fresh",     "delta": 2.0 },
+            { "token": "vibe:calm",      "delta": 1.5 }
+          ]
+        }
+      ]
+    }
+  ],
+
+  "tagLabels": {
+    "cat:travel": "travel", "cat:food": "food", "cat:home": "home", "cat:fashion": "fashion",
+    "cat:beauty": "beauty", "cat:wellness": "wellness", "cat:sports": "sports",
+    "cat:entertainment": "entertainment", "cat:luxury": "luxury", "cat:hobbies": "hobbies",
+    "sub:nature-travel": "calm nature", "sub:india-travel": "India travel",
+    "sub:heritage-travel": "heritage places", "sub:street-food": "street food",
+    "sub:slow-living": "slow living", "sub:cozy-interiors": "cosy interiors",
+    "sub:social-dining": "shared dining", "sub:fine-dining": "fine dining",
+    "sub:cafe-culture": "cafe culture", "sub:urban-travel": "city travel",
+    "sub:night-market": "night markets", "sub:morning-ritual": "morning rituals",
+    "sub:forest": "forests", "sub:kerala": "Kerala", "sub:himalayan": "Himalayan routes",
+    "sub:nordic-living": "Nordic living", "sub:reading-nook": "reading nooks",
+    "sub:brunch": "brunch", "sub:food-culture": "food culture",
+    "sub:concert": "live concerts", "sub:cricket": "cricket",
+    "vibe:calm": "calm moments", "vibe:cozy": "cosy scenes", "vibe:warm": "warm tones",
+    "vibe:neon": "neon nights", "vibe:high-energy": "high-energy picks",
+    "vibe:luxury": "luxury", "vibe:minimal": "minimal spaces",
+    "vibe:festive": "festivals", "vibe:nature-led": "nature",
+    "vibe:urban": "city scenes", "vibe:social": "social energy",
+    "vibe:cinematic": "cinematic scenes", "vibe:spiritual": "spiritual moments",
+    "vibe:open-sky": "open sky", "vibe:slow": "slow living", "vibe:timeless": "heritage",
+    "vibe:fresh": "fresh outdoors", "vibe:premium": "premium", "vibe:lively": "lively scenes",
+    "region:india": "India", "region:kerala": "Kerala", "region:rajasthan": "Rajasthan",
+    "region:himalayas": "Himalayas", "region:korea": "Korea", "region:asia": "Asia",
+    "region:nordic": "Nordic", "region:europe": "Europe", "region:us": "US",
+    "pace:slow": "slow pace", "pace:medium": "medium pace", "pace:fast": "fast pace"
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "name": null,
+  "city": "Bangalore",
+  "user_summary": "New Glance user who set a social, out-and-about tone and leaned into food and local culture. Early signals favour markets, dining and city energy.",
+  "profession": null,
+  "preferences": [
+    "food",
+    "culture",
+    "social",
+    "travel"
+  ],
+  "fashion_palette": [],
+  "fashion_brands": [],
+  "venues": [
+    "Local markets",
+    "Restaurants & dining",
+    "Cultural spots"
+  ],
+  "hobbies": [
+    "Food & dining",
+    "Local culture",
+    "Going out"
+  ],
+  "occasions": [
+    "Out and social",
+    "Brunch & day out",
+    "Local cultural events"
+  ],
+  "discovery_appetite": "medium",
+  "past_activity": [
+    {
+      "action": "liked",
+      "topic": "a local vegetable market story",
+      "category": "Food"
+    },
+    {
+      "action": "explored",
+      "topic": "a festive courtyard with lights (L1)",
+      "category": "Culture"
+    },
+    {
+      "action": "answered",
+      "topic": "chose 'A restaurant night' dinner table",
+      "category": "Food"
+    }
+  ],
+  "signals": {
+    "timeOfDay": "evening",
+    "weather": "clear",
+    "day": "Friday"
+  },
+  "data_quality": "sparse",
+  "collected_inputs": {
+    "source": "glance_preference_collection",
+    "onboarding": {
+      "q1_sunday_scenario": "Social Brunch",
+      "q2_worlds": [
+        "Local Markets & Street Life",
+        "Food Stories & Kitchens"
+      ],
+      "q3_discovery_appetite": "Mix in related ideas"
+    },
+    "in_feed": {
+      "l0_interactions": [
+        {
+          "card": "local vegetable market",
+          "signal": "like"
+        },
+        {
+          "card": "festive courtyard (opened L1)",
+          "signal": "L1_explore"
+        },
+        {
+          "card": "minimal home interior",
+          "signal": "skip"
+        }
+      ],
+      "interstitial_answers": [
+        {
+          "question": "Which dinner table is yours tonight?",
+          "answer": "A restaurant night"
+        },
+        {
+          "question": "L1 exit: would you like more of this?",
+          "answer": "More Indian markets and street life"
+        }
+      ]
+    },
+    "derivation": {
+      "preferences": "Social Brunch + Local Markets world -> food, culture, social; L1 explore on culture -> culture (strong, L1 is highest-intent); Markets world also implies local travel -> travel",
+      "venues": "markets world + restaurant interstitial -> local markets, restaurants, cultural spots",
+      "discovery_appetite": "Q3 'Mix in related ideas' -> medium",
+      "vibe": "Social Brunch -> social/medium pace, out-and-about",
+      "not_collected": "profession, fashion_brands, fashion_palette never asked -> null/empty"
+    }
+  }
+}

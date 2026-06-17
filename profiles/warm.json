@@ -1,0 +1,65 @@
+{
+  "name": null,
+  "city": "Bangalore",
+  "user_summary": "A Bangalore tech professional with a smart-casual, modern-urbanite streak — into clean menswear, good coffee, rooftops and the city's tech-culture scene.",
+  "profession": "Tech/Corporate Professional",
+  "preferences": [
+    "fashion",
+    "tech",
+    "social",
+    "food",
+    "culture"
+  ],
+  "fashion_palette": [
+    "Light beige",
+    "Ecru",
+    "Off-white",
+    "Black"
+  ],
+  "fashion_brands": [
+    "Blackberrys",
+    "Park Avenue",
+    "Wrangler",
+    "Blackberrys"
+  ],
+  "venues": [
+    "Urban cafes",
+    "Modern indoor environments with wood accents",
+    "Rooftop terraces"
+  ],
+  "hobbies": [
+    "Technology",
+    "Social/Cultural Interest",
+    "Contemporary Urban Fashion"
+  ],
+  "occasions": [
+    "Evening social outings",
+    "Business casual work environments",
+    "Urban cultural events",
+    "Rama Navami temple visits"
+  ],
+  "past_activity": [
+    {
+      "action": "browsed",
+      "topic": "smart-casual menswear",
+      "category": "Fashion"
+    },
+    {
+      "action": "clicked",
+      "topic": "a desk-tech upgrade",
+      "category": "Tech",
+      "count": 2
+    },
+    {
+      "action": "saved",
+      "topic": "a rooftop after-work spot",
+      "category": "Social"
+    }
+  ],
+  "signals": {
+    "timeOfDay": "evening",
+    "weather": "rainy",
+    "day": "Friday"
+  },
+  "data_quality": "sparse"
+}

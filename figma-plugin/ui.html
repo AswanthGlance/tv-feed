@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+      font-size: 12px;
+      background: #1a1a1a;
+      color: #e5e5e5;
+      padding: 16px;
+      width: 260px;
+    }
+    h2 { font-size: 13px; font-weight: 600; margin-bottom: 4px; color: #fff; }
+    p  { font-size: 11px; color: rgba(255,255,255,0.45); margin-bottom: 16px; line-height: 1.5; }
+
+    .template-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+    .template-item {
+      display: flex; align-items: center; gap: 10px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px; padding: 10px 12px; cursor: pointer;
+      transition: background 0.15s;
+    }
+    .template-item:hover { background: rgba(255,255,255,0.10); }
+    .template-item.selected { border-color: rgba(167,134,229,0.7); background: rgba(167,134,229,0.12); }
+    .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .dot-left   { background: #a786e5; }
+    .dot-center { background: #60d9fa; }
+    .dot-right  { background: #f9a84d; }
+    .tname { font-weight: 600; font-size: 12px; color: #fff; }
+    .tdesc { font-size: 10px; color: rgba(255,255,255,0.4); margin-top: 1px; }
+
+    .all-btn {
+      width: 100%; padding: 9px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 6px; color: rgba(255,255,255,0.6);
+      font-size: 11px; cursor: pointer; margin-bottom: 8px;
+      transition: background 0.15s;
+    }
+    .all-btn:hover { background: rgba(255,255,255,0.13); }
+
+    .run-btn {
+      width: 100%; padding: 10px;
+      background: #a786e5; border: none; border-radius: 6px;
+      color: #111; font-size: 12px; font-weight: 700;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .run-btn:hover { background: #c0a8ff; }
+    .run-btn:disabled { background: rgba(167,134,229,0.3); color: rgba(0,0,0,0.4); cursor: default; }
+
+    .status {
+      font-size: 11px; color: rgba(255,255,255,0.4);
+      text-align: center; margin-top: 10px; min-height: 16px;
+    }
+    .status.error { color: #ff7070; }
+
+    .note {
+      font-size: 10px; color: rgba(255,255,255,0.28);
+      margin-top: 12px; line-height: 1.5;
+      padding: 8px; background: rgba(255,255,255,0.04);
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Glance L0 Templates</h2>
+  <p>Creates editable 1920×1080 Figma frames for each L0 layout variant.</p>
+
+  <div class="template-list">
+    <div class="template-item selected" data-id="left">
+      <div class="dot dot-left"></div>
+      <div>
+        <div class="tname">01 Left Template</div>
+        <div class="tdesc">eatly-dawn · food · 2 product cards</div>
+      </div>
+    </div>
+    <div class="template-item selected" data-id="center">
+      <div class="dot dot-center"></div>
+      <div>
+        <div class="tname">02 Center Template</div>
+        <div class="tdesc">feed-46 · fashion · 2 product cards</div>
+      </div>
+    </div>
+    <div class="template-item selected" data-id="right">
+      <div class="dot dot-right"></div>
+      <div>
+        <div class="tname">03 Right Template</div>
+        <div class="tdesc">feed-52 · wellness · no products</div>
+      </div>
+    </div>
+  </div>
+
+  <button class="all-btn" id="toggle-all">Deselect all</button>
+  <button class="run-btn" id="run-btn">Create frames in Figma</button>
+  <div class="status" id="status"></div>
+
+  <div class="note">
+    Dev server must be running at localhost:5175 for background images.<br>
+    Mascot in CTA pill is a placeholder — replace with a Rive PNG export.
+  </div>
+
+  <script>
+    const items = document.querySelectorAll('.template-item');
+    const runBtn = document.getElementById('run-btn');
+    const statusEl = document.getElementById('status');
+    const toggleAllBtn = document.getElementById('toggle-all');
+
+    let selected = new Set(['left','center','right']);
+
+    items.forEach(item => {
+      item.addEventListener('click', () => {
+        const id = item.dataset.id;
+        if (selected.has(id)) { selected.delete(id); item.classList.remove('selected'); }
+        else { selected.add(id); item.classList.add('selected'); }
+        updateToggleLabel();
+        updateRunBtn();
+      });
+    });
+
+    toggleAllBtn.addEventListener('click', () => {
+      if (selected.size === items.length) {
+        selected.clear();
+        items.forEach(i => i.classList.remove('selected'));
+      } else {
+        items.forEach(i => { selected.add(i.dataset.id); i.classList.add('selected'); });
+      }
+      updateToggleLabel();
+      updateRunBtn();
+    });
+
+    function updateToggleLabel() {
+      toggleAllBtn.textContent = selected.size === items.length ? 'Deselect all' : 'Select all';
+    }
+    function updateRunBtn() {
+      runBtn.disabled = selected.size === 0;
+    }
+
+    runBtn.addEventListener('click', async () => {
+      runBtn.disabled = true;
+      statusEl.className = 'status';
+      statusEl.textContent = 'Fetching background images…';
+
+      const toFetch = [
+        { id: 'left',   url: 'http://localhost:5175/images/feed/eatly-dawn.jpg' },
+        { id: 'center', url: 'http://localhost:5175/images/feed/feed_46-fashion-luxury-flatlay.jpg' },
+        { id: 'right',  url: 'http://localhost:5175/images/feed/feed_52-wellness-surf-morning.jpg' },
+      ].filter(f => selected.has(f.id));
+
+      const imageData = {};
+      for (const f of toFetch) {
+        try {
+          statusEl.textContent = `Fetching ${f.id} image…`;
+          const resp = await fetch(f.url);
+          if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+          const buf = await resp.arrayBuffer();
+          imageData[f.id] = Array.from(new Uint8Array(buf));
+        } catch (e) {
+          imageData[f.id] = null;
+          console.warn('Could not fetch', f.url, e);
+        }
+      }
+
+      statusEl.textContent = 'Building frames…';
+      parent.postMessage({
+        pluginMessage: {
+          type: 'create-frames',
+          selected: Array.from(selected),
+          imageData,
+        }
+      }, '*');
+    });
+
+    window.onmessage = (event) => {
+      const msg = event.data.pluginMessage;
+      if (!msg) return;
+      if (msg.type === 'done') {
+        statusEl.className = 'status';
+        statusEl.textContent = msg.text || 'Done!';
+        runBtn.disabled = false;
+      }
+      if (msg.type === 'error') {
+        statusEl.className = 'status error';
+        statusEl.textContent = 'Error: ' + msg.text;
+        runBtn.disabled = false;
+      }
+      if (msg.type === 'progress') {
+        statusEl.className = 'status';
+        statusEl.textContent = msg.text;
+      }
+    };
+  </script>
+</body>
+</html>

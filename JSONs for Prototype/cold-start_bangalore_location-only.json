@@ -1,0 +1,32 @@
+{
+  "name": null,
+  "city": "Bangalore",
+  "user_summary": "Cold-start user. Only location is known (from IP). No preferences collected yet — the feed should start from Bangalore local trends and current context (weather, time, day) and learn as the user watches.",
+  "profession": null,
+  "preferences": [],
+  "fashion_palette": [],
+  "fashion_brands": [],
+  "venues": [],
+  "hobbies": [],
+  "occasions": [],
+  "past_activity": [],
+  "signals": {
+    "timeOfDay": "evening",
+    "weather": "rainy",
+    "day": "Friday"
+  },
+  "location_context": {
+    "city": "Bangalore",
+    "region": "Karnataka, India",
+    "source": "ip_geolocation",
+    "local_trends": [
+      "rainy-evening cosy food & coffee",
+      "Bangalore cafe culture",
+      "weekend getaways near Bangalore (Coorg, Nandi Hills)",
+      "local cultural events",
+      "rooftop & indoor city spots"
+    ],
+    "default_feed_strategy": "balanced, locally-relevant; weight toward current context (rainy Friday evening -> cosy food, coffee, calm indoor, light city culture); no personalization yet"
+  },
+  "data_quality": "cold"
+}

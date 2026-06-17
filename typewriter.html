@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TypeCraft — Typing Animation Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Roboto:wght@300;400;500&family=Instrument+Serif:ital@0;1&family=Instrument+Sans:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ── CSS Variables ── */
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #111118;
+    --panel: #13131c;
+    --panel-border: #1e1e2e;
+    --surface: #1a1a27;
+    --surface2: #20202f;
+    --accent: #7c6af7;
+    --accent2: #a78bfa;
+    --accent-glow: rgba(124,106,247,0.25);
+    --text: #e8e6f0;
+    --text-dim: #7a7890;
+    --text-muted: #4a4860;
+    --cursor-color: #7c6af7;
+    --user-text-color: #e8e6f0;
+    --panel-w: 300px;
+    --radius: 10px;
+    --font-ui: 'Instrument Sans', sans-serif;
+  }
+
+  .light-mode {
+    --bg: #f4f3fa;
+    --bg2: #ede9f8;
+    --panel: #ffffff;
+    --panel-border: #d8d4ee;
+    --surface: #eeeaf8;
+    --surface2: #e5e0f5;
+    --accent: #6b57f0;
+    --accent2: #8b72fa;
+    --accent-glow: rgba(107,87,240,0.15);
+    --text: #1a1730;
+    --text-dim: #5a5578;
+    --text-muted: #9990bb;
+    --cursor-color: #6b57f0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-ui);
+    overflow: hidden;
+    transition: background 0.3s, color 0.3s;
+  }
+
+  /* ── Layout ── */
+  .app {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  /* ── Stage (left) ── */
+  .stage {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    padding: 48px 60px;
+    transition: background 0.3s;
+  }
+
+
+  .stage-label {
+    position: absolute;
+    top: 24px; left: 32px;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  /* ── Conversation container ── */
+  .conversation {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 720px;
+    width: 100%;
+  }
+
+  /* ── User chat bubble ── */
+  .chat-row {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+  }
+
+  .user-bubble {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    border-radius: 20px 20px 4px 20px;
+    padding: 14px 18px;
+    max-width: 72%;
+    font-family: var(--font-ui);
+    font-size: 22px;
+    line-height: 1.5;
+    word-break: break-word;
+    white-space: pre-wrap;
+    outline: none;
+    cursor: text;
+    caret-color: rgba(255,255,255,0.9);
+    box-shadow: 0 4px 20px var(--accent-glow);
+    transition: box-shadow 0.2s, background 0.3s;
+    position: relative;
+  }
+
+  .user-bubble:focus {
+    box-shadow: 0 4px 28px var(--accent-glow), 0 0 0 2px rgba(255,255,255,0.18);
+  }
+
+
+  .user-bubble:empty::before {
+    content: 'Type your message…';
+    color: rgba(255,255,255,0.45);
+    pointer-events: none;
+  }
+
+  .typing-wrapper {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    width: 100%;
+  }
+
+  .typing-image {
+    flex-shrink: 0;
+    width: 56px;
+    min-width: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .typing-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 20px;
+    display: block;
+    object-fit: cover;
+    box-shadow: none;
+    border: none;
+  }
+
+  .typing-area {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    text-align: left;
+    line-height: 1.5;
+    word-break: break-word;
+    white-space: pre-wrap;
+    /* font set dynamically */
+  }
+
+  .char {
+    display: inline-block;
+    vertical-align: bottom;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    transform-origin: bottom;
+  }
+
+  /* Prevents line breaks mid-word when chars are individual inline-block spans */
+  .word-group {
+    display: inline-block;
+    white-space: nowrap;
+  }
+
+  /* Cursor styles */
+  .cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1.15em;
+    background: var(--cursor-color);
+    vertical-align: text-bottom;
+    margin-left: 2px;
+    position: relative;
+    top: 0.04em;
+    transition: background 0.3s;
+  }
+  .cursor.block  { width: 0.6em; height: 1.15em; opacity: 0.85; }
+  .cursor.line   { width: 2px; }
+  .cursor.under  { width: 0.65em; height: 2px; top: auto; bottom: 0; vertical-align: baseline; transform: translateY(4px); }
+  .cursor.none   { display: none; }
+
+  /* blink animation */
+  @keyframes blink {
+    0%,49% { opacity: 1; }
+    50%,100% { opacity: 0; }
+  }
+  .cursor.blinking { animation: blink 0.75s step-end infinite; }
+
+  /* ── Char effect animations ── */
+  @keyframes fadeIn    { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes slideUp   { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes glitchIn  {
+    0%   { opacity: 0; transform: skewX(20deg) translateX(-4px); filter: hue-rotate(90deg); }
+    40%  { opacity: 0.7; transform: skewX(-10deg) translateX(3px); }
+    70%  { opacity: 1; transform: skewX(4deg) translateX(-1px); filter: hue-rotate(0deg); }
+    100% { opacity: 1; transform: none; filter: none; }
+  }
+  @keyframes blurIn    { from { opacity: 0; filter: blur(8px); } to { opacity: 1; filter: blur(0); } }
+  .char.effect-fade   { animation: fadeIn 0.25s ease forwards; }
+  .char.effect-slide  { animation: slideUp 0.28s cubic-bezier(0.22,0.61,0.36,1) forwards; }
+  .char.effect-glitch { animation: glitchIn 0.35s ease forwards; }
+  .char.effect-blur   { animation: blurIn 0.4s ease forwards; }
+
+  /* ── Panel (right) ── */
+  .panel {
+    width: var(--panel-w);
+    height: 100vh;
+    background: var(--panel);
+    border-left: 1px solid var(--panel-border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    flex-shrink: 0;
+    transition: background 0.3s, border-color 0.3s;
+  }
+
+  .panel-header {
+    padding: 20px 20px 12px;
+    border-bottom: 1px solid var(--panel-border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  .panel-logo {
+    width: 28px; height: 28px;
+    background: var(--accent);
+    border-radius: 7px;
+    display: grid;
+    place-items: center;
+    font-size: 14px;
+  }
+
+  .panel-title {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--text);
+  }
+
+  .panel-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 16px 20px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--surface2) transparent;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .panel-scroll::-webkit-scrollbar { width: 4px; }
+  .panel-scroll::-webkit-scrollbar-track { background: transparent; }
+  .panel-scroll::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 4px; }
+
+  /* ── Section ── */
+  .section { display: flex; flex-direction: column; gap: 8px; }
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 600;
+    padding-bottom: 2px;
+  }
+
+  /* ── Textarea ── */
+  textarea {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    line-height: 1.6;
+    padding: 10px 12px;
+    resize: vertical;
+    min-height: 88px;
+    outline: none;
+    transition: border-color 0.2s, background 0.3s;
+  }
+  textarea:focus { border-color: var(--accent); }
+
+  /* ── Select ── */
+  select {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: var(--font-ui);
+    font-size: 12px;
+    padding: 9px 12px;
+    outline: none;
+    appearance: none;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%237a7890' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    transition: border-color 0.2s, background-color 0.3s;
+  }
+  select:focus { border-color: var(--accent); }
+
+  /* ── Slider ── */
+  .slider-row { display: flex; align-items: center; gap: 10px; }
+  .slider-val {
+    font-size: 11px;
+    color: var(--accent2);
+    font-family: 'JetBrains Mono', monospace;
+    min-width: 34px;
+    text-align: right;
+  }
+  input[type=range] {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 3px;
+    background: var(--surface2);
+    border-radius: 99px;
+    outline: none;
+    cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent-glow);
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+  }
+  input[type=range]:hover::-webkit-slider-thumb { box-shadow: 0 0 14px var(--accent); }
+  input[type=range]::-moz-range-thumb {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: none;
+    cursor: pointer;
+  }
+
+  /* ── Pill buttons (effect / cursor) ── */
+  .pill-group { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pill {
+    font-size: 11px;
+    font-family: var(--font-ui);
+    font-weight: 500;
+    padding: 5px 11px;
+    border-radius: 99px;
+    border: 1px solid var(--panel-border);
+    background: var(--surface);
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.18s;
+    user-select: none;
+  }
+  .pill:hover { border-color: var(--accent2); color: var(--text); }
+  .pill.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    box-shadow: 0 0 12px var(--accent-glow);
+  }
+
+  /* ── Color pickers ── */
+  .color-row { display: flex; align-items: center; gap: 10px; }
+  .color-row label { font-size: 12px; color: var(--text-dim); flex: 1; }
+  input[type=color] {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    border: 1px solid var(--panel-border);
+    background: var(--surface);
+    cursor: pointer;
+    padding: 2px;
+    outline: none;
+  }
+
+  /* ── Controls (play/pause/reset) ── */
+  .controls-row { display: flex; gap: 8px; }
+  .ctrl-btn {
+    flex: 1;
+    padding: 10px 0;
+    border-radius: var(--radius);
+    border: 1px solid var(--panel-border);
+    background: var(--surface);
+    color: var(--text);
+    font-family: var(--font-ui);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    transition: all 0.18s;
+  }
+  .ctrl-btn:hover { border-color: var(--accent); color: var(--accent2); }
+  .ctrl-btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  .ctrl-btn.primary:hover { background: var(--accent2); border-color: var(--accent2); }
+
+  /* ── Theme toggle ── */
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; }
+  .toggle-label { font-size: 12px; color: var(--text-dim); }
+  .toggle {
+    position: relative; width: 40px; height: 22px;
+    cursor: pointer; display: inline-block;
+  }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .toggle-track {
+    position: absolute; inset: 0;
+    background: var(--surface2);
+    border-radius: 99px;
+    transition: background 0.2s;
+  }
+  .toggle input:checked + .toggle-track { background: var(--accent); }
+  .toggle-thumb {
+    position: absolute;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    top: 3px; left: 3px;
+    transition: transform 0.2s;
+  }
+  .toggle input:checked ~ .toggle-thumb { transform: translateX(18px); }
+
+  /* ── Status bar ── */
+  .status-bar {
+    padding: 10px 20px;
+    border-top: 1px solid var(--panel-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .status-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 6px var(--accent);
+    animation: blink 1.2s ease infinite;
+  }
+  .status-txt { font-size: 10px; color: var(--text-muted); letter-spacing: 0.1em; }
+
+  /* ── Divider ── */
+  .divider { height: 1px; background: var(--panel-border); margin: 0 -16px; }
+
+  /* ── Responsive ── */
+  @media (max-width: 640px) {
+    :root { --panel-w: 100%; }
+    .app { flex-direction: column-reverse; }
+    .stage { min-height: 45vh; padding: 32px 24px; }
+    .panel { height: auto; border-left: none; border-top: 1px solid var(--panel-border); }
+    .panel-scroll { max-height: 55vh; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+  <!-- Stage -->
+  <div class="stage" id="stage">
+    <span class="stage-label">Preview</span>
+    <div class="conversation">
+      <div class="chat-row">
+        <div class="user-bubble" id="userBubble" contenteditable="true" spellcheck="false">Comfortable summer clothing</div>
+      </div>
+      <div class="typing-wrapper">
+        <div class="typing-image">
+          <img src="image-mascot.png" alt="Left side image">
+        </div>
+        <div class="typing-area" id="typingArea"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel -->
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-logo">✦</div>
+      <span class="panel-title">TypeCraft</span>
+    </div>
+
+    <div class="panel-scroll">
+
+      <!-- Custom text -->
+      <div class="section">
+        <div class="section-label">Text</div>
+        <textarea id="customText" placeholder="Enter your text here…" rows="4">It sounds like you're in search of some comfy summer outfits that suit your style! Can you share a bit more about what you like?</textarea>
+      </div>
+
+      <!-- Play controls -->
+      <div class="section">
+        <div class="section-label">Playback</div>
+        <div class="controls-row">
+          <button class="ctrl-btn primary" id="btnPlay">▶ Play</button>
+          <button class="ctrl-btn" id="btnPause">⏸</button>
+          <button class="ctrl-btn" id="btnReset">↺</button>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Speed -->
+      <div class="section">
+        <div class="section-label">Speed</div>
+        <div class="slider-row">
+          <input type="range" id="speed" min="20" max="300" value="80" step="5">
+          <span class="slider-val" id="speedVal">80ms</span>
+        </div>
+      </div>
+
+      <!-- Font -->
+      <div class="section">
+        <div class="section-label">Font</div>
+        <select id="fontSelect">
+          <option value="'Poppins', sans-serif">Poppins</option>
+          <option value="'Roboto', sans-serif">Roboto</option>
+          <option value="'Instrument Serif', serif">Instrument Serif</option>
+          <option value="'Instrument Sans', sans-serif" selected>Instrument Sans</option>
+          <option value="'Playfair Display', serif">Playfair Display</option>
+        </select>
+      </div>
+
+      <!-- Font size -->
+      <div class="section">
+        <div class="section-label">Font Size</div>
+        <div class="slider-row">
+          <input type="range" id="fontSize" min="16" max="72" value="22" step="2">
+          <span class="slider-val" id="fontSizeVal">22px</span>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Effect -->
+      <div class="section">
+        <div class="section-label">Typing Effect</div>
+        <div class="pill-group" id="effectGroup">
+          <button class="pill active" data-effect="classic">Classic</button>
+          <button class="pill" data-effect="fade">Fade</button>
+          <button class="pill" data-effect="slide">Slide Up</button>
+          <button class="pill" data-effect="glitch">Glitch</button>
+          <button class="pill" data-effect="scramble">Scramble</button>
+          <button class="pill" data-effect="blur">Blur</button>
+        </div>
+      </div>
+
+      <!-- Animation mode -->
+      <div class="section">
+        <div class="section-label">Animation mode</div>
+        <div class="pill-group" id="modeGroup">
+          <button class="pill active" data-mode="letter">Letter by letter</button>
+          <button class="pill" data-mode="word">Word by word</button>
+        </div>
+      </div>
+
+      <!-- Cursor style -->
+      <div class="section">
+        <div class="section-label">Cursor</div>
+        <div class="pill-group" id="cursorGroup">
+          <button class="pill active" data-cursor="line">Line</button>
+          <button class="pill" data-cursor="block">Block</button>
+          <button class="pill" data-cursor="under">Under</button>
+          <button class="pill" data-cursor="none">None</button>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Colors -->
+      <div class="section">
+        <div class="section-label">Colors</div>
+        <div class="color-row">
+          <label>Text color</label>
+          <input type="color" id="textColor" value="#e8e6f0">
+        </div>
+        <div class="color-row">
+          <label>Stage background</label>
+          <input type="color" id="bgColor" value="#0a0a0f">
+        </div>
+        <div class="color-row">
+          <label>Cursor / Accent</label>
+          <input type="color" id="accentColor" value="#7c6af7">
+        </div>
+      </div>
+
+      <!-- Theme toggle -->
+      <div class="section">
+        <div class="section-label">Theme</div>
+        <div class="toggle-row">
+          <span class="toggle-label">Light mode</span>
+          <label class="toggle">
+            <input type="checkbox" id="themeToggle">
+            <div class="toggle-track"></div>
+            <div class="toggle-thumb"></div>
+          </label>
+        </div>
+      </div>
+
+    </div><!-- /panel-scroll -->
+
+    <div class="status-bar">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div class="status-dot" id="statusDot"></div>
+        <span class="status-txt" id="statusTxt">READY</span>
+      </div>
+      <span class="status-txt" id="charCount">0 / 0</span>
+    </div>
+  </div><!-- /panel -->
+</div><!-- /app -->
+
+<script>
+/* ─────────────────────────────────────────────
+   TypeCraft — Modular Typing Animation Engine
+───────────────────────────────────────────── */
+
+/* ── State ── */
+const state = {
+  text: '',
+  charIndex: 0,
+  timerId: null,
+  running: false,
+  paused: false,
+  speed: 80,
+  effect: 'classic',
+  cursorStyle: 'line',
+  animationMode: 'letter',
+  tokenIndex: 0,
+  tokens: [],
+  font: "'Instrument Sans', sans-serif",
+  fontSize: 22,
+  textColor: '#e8e6f0',
+  bgColor: '#0a0a0f',
+  accentColor: '#7c6af7',
+  scrambleChars: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*',
+  scrambleMap: {},   // index → timerId for scramble cleanup
+};
+
+/* ── DOM refs ── */
+const $ = id => document.getElementById(id);
+const typingArea  = $('typingArea');
+const customText  = $('customText');
+const btnPlay     = $('btnPlay');
+const btnPause    = $('btnPause');
+const btnReset    = $('btnReset');
+const speedSlider = $('speed');
+const speedVal    = $('speedVal');
+const fontSelect  = $('fontSelect');
+const fontSizeSlider = $('fontSize');
+const fontSizeVal = $('fontSizeVal');
+const modeGroup = $('modeGroup');
+const textColorPicker   = $('textColor');
+const bgColorPicker     = $('bgColor');
+const accentColorPicker = $('accentColor');
+const themeToggle = $('themeToggle');
+const statusDot   = $('statusDot');
+const statusTxt   = $('statusTxt');
+const charCount   = $('charCount');
+const stage       = $('stage');
+const app         = $('app');
+
+/* ── Cursor element (always appended last) ── */
+let cursorEl = null;
+let currentWordEl = null; // tracks active word-group span
+
+function createCursor() {
+  cursorEl = document.createElement('span');
+  cursorEl.className = `cursor ${state.cursorStyle} blinking`;
+  cursorEl.style.background = state.accentColor;
+  return cursorEl;
+}
+
+function ensureCursor() {
+  if (!cursorEl || !cursorEl.parentNode) {
+    typingArea.appendChild(createCursor());
+  }
+}
+
+function updateCursorClass() {
+  if (!cursorEl) return;
+  cursorEl.className = `cursor ${state.cursorStyle} blinking`;
+  cursorEl.style.background = state.accentColor;
+}
+
+/* ── Word-safe insertion (prevents mid-word line breaks) ── */
+function insertIntoArea(el, ch) {
+  if (ch === ' ' || ch === '\n' || ch === '\t') {
+    currentWordEl = null;
+    typingArea.insertBefore(el, cursorEl);
+  } else {
+    if (!currentWordEl) {
+      currentWordEl = document.createElement('span');
+      currentWordEl.className = 'word-group';
+      typingArea.insertBefore(currentWordEl, cursorEl);
+    }
+    currentWordEl.appendChild(el);
+  }
+}
+
+/* ── Render helpers ── */
+function makeChar(ch, effect) {
+  const span = document.createElement('span');
+  span.className = 'char';
+  span.textContent = ch;
+  span.style.color = state.textColor;
+
+  switch (effect) {
+    case 'fade':    span.classList.add('effect-fade');   break;
+    case 'slide':   span.classList.add('effect-slide');  break;
+    case 'glitch':  span.classList.add('effect-glitch'); break;
+    case 'blur':    span.classList.add('effect-blur');   break;
+  }
+  return span;
+}
+
+function updateCharCount() {
+  charCount.textContent = `${state.charIndex} / ${state.text.length}`;
+}
+
+function setStatus(label, active = false) {
+  statusTxt.textContent = label;
+  statusDot.style.background = active ? 'var(--accent)' : 'var(--text-muted)';
+  statusDot.style.boxShadow   = active ? '0 0 6px var(--accent)' : 'none';
+  if (!active) statusDot.style.animation = 'none';
+  else statusDot.style.animation = '';
+}
+
+/* ── Stage appearance ── */
+function applyTypingStyles() {
+  typingArea.style.fontFamily = state.font;
+  typingArea.style.fontSize   = state.fontSize + 'px';
+  typingArea.style.color      = state.textColor;
+  stage.style.background      = state.bgColor;
+  const userBubble = $('userBubble');
+  if (userBubble) {
+    userBubble.style.fontFamily = state.font;
+    userBubble.style.fontSize   = state.fontSize + 'px';
+  }
+}
+
+/* ── Core: advance one character ── */
+function typeNextChar() {
+  if (state.charIndex >= state.text.length) {
+    stopTyping(true);
+    return;
+  }
+
+  const ch = state.text[state.charIndex];
+
+  if (state.effect === 'scramble') {
+    typeScrambleChar(ch, state.charIndex);
+  } else {
+    const el = makeChar(ch, state.effect);
+    insertIntoArea(el, ch);
+  }
+
+  state.charIndex++;
+  updateCharCount();
+
+  const jitter = state.speed > 60 ? Math.random() * 30 - 15 : 0;
+  state.timerId = setTimeout(typeNextChar, Math.max(10, state.speed + jitter));
+}
+
+/* ── Scramble effect ── */
+function typeScrambleChar(finalChar, idx) {
+  const el = document.createElement('span');
+  el.className = 'char';
+  el.style.color = state.accentColor;
+  insertIntoArea(el, finalChar);
+
+  if (finalChar === ' ' || finalChar === '\n') {
+    el.textContent = finalChar;
+    el.style.color = state.textColor;
+    return;
+  }
+
+  let iterations = 0;
+  const maxIter = 6;
+  const id = setInterval(() => {
+    el.textContent = state.scrambleChars[Math.floor(Math.random() * state.scrambleChars.length)];
+    iterations++;
+    if (iterations >= maxIter) {
+      clearInterval(id);
+      el.textContent = finalChar;
+      el.style.color = state.textColor;
+    }
+  }, state.speed * 0.6);
+
+  state.scrambleMap[idx] = id;
+}
+
+/* ── Playback controls ── */
+function startTyping() {
+  if (state.running && !state.paused) return;
+
+  state.text = customText.value || '';
+  if (!state.text) return;
+
+  if (!state.paused) {
+    clearTypingArea();
+    state.charIndex = 0;
+    state.tokenIndex = 0;
+    state.tokens = state.animationMode === 'word'
+      ? Array.from(state.text.match(/(\S+\s*)/g) || [state.text])
+      : [];
+    ensureCursor();
+  }
+
+  state.running = true;
+  state.paused  = false;
+  setStatus('TYPING', true);
+  btnPlay.textContent = '▶ Play';
+
+  typeNextStep();
+}
+
+function typeNextStep() {
+  if (state.animationMode === 'word') {
+    typeNextWord();
+  } else {
+    typeNextChar();
+  }
+}
+
+function typeNextWord() {
+  if (state.tokenIndex >= state.tokens.length) {
+    stopTyping(true);
+    return;
+  }
+
+  const word = state.tokens[state.tokenIndex];
+  const el = makeChar(word, state.effect);
+  typingArea.insertBefore(el, cursorEl);
+
+  state.charIndex += word.length;
+  state.tokenIndex += 1;
+  updateCharCount();
+
+  const jitter = state.speed > 60 ? Math.random() * 30 - 15 : 0;
+  state.timerId = setTimeout(typeNextStep, Math.max(10, state.speed + jitter));
+}
+
+function pauseTyping() {
+  if (!state.running || state.paused) return;
+  clearTimeout(state.timerId);
+  state.paused = true;
+  setStatus('PAUSED');
+}
+
+function stopTyping(finished = false) {
+  clearTimeout(state.timerId);
+  // cleanup any scramble intervals
+  Object.values(state.scrambleMap).forEach(id => clearInterval(id));
+  state.scrambleMap = {};
+  state.running = false;
+  state.paused  = false;
+  setStatus(finished ? 'DONE' : 'READY');
+}
+
+function resetTyping() {
+  stopTyping(false);
+  clearTypingArea();
+  state.charIndex = 0;
+  updateCharCount();
+  ensureCursor();
+  setStatus('READY');
+}
+
+function clearTypingArea() {
+  typingArea.innerHTML = '';
+  cursorEl = null;
+  currentWordEl = null;
+}
+
+/* ── Event listeners ── */
+btnPlay.addEventListener('click', startTyping);
+btnPause.addEventListener('click', pauseTyping);
+btnReset.addEventListener('click', resetTyping);
+
+speedSlider.addEventListener('input', () => {
+  state.speed = +speedSlider.value;
+  // invert: lower value = faster
+  speedVal.textContent = state.speed + 'ms';
+});
+
+fontSelect.addEventListener('change', () => {
+  state.font = fontSelect.value;
+  applyTypingStyles();
+});
+
+fontSizeSlider.addEventListener('input', () => {
+  state.fontSize = +fontSizeSlider.value;
+  fontSizeVal.textContent = state.fontSize + 'px';
+  applyTypingStyles();
+});
+
+// Effect pills
+$('effectGroup').addEventListener('click', e => {
+  const btn = e.target.closest('.pill');
+  if (!btn) return;
+  $('effectGroup').querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  state.effect = btn.dataset.effect;
+});
+
+// Animation mode pills
+modeGroup.addEventListener('click', e => {
+  const btn = e.target.closest('.pill');
+  if (!btn) return;
+  modeGroup.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  state.animationMode = btn.dataset.mode;
+});
+
+// Cursor pills
+$('cursorGroup').addEventListener('click', e => {
+  const btn = e.target.closest('.pill');
+  if (!btn) return;
+  $('cursorGroup').querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  state.cursorStyle = btn.dataset.cursor;
+  updateCursorClass();
+});
+
+// Colors
+textColorPicker.addEventListener('input', () => {
+  state.textColor = textColorPicker.value;
+  document.querySelectorAll('.char').forEach(el => el.style.color = state.textColor);
+  if (cursorEl) cursorEl.style.background = state.accentColor;
+});
+
+bgColorPicker.addEventListener('input', () => {
+  state.bgColor = bgColorPicker.value;
+  stage.style.background = state.bgColor;
+});
+
+accentColorPicker.addEventListener('input', () => {
+  state.accentColor = accentColorPicker.value;
+  document.documentElement.style.setProperty('--accent', state.accentColor);
+  document.documentElement.style.setProperty('--accent2', state.accentColor);
+  document.documentElement.style.setProperty('--cursor-color', state.accentColor);
+  if (cursorEl) cursorEl.style.background = state.accentColor;
+});
+
+// Theme toggle (light/dark)
+themeToggle.addEventListener('change', () => {
+  const light = themeToggle.checked;
+  app.classList.toggle('light-mode', light);
+
+  if (light) {
+    state.bgColor   = '#f4f3fa';
+    state.textColor = '#1a1730';
+    bgColorPicker.value   = '#f4f3fa';
+    textColorPicker.value = '#1a1730';
+    stage.style.background = state.bgColor;
+  } else {
+    state.bgColor   = '#0a0a0f';
+    state.textColor = '#e8e6f0';
+    bgColorPicker.value   = '#0a0a0f';
+    textColorPicker.value = '#e8e6f0';
+    stage.style.background = state.bgColor;
+  }
+
+  // update existing chars
+  document.querySelectorAll('.char').forEach(el => el.style.color = state.textColor);
+});
+
+/* ── Keyboard shortcut: Space to play/pause ── */
+document.addEventListener('keydown', e => {
+  if (e.target === customText) return;
+  if (e.code === 'Space') {
+    e.preventDefault();
+    state.running && !state.paused ? pauseTyping() : startTyping();
+  }
+  if (e.code === 'KeyR' && (e.metaKey || e.ctrlKey)) {
+    e.preventDefault(); resetTyping();
+  }
+});
+
+/* ── Init ── */
+(function init() {
+  applyTypingStyles();
+  ensureCursor();
+  updateCharCount();
+  setStatus('READY');
+
+  // Animate the placeholder text on load
+  setTimeout(() => {
+    startTyping();
+  }, 600);
+})();
+</script>
+</body>
+</html>

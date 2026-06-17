@@ -1,0 +1,420 @@
+[
+  {
+    "id": 1,
+    "image": "https://x-stg-tv.glance-cdn.com/public/glancetv/studio/media/36db1980-62cb-45eb-abb2-951f2620b9f1.webp",
+    "headline": "The Coorgi Coffee Ritual",
+    "caption": "A slow drip method that turns a simple coffee break into a mindful pause",
+    "category": "Culture",
+    "subCategory": "South Indian Culinary Traditions",
+    "reasoning": {
+      "L1": "Strong cold-start card for Bangalore because filter coffee is culturally local, morning-relevant, and immediately understandable on its own.",
+      "L2": "Your history leans toward mindful pauses, South Indian food culture, and premium everyday rituals, so this coffee card fits a pattern already visible in your engagement.",
+      "L3": "Your household fit strengthens this: it is a premium-but-grounded ritual that works for a Bangalore home morning, not a random food card."
+    },
+    "evidencePill": {
+      "L1": "Context only",
+      "L2": "From your history",
+      "L3": "Household fit"
+    },
+    "cta": "Find Near You"
+  },
+  {
+    "id": 2,
+    "image": "https://x-stg-tv.glance-cdn.com/public/glancetv/studio/media/9396f55c-e4c7-46a1-a363-6bbb575e419d.webp",
+    "headline": "The Smart Desk, Seamless",
+    "caption": "Ergonomics and tech so integrated you don't even notice it's there",
+    "category": "Tech",
+    "subCategory": "Contemporary Indian Workspace Innovation",
+    "reasoning": {
+      "L1": "Works in cold start because Bangalore has a strong hybrid-work context, and this card is useful, visual, and action-oriented for a weekday morning.",
+      "L2": "You have shown interest in productivity and home-workspace upgrades, so a smart desk is relevant as a practical improvement, not just décor.",
+      "L3": "Household context makes this stronger: a home that invests in better work and study spaces is likely to find this useful and purchase-relevant."
+    },
+    "evidencePill": {
+      "L1": "Context only",
+      "L2": "From your history",
+      "L3": "Household fit"
+    },
+    "cta": "Explore More"
+  },
+  {
+    "id": 3,
+    "image": "https://x-stg-tv.glance-cdn.com/public/glancetv/studio/media/c50a8e9e-a8bc-4f9b-b1dc-5ff605246574.webp",
+    "headline": "Your Smart Coffee Machine",
+    "caption": "It remembers how you like your coffee, even when you don't",
+    "category": "Culinary",
+    "subCategory": "Modern Indian Culinary Technology",
+    "reasoning": {
+      "L1": "Good Bangalore morning card because coffee, convenience, and home tech all fit the city's weekday rhythm without needing personal data.",
+      "L2": "Your engagement with coffee rituals and useful home technology makes this feel like a natural next card after food and productivity content.",
+      "L3": "Enriched fit is stronger because this is a premium home appliance decision for a household that values convenience, routine, and better mornings."
+    },
+    "evidencePill": {
+      "L1": "Context only",
+      "L2": "From your history",
+      "L3": "Household fit"
+    },
+    "cta": "Explore More"
+  },
+  {
+    "id": 4,
+    "image": "https://x-stg-tv.glance-cdn.com/public/glancetv/studio/media/196f8ba7-c203-4990-b6a2-5b932351b15a.webp",
+    "headline": "Iwagumi, The Living Art",
+    "caption": "A minimalist underwater garden that brings a deep sense of calm to your desk",
+    "category": "Hobbies",
+    "subCategory": "Biophilic Design & Urban Home Hobbies",
+    "reasoning": {
+      "L1": "Cold start fit comes from Bangalore's apartment-living and indoor-greenery context; this is calm, visual, and suitable for a weekday discovery slot.",
+      "L2": "You spend time on home, plants, and mindful hobby content, so this aquascape card fits your quieter lifestyle-upgrade pattern.",
+      "L3": "Household context adds relevance: a premium urban home with interest in calming interiors makes this more than a hobby card."
+    },
+    "evidencePill": {
+      "L1": "Context only",
+      "L2": "From your history",
+      "L3": "Household fit"
+    },
+    "cta": "Explore More"
+  },
+  {
+    "id": 5,
+    "image": "https://x-stg-tv.glance-cdn.com/public/glancetv/studio/media/67ef82e7-4bc1-4c47-9fcc-8e3d7e9acb59.webp",
+    "headline": "The Perfect Retro Corner",
+    "caption": "That dedicated space where the classics feel brand new again",
+    "category": "Entertainment",
+    "subCategory": "Urban Indian Retro-Gaming Revival",
+    "reasoning": {
+      "L1": "Broad-interest cold-start card because retro gaming is easy to understand on TV, visually distinctive, and fun without personalisation.",
+      "L2": "Your history shows interest in thoughtful leisure and home experiences, so this works as a nostalgic entertainment setup rather than generic gaming content.",
+      "L3": "Enriched context helps because a family household can use this as a shared living-room idea, making it a better fit for the TV surface."
+    },
+    "evidencePill": {
+      "L1": "Context only",
+      "L2": "From your history",
+      "L3": "Household fit"
+    },
+    "cta": "Explore More"
+  },
+  {
+    "id": 6,
+    "image": "https://x-stg-tv.glance-cdn.com/public/glancetv/studio/media/b420d8e3-19a7-47cb-9c8d-99d133078b39.webp",
+    "headline": "The Lost Art Of Bidriware",
+    "caption": "This 14th-century Persian craft uses Indian soil to create its signature black",
+    "category": "Culture",
+    "subCategory": "Indian Artistic Heritage",
+    "reasoning": {
+      "L1": "Strong cold-start placement because Bidriware is a specific Indian craft signal, giving the feed local depth instead of generic culture.",
+      "L2": "You engage with Indian craft and heritage content, so this earns placement as a precise cultural discovery, not a decorative visual.",
+      "L3": "Household fit makes it stronger as a premium craft and gifting or home accent idea that aligns with a culturally curious Bangalore household."
+    },
+    "evidencePill": {
+      "L1": "Context only",
+      "L2": "From your history",
+      "L3": "Household fit"
+    },
+    "cta": "Find Near You"
+  },
+  {
+    "id": 7,
+    "image": "https://x-stg-tv.glance-cdn.com/public/glancetv/studio/media/27634a69-5cef-47b8-86f8-a4d9753b36ef.webp",
+    "headline": "The Vinyl Collecting Ritual",
+    "caption": "It's not about the playlist, it's about the one record you can't find anywhere else",
+    "category": "Hobbies",
+    "subCategory": "Urban Retreats for Music Lovers",
+    "reasoning": {
+      "L1": "Works cold because it is a clear lifestyle object with visual appeal and a slow-living mood that suits ambient TV browsing.",
+      "L2": "Your interaction history points to books, music, and intentional hobbies, so vinyl collecting fits the same reflective leisure pattern.",
+      "L3": "Enriched fit adds purchase and home-lifestyle relevance: this is a premium hobby object that can become part of the home environment."
+    },
+    "evidencePill": {
+      "L1": "Context only",
+      "L2": "From your history",
+      "L3": "Household fit"
+    },
+    "cta": "Explore More"
+  },
+  {
+    "id": 8,
+    "image": "https://x-stg-tv.glance-cdn.com/public/glancetv/studio/media/048567ca-3504-4e95-a6a1-72fd9ae70369.webp",
+    "headline": "Think On The Kindle Scribe",
+    "caption": "The first digital reader that feels like writing on real paper",
+    "category": "Tech",
+    "subCategory": "Elevated Digital Reading & Personal Annotation",
+    "reasoning": {
+      "L1": "Cold-start relevance comes from Bangalore's knowledge-work context: reading, notes, and productivity are useful weekday themes.",
+      "L2": "Reading and productivity tools are a consistent thread in your engagement, so this is not a gadget for its own sake; it supports how you think and work.",
+      "L3": "Household context improves the match because a tech-forward home with work and learning needs has a clear use case for a digital reading and note-taking device."
+    },
+    "evidencePill": {
+      "L1": "Context only",
+      "L2": "From your history",
+      "L3": "Household fit"
+    },
+    "cta": "Explore More"
+  },
+  {
+    "id": 9,
+    "image": "https://x-stg-tv.glance-cdn.com/public/glancetv/studio/media/eb5749a2-39ea-4e24-b609-d8af58174a61.webp",
+    "headline": "An Ayurvedic Bath Ritual",
+    "caption": "Herbal salts in a copper bowl, a simple way to reset the afternoon",
+    "category": "Wellness",
+    "subCategory": "Holistic Wellness & Ancient Indian Rituals",
+    "reasoning": {
+      "L1": "Good cold-start wellness card because it is Indian, calming, and easy to act on during a morning routine without requiring user data.",
+      "L2": "Your wellness engagement leans toward practical recovery and routine-building, so this bath ritual fits as a restorative habit, not generic self-care.",
+      "L3": "Enriched context makes it stronger: a health-oriented household is more likely to value a premium, traditional wellness upgrade."
+    },
+    "evidencePill": {
+      "L1": "Context only",
+      "L2": "From your history",
+      "L3": "Household fit"
+    },
+    "cta": "Start This Routine"
+  },
+  {
+    "id": 10,
+    "image": "https://x-stg-tv.glance-cdn.com/public/glancetv/studio/media/780d6894-726f-4d8c-8349-3a9d719311d4.webp",
+    "headline": "Ride The Nandi Hills Ascent",
+    "caption": "The classic Bangalore weekend ride that tests your legs and rewards your eyes",
+    "category": "Sports",
+    "subCategory": "Karnataka Cycling Escapades",
+    "reasoning": {
+      "L1": "Strong Bangalore cold-start card because Nandi Hills is nearby, specific, and actionable; it is a real weekend plan, not generic sports imagery.",
+      "L2": "You engage with fitness and outdoor challenge content, so this ride fits your performance and weekend-adventure pattern.",
+      "L3": "Household data strengthens the planning angle: short-drive, active escapes from Bangalore match a family that values fitness and local experiences."
+    },
+    "evidencePill": {
+      "L1": "Context only",
+      "L2": "From your history",
+      "L3": "Household fit"
+    },
+    "cta": "Explore More"
+  },
+  {
+    "id": 11,
+    "image": "https://x-stg-tv.glance-cdn.com/public/glancetv/studio/media/1120ff11-b608-46c1-b254-9b5a37ed375b.webp",
+    "headline": "Lunch At Karavalli",
+    "caption": "A taste of the coast, served right in the heart of Bangalore",
+    "category": "Restaurants",
+    "subCategory": "South Indian Culinary Heritage",
+    "reasoning": {
+      "L1": "Cold-start fit is high because Karavalli is a known Bangalore dining destination with clear local relevance and a direct action.",
+      "L2": "Your food engagement is local, vegetarian-aware, and quality-led, so this restaurant card is a better match than generic cuisine content.",
+      "L3": "Enriched fit adds household dining relevance: premium, family-plannable, vegetarian-friendly restaurant discovery is a strong match."
+    },
+    "evidencePill": {
+      "L1": "Context only",
+      "L2": "From your history",
+      "L3": "Household fit"
+    },
+    "cta": "Explore More"
+  },
+  {
+    "id": 12,
+    "image": "https://x-stg-tv.glance-cdn.com/public/glancetv/studio/media/0ccb17d2-a7db-4686-9187-9d404dc91514.webp",
+    "headline": "The Bangalore Palace Facade",
+    "caption": "A corner of England's Windsor Castle, recreated in the heart of South India",
+    "category": "Architecture",
+    "subCategory": "Iconic Indian Royal Architecture",
+    "reasoning": {
+      "L1": "Cold-start placement is justified by landmark specificity; Bangalore Palace gives the feed local identity and an easy discovery action.",
+      "L2": "You engage more with local heritage than abstract culture, so this card works because it is recognizable, nearby, and visitable.",
+      "L3": "Household context adds family outing value: a landmark visit is easy to plan, culturally useful, and suitable for a shared weekend."
+    },
+    "evidencePill": {
+      "L1": "Context only",
+      "L2": "From your history",
+      "L3": "Household fit"
+    },
+    "cta": "Explore More"
+  },
+  {
+    "id": 13,
+    "image": "https://x-stg-tv.glance-cdn.com/public/glancetv/studio/media/2bd46fe3-ded3-4e0d-b271-7daff1d69d4c.webp",
+    "headline": "Frame A Moment In Hoop Art",
+    "caption": "Turning a quiet afternoon into a small, beautiful piece of personal art",
+    "category": "Hobbies",
+    "subCategory": "Mindful Domestic Arts & Craftsmanship",
+    "reasoning": {
+      "L1": "Cold-start fit comes from the craft being visual, calm, and easy to understand on TV; it adds variety beyond food and travel.",
+      "L2": "Mindful, hands-on hobby content shows up repeatedly in your dwell patterns, so hoop art fits your slower creative interest pattern.",
+      "L3": "Enriched context improves relevance because a family home with creative interests can treat this as a weekend activity or décor idea."
+    },
+    "evidencePill": {
+      "L1": "Context only",
+      "L2": "From your history",
+      "L3": "Household fit"
+    },
+    "cta": "Explore More"
+  },
+  {
+    "id": 14,
+    "image": "https://x-stg-tv.glance-cdn.com/public/glancetv/studio/media/36429fde-8e2f-4b6a-a38f-9bbe36848eff.webp",
+    "headline": "A Cubbon Park Chess Game",
+    "caption": "The city fades away and only the next move matters",
+    "category": "Hobbies",
+    "subCategory": "Mindfulness & Strategic Leisure",
+    "reasoning": {
+      "L1": "Strong cold-start Bangalore card because Cubbon Park plus chess is local, social, and specific rather than a generic leisure image.",
+      "L2": "Your profile shows interest in thoughtful games and meaningful leisure, so this card fits as a strategic, low-effort weekend idea.",
+      "L3": "Household context makes it even stronger: it can be a parent-child activity, a park outing, and a mental-fitness moment in one."
+    },
+    "evidencePill": {
+      "L1": "Context only",
+      "L2": "From your history",
+      "L3": "Household fit"
+    },
+    "cta": "Explore More"
+  },
+  {
+    "id": 15,
+    "image": "https://x-stg-tv.glance-cdn.com/public/glancetv/studio/media/a11380c0-3f70-467b-b6e1-1e1d6e2f8038.webp",
+    "headline": "A Smart Sensor For Plants",
+    "caption": "It tells you exactly when to water, so you never have to guess again",
+    "category": "Tech",
+    "subCategory": "Urban Biophilic Tech Innovations",
+    "reasoning": {
+      "L1": "Balcony-and-apartment greenery is a strong Bangalore urban pattern, and pairing it with a practical smart-home action makes this immediately useful without any user data.",
+      "L2": "You engage with plants, home tech, and practical upgrades, so a plant sensor fits at the intersection of your interests.",
+      "L3": "Enriched profile strengthens the fit because this is a small, practical premium purchase for a household that invests in the home."
+    },
+    "evidencePill": {
+      "L1": "Context only",
+      "L2": "From your history",
+      "L3": "Household fit"
+    },
+    "cta": "Explore More"
+  },
+  {
+    "id": 16,
+    "image": "https://x-stg-tv.glance-cdn.com/public/glancetv/studio/media/c7f2822d-351d-4748-a45e-835374da1974.webp",
+    "headline": "The MTR Rava Idli Ritual",
+    "caption": "The one dish that defines Bangalore's old-school tiffin culture",
+    "category": "Restaurants",
+    "subCategory": "Iconic South Indian Culinary Destinations",
+    "reasoning": {
+      "L1": "Excellent cold-start card because MTR and rava idli are unmistakably Bangalore; the timing also fits a morning food moment.",
+      "L2": "Your food engagement favors local, vegetarian, specific dining experiences, so this is much stronger than a generic breakfast visual.",
+      "L3": "Household fit is strong because it is family-friendly, vegetarian, iconic, and easy to act on for a Bangalore morning."
+    },
+    "evidencePill": {
+      "L1": "Context only",
+      "L2": "From your history",
+      "L3": "Household fit"
+    },
+    "cta": "Explore More"
+  },
+  {
+    "id": 17,
+    "image": "https://x-stg-tv.glance-cdn.com/public/glancetv/studio/media/5bfddea0-2064-492d-86ec-05e463fb1fe5.webp",
+    "headline": "Stay At The Paul, Bangalore",
+    "caption": "Where classic European architecture meets quiet Bangalore luxury",
+    "category": "Luxury",
+    "subCategory": "Indian Luxury Hospitality Interiors",
+    "reasoning": {
+      "L1": "Cold-start placement works because it is a named local premium staycation, giving Bangalore users a concrete weekend option.",
+      "L2": "You interact with premium local experiences and short-break ideas, so this staycation card fits without forcing a long-trip plan.",
+      "L3": "The household fit sharpens this considerably: family planning needs and premium-but-practical intent make a named city staycation far more actionable than a generic hotel card."
+    },
+    "evidencePill": {
+      "L1": "Context only",
+      "L2": "From your history",
+      "L3": "Household fit"
+    },
+    "cta": "Explore More"
+  },
+  {
+    "id": 18,
+    "image": "https://x-stg-tv.glance-cdn.com/public/glancetv/studio/media/f1457189-f4df-4388-a242-02b686041546.webp",
+    "headline": "Eat At Toast And Tonic",
+    "caption": "Where every plate is a work of art assembled right before your eyes",
+    "category": "Restaurants",
+    "subCategory": "Bangalore's Modern Culinary Excellence",
+    "reasoning": {
+      "L1": "A named Bangalore restaurant with a clear dining action earns cold-start placement; this is local discovery, not food wallpaper.",
+      "L2": "Your food interactions suggest interest in quality-led dining and modern Bangalore restaurants, making this a strong warm-start placement.",
+      "L3": "Enriched fit adds occasion planning: a premium, family or couple-friendly dining profile makes this restaurant more actionable."
+    },
+    "evidencePill": {
+      "L1": "Context only",
+      "L2": "From your history",
+      "L3": "Household fit"
+    },
+    "cta": "Explore More"
+  },
+  {
+    "id": 19,
+    "image": "https://x-stg-tv.glance-cdn.com/public/glancetv/studio/media/46eaa74b-d7e5-4a74-92d7-4435a04131f9.webp",
+    "headline": "The Cryotherapy Upgrade",
+    "caption": "Three minutes of intense cold that can reset your entire week's recovery",
+    "category": "Wellness",
+    "subCategory": "Futuristic Urban Wellness in India",
+    "reasoning": {
+      "L1": "Cold-start fit is moderate but defensible because Bangalore has a growing premium wellness market and this card is clearly actionable.",
+      "L2": "Your wellness engagement includes recovery and performance themes, so cryotherapy is relevant as an upgrade, not generic inspiration.",
+      "L3": "Enriched context improves the match because a health-conscious, premium household is more likely to evaluate advanced wellness services."
+    },
+    "evidencePill": {
+      "L1": "Context only",
+      "L2": "From your history",
+      "L3": "Household fit"
+    },
+    "cta": "Start This Routine"
+  },
+  {
+    "id": 20,
+    "image": "https://x-stg-tv.glance-cdn.com/public/glancetv/studio/media/a70ad0bc-2bfd-4109-bf28-486bdcf874d9.webp",
+    "headline": "The Art Of Mysore Silk",
+    "caption": "This royal fabric is still woven by hand, one golden thread at a time",
+    "category": "Culture",
+    "subCategory": "Indian Textile Heritage",
+    "reasoning": {
+      "L1": "Strong cold-start culture card because Mysore silk is locally resonant, visually rich, and specific to Karnataka heritage.",
+      "L2": "Your history favors Indian craft and quality-led style, so this card connects culture with wearable premium taste.",
+      "L3": "A culturally rooted household with occasion wear, gifting, and heritage shopping intent makes this a precise match, not a decorative culture card."
+    },
+    "evidencePill": {
+      "L1": "Context only",
+      "L2": "From your history",
+      "L3": "Household fit"
+    },
+    "cta": "Find Near You"
+  },
+  {
+    "id": 21,
+    "image": "https://x-stg-tv.glance-cdn.com/public/glancetv/studio/media/eba979ae-7763-4036-9ec4-4a83be324f81.webp",
+    "headline": "The Pomodoro Timer Edit",
+    "caption": "Twenty-five minutes of pure, uninterrupted focus, powered by sand, not software",
+    "category": "Productivity",
+    "subCategory": "Mindful Productivity in India's Tech Hubs",
+    "reasoning": {
+      "L1": "Bangalore's workday productivity culture makes this a natural morning card; it is a concrete focus tool, not ambient decor.",
+      "L2": "Productivity and focus tools are consistent with your engagement pattern, so this fits your work rhythm rather than being generic self-help.",
+      "L3": "Household context adds utility because focus tools can support both work and study routines inside a busy home."
+    },
+    "evidencePill": {
+      "L1": "Context only",
+      "L2": "From your history",
+      "L3": "Household fit"
+    },
+    "cta": "Explore More"
+  },
+  {
+    "id": 22,
+    "image": "https://x-stg-tv.glance-cdn.com/public/glancetv/studio/media/369a7a43-5150-4c60-b14d-5d9e1557b76f.webp",
+    "headline": "The Konkan Vintage Drive",
+    "caption": "The only sound is the classic engine and the waves of the Arabian Sea",
+    "category": "Auto",
+    "subCategory": "Coastal Grandeur: India's Classic Drives",
+    "reasoning": {
+      "L1": "A scenic, specific road-trip that is plausible from Bangalore earns its place here; it is a real weekend plan, not generic coastal imagery.",
+      "L2": "You engage with short-drive escapes and distinctive experiences, so a vintage Konkan drive fits your travel pattern better than generic beach content.",
+      "L3": "Enriched context sharpens it further: it is a family-plannable premium road trip that aligns with household mobility and weekend travel intent."
+    },
+    "evidencePill": {
+      "L1": "Context only",
+      "L2": "From your history",
+      "L3": "Household fit"
+    },
+    "cta": "Explore More"
+  }
+]

@@ -1,0 +1,33 @@
+{
+  "version": "1.0-fallback",
+  "setup": [
+    {
+      "id": "q-setup-scenario",
+      "surface": "setup",
+      "select": "single",
+      "prompt": "Which Sunday feels like yours?",
+      "options": [
+        { "id": "slow-morning", "label": "Slow Morning", "image": "/images/q3/q3-01-keep-it-close-to-what-i-love.jpg", "confirmationText": "More slow-living moments coming up.", "mapping": [{ "token": "cat:home", "delta": 2 }, { "token": "vibe:calm", "delta": 2 }, { "token": "vibe:slow", "delta": 2 }] },
+        { "id": "forest-trail", "label": "Forest Trail", "image": "/images/q3/q3-02-mix-in-some-fresh-ideas.jpg", "confirmationText": "More calm nature coming up.", "mapping": [{ "token": "cat:travel", "delta": 2 }, { "token": "vibe:nature-led", "delta": 2 }, { "token": "vibe:calm", "delta": 2 }] },
+        { "id": "social-brunch", "label": "Social Brunch", "image": "/images/q3/q3-03-surprise-me-sometimes.jpg", "confirmationText": "More food and social energy coming up.", "mapping": [{ "token": "cat:food", "delta": 2 }, { "token": "vibe:warm", "delta": 2 }, { "token": "vibe:social", "delta": 2 }] },
+        { "id": "city-lights", "label": "City Lights", "image": "/images/feed/feed_23-food-neon-night-market.jpg", "confirmationText": "More city energy coming up.", "mapping": [{ "token": "cat:entertainment", "delta": 2 }, { "token": "vibe:neon", "delta": 2 }, { "token": "vibe:urban", "delta": 2 }] }
+      ]
+    },
+    {
+      "id": "q-setup-discovery",
+      "surface": "setup",
+      "select": "single",
+      "prompt": "How adventurous should your Glance feed be?",
+      "options": [
+        { "id": "familiar", "label": "Keep it familiar", "confirmationText": "Starting with what you love.", "mapping": [{ "token": "discovery:low", "delta": 1 }] },
+        { "id": "related",  "label": "Mix in related ideas", "confirmationText": "Mixing in nearby worlds.", "mapping": [{ "token": "discovery:mix", "delta": 1 }] },
+        { "id": "surprise", "label": "Surprise me sometimes", "confirmationText": "Mixing in something new.", "mapping": [{ "token": "discovery:high", "delta": 1 }] }
+      ]
+    }
+  ],
+  "interstitials": [],
+  "tagLabels": {
+    "cat:travel": "travel", "cat:food": "food", "cat:home": "home",
+    "vibe:calm": "calm moments", "vibe:warm": "warm tones", "vibe:social": "social energy"
+  }
+}

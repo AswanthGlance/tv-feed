@@ -1,0 +1,64 @@
+{
+  "name": null,
+  "city": "Bangalore",
+  "user_summary": "A Bangalore creative professional with an understated, design-forward streak — into neutral tailoring, specialty coffee, weekend art spaces and quiet city corners.",
+  "profession": "Design/Creative Professional",
+  "preferences": [
+    "fashion",
+    "culture",
+    "food",
+    "social"
+  ],
+  "fashion_palette": [
+    "Stone",
+    "Off-white",
+    "Olive",
+    "Charcoal"
+  ],
+  "fashion_brands": [
+    "Nicobar",
+    "Fabindia",
+    "Bhaane",
+    "Uniqlo"
+  ],
+  "venues": [
+    "Specialty coffee roasteries",
+    "Art galleries",
+    "Design studios",
+    "Quiet wine bars"
+  ],
+  "hobbies": [
+    "Design & aesthetics",
+    "Coffee culture",
+    "Art & exhibitions"
+  ],
+  "occasions": [
+    "Creative workplace",
+    "Weekend art outings",
+    "Evening social"
+  ],
+  "past_activity": [
+    {
+      "action": "browsed",
+      "topic": "neutral linen co-ords",
+      "category": "Fashion"
+    },
+    {
+      "action": "saved",
+      "topic": "a new specialty coffee roastery",
+      "category": "Food"
+    },
+    {
+      "action": "clicked",
+      "topic": "a weekend gallery show",
+      "category": "Culture",
+      "count": 2
+    }
+  ],
+  "signals": {
+    "timeOfDay": "evening",
+    "weather": "cloudy",
+    "day": "Saturday"
+  },
+  "data_quality": "sparse"
+}
