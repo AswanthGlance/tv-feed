@@ -307,19 +307,33 @@ export default function WarmProfile1CinematicL0({
       {/* Persistent prev-image layer — fades out during crossdissolve */}
       <div ref={prevImageRef} style={{
         position: 'absolute', inset: 0,
-        backgroundImage: `url(${prevImage})`,
-        backgroundSize: 'cover', backgroundPosition: 'center 32%',
+        overflow: 'hidden',
         zIndex: 0,
-      }} />
+      }}>
+        <img src={prevImage} style={{
+          position: 'absolute', inset: 0,
+          width: '100%', height: '100%',
+          objectFit: 'cover', objectPosition: 'center 32%',
+          willChange: 'transform',
+          imageRendering: 'auto',
+        }} />
+      </div>
 
       {/* BG */}
       <div ref={bgRef} style={{
         position: 'absolute', inset: 0,
-        backgroundImage: `url(${item.image})`,
-        backgroundSize: 'cover', backgroundPosition: 'center 32%',
+        overflow: 'hidden',
         willChange: 'transform, opacity',
         zIndex: 1,
-      }} />
+      }}>
+        <img src={item.image} style={{
+          position: 'absolute', inset: 0,
+          width: '100%', height: '100%',
+          objectFit: 'cover', objectPosition: 'center 32%',
+          willChange: 'transform',
+          imageRendering: 'auto',
+        }} />
+      </div>
 
       {/* OVERLAY */}
       <div ref={overlayRef} style={{

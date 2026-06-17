@@ -251,7 +251,7 @@ export const WARM_PROFILE_2_FEED_ITEMS: FeedItem[] = [
   {
     id: 'wp2-pour-over',
     image: '/images/cold-start/taste-pour-over.webp',
-    title: 'Get Your Pour-Over Right',
+    title: 'Get Your Pour Over Right',
     subtitle: '',
     locationLabel: 'Coffee · Technique',
     market: ['india'],
