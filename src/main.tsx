@@ -54,6 +54,7 @@ const isL1Templates   = window.location.pathname === '/L1_templates'
                      || window.location.pathname.startsWith('/L1_templates');
 const isL0Lab         = window.location.pathname === '/l0_experiment'
                      || new URLSearchParams(window.location.search).has('l0_experiment');
+const isSetup         = window.location.pathname === '/setup';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -72,6 +73,7 @@ createRoot(document.getElementById('root')!).render(
      isT3           ? <T3App /> :
      isL1Templates  ? <L1TemplatesApp /> :
      isL0Lab        ? <L0AnimationLabApp /> :
+     isSetup        ? <App /> :
                       <App />}
   </StrictMode>,
 )
