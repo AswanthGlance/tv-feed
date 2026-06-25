@@ -23,6 +23,7 @@ import WarmProfile1CrispApp from './WarmProfile1CrispApp'
 import WarmProfile1CrisperApp from './WarmProfile1CrisperApp'
 import WarmProfile2CrispApp from './WarmProfile2CrispApp'
 import ColdProfile1App from './ColdProfile1App'
+import L0T1App from './L0T1App'
 
 declare global { interface Window { __L0_PREVIEW__?: string; __BEAM_POC__?: boolean; __INTERSTITIAL_PREVIEW__?: boolean; __L0_EXPORT__?: boolean } }
 
@@ -55,6 +56,8 @@ const isL1Templates   = window.location.pathname === '/L1_templates'
 const isL0Lab         = window.location.pathname === '/l0_experiment'
                      || new URLSearchParams(window.location.search).has('l0_experiment');
 const isSetup         = window.location.pathname === '/setup';
+const isL0T1          = window.location.pathname === '/l0_t1'
+                     || window.location.pathname === '/l0-t1';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -73,7 +76,8 @@ createRoot(document.getElementById('root')!).render(
      isT3           ? <T3App /> :
      isL1Templates  ? <L1TemplatesApp /> :
      isL0Lab        ? <L0AnimationLabApp /> :
-     isSetup        ? <App /> :
+     isSetup        ? <App warmFeedMode /> :
+     isL0T1         ? <L0T1App /> :
                       <App />}
   </StrictMode>,
 )

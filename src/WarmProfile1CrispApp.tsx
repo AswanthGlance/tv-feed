@@ -315,13 +315,13 @@ export default function WarmProfile1CrispApp() {
               interactionFollowUpsToday={interactionFollowUpsToday}
               onOpenDataPanel={() => {}}
               toast={toast}
-              renderL0={(item, paused, onCTAClick) => (
+              renderL0={(item, paused) => (
                 <WarmProfile1CrispL0Glance
                   key={item.id}
                   item={item}
                   profile={profile}
                   paused={paused}
-                  onCTAClick={onCTAClick}
+                  onCTAClick={() => {}}
                   onTimelineComplete={handleTimelineComplete}
                 />
               )}

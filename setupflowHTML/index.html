@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1920" />
+  <title>Glance — Setup Flow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Instrument+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- ── 1920×1080 Stage ──────────────────────────────────────────────────── -->
+<div id="stage">
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       SCREEN 0 — WELCOME
+  ═══════════════════════════════════════════════════════════════════════ -->
+  <div id="screen-welcome" class="fg-screen" data-step="welcome">
+    <div class="fg-bg-glow"></div>
+
+    <!-- Logo -->
+    <div class="fg-brand">
+      <img src="assets/logo/glance-logo.png" class="fg-logo-icon" width="28" height="28" alt="Glance" />
+      <span class="fg-logo-word">glance</span>
+      <span class="fg-logo-star">✦</span>
+    </div>
+
+    <!-- Center stage -->
+    <div class="fg-welcome-stage">
+
+      <!-- Mascot placeholder (Rive not available offline — show static SVG owl) -->
+      <div id="welcome-mascot" class="fg-welcome-mascot" style="opacity:0; position:relative; width:166px; height:160px; display:flex; align-items:center; justify-content:center;">
+        <div class="mascot-placeholder">
+          <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="44" fill="rgba(100,60,200,0.18)" stroke="rgba(180,130,255,0.35)" stroke-width="1.5"/>
+            <ellipse cx="50" cy="52" rx="24" ry="26" fill="rgba(130,80,240,0.22)"/>
+            <!-- eyes -->
+            <circle cx="40" cy="48" r="6" fill="rgba(200,170,255,0.9)"/>
+            <circle cx="60" cy="48" r="6" fill="rgba(200,170,255,0.9)"/>
+            <circle cx="41" cy="47" r="2.5" fill="#1a0a3a"/>
+            <circle cx="61" cy="47" r="2.5" fill="#1a0a3a"/>
+            <circle cx="42" cy="46" r="1" fill="rgba(255,255,255,0.9)"/>
+            <circle cx="62" cy="46" r="1" fill="rgba(255,255,255,0.9)"/>
+            <!-- beak -->
+            <path d="M46 55 L50 60 L54 55 Z" fill="rgba(220,180,100,0.85)"/>
+          </svg>
+        </div>
+        <div class="mascot-glow-ring"></div>
+      </div>
+
+      <!-- Agent response line (hidden until CTA pressed) -->
+      <div id="welcome-response" class="fg-welcome-response" style="opacity:0; min-height:44px; display:flex; align-items:center; justify-content:center;">
+        <span class="fg-response-text" id="welcome-response-text"></span>
+      </div>
+
+      <!-- Intro lines -->
+      <div class="fg-intro-lines" style="margin-bottom:52px;">
+        <div id="welcome-line1" class="fg-intro-line1">
+          <span id="welcome-line1-text" class="cr-text" aria-label="Hello, I'm Glance."></span>
+        </div>
+        <div id="welcome-line2" class="fg-intro-line2" style="display:flex; flex-direction:column; align-items:center; gap:4px;">
+          <div><span id="welcome-line2a-text" class="cr-text" aria-label="I turn your screensaver into a feed"></span></div>
+          <div><span id="welcome-line2b-text" class="cr-text" aria-label="that helps you discover something new every day."></span></div>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div id="welcome-cta" class="fg-cta-row" style="opacity:0; flex-direction:column; align-items:center; gap:16px; pointer-events:none;">
+        <button id="welcome-cta-btn" class="fg-cta-pill" onclick="handleWelcomeCta()">
+          First, let me get to know you
+        </button>
+      </div>
+
+      <!-- Skip all -->
+      <button id="welcome-skip-btn" onclick="skipToEnd()"
+        style="position:absolute; bottom:clamp(28px,4.5vh,52px); left:50%; transform:translateX(-50%); background:none; border:none; cursor:pointer; font-size:clamp(13px,1.2vw,17px); font-weight:500; font-family:'Plus Jakarta Sans',system-ui,sans-serif; color:rgba(255,255,255,0.3); padding:8px 24px; border-radius:999px; transition:all 0.2s ease; opacity:0; pointer-events:none; z-index:10;">
+        Skip this for now
+      </button>
+
+    </div>
+  </div><!-- /screen-welcome -->
+
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       SCREEN 1 — BANGALORE CONFIRM (Q1 of 7)
+  ═══════════════════════════════════════════════════════════════════════ -->
+  <div id="screen-bangalore" class="fg-screen" data-step="bangalore-confirm" style="display:none;">
+    <div class="fg-bg-glow fg-bg-glow--q1"></div>
+    <div class="fg-brand">
+      <img src="assets/logo/glance-logo.png" class="fg-logo-icon" width="28" height="28" alt="Glance" />
+      <span class="fg-logo-word">glance</span>
+      <span class="fg-logo-star">✦</span>
+    </div>
+
+    <div id="blr-mascot" class="fg-q-mascot" style="opacity:0;">
+      <div class="mascot-sm-placeholder"></div>
+    </div>
+
+    <div id="blr-question" style="display:flex; flex-direction:column; align-items:center; width:100%;">
+      <div class="fg-progress-label">1 of 7</div>
+      <div class="fg-q-title" style="margin:0; margin-bottom:18px;">
+        <span id="blr-question-text" class="cr-text" aria-label="I see you're in Bangalore — that right?"></span>
+      </div>
+    </div>
+
+    <div id="blr-subtitle" class="fg-q-subtitle" style="opacity:0; transform:translateY(10px); margin-bottom:clamp(28px,4.5vh,48px);">
+      It helps me get your feed spot on
+    </div>
+
+    <div id="blr-cards-row" style="opacity:0; display:flex; gap:clamp(16px,2vw,28px); justify-content:center; align-items:flex-start; padding-bottom:clamp(24px,3vh,40px);">
+      <!-- Card: Bengaluru -->
+      <div class="setup-card-wrapper" id="blr-card-0" data-idx="0"
+           onclick="handleBangaloreSelect(0)"
+           style="width:clamp(220px,20vw,320px); display:flex; flex-direction:column; align-items:center; gap:clamp(10px,1.4vh,16px); cursor:pointer; transform:scale(0.94); transition:transform 0.25s cubic-bezier(0.22,1,0.36,1);">
+        <div class="setup-card-img" style="width:100%; height:clamp(200px,26vh,300px); border-radius:clamp(14px,1.6vw,22px); position:relative; overflow:hidden; border:1.5px solid rgba(255,255,255,0.1); box-shadow:0 4px 20px rgba(0,0,0,0.35); background:#0d0820;">
+          <div style="position:absolute; inset:0; background-image:url('assets/images/feed/feed_58-travel-mumbai-marine-drive-night.jpg'); background-size:cover; background-position:center;"></div>
+          <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(4,2,14,0.55) 0%, transparent 55%);"></div>
+        </div>
+        <div class="setup-card-label">Yes, Bengaluru</div>
+      </div>
+      <!-- Card: Not quite -->
+      <div class="setup-card-wrapper" id="blr-card-1" data-idx="1"
+           onclick="handleBangaloreSelect(1)"
+           style="width:clamp(220px,20vw,320px); display:flex; flex-direction:column; align-items:center; gap:clamp(10px,1.4vh,16px); cursor:pointer; transform:scale(0.94); transition:transform 0.25s cubic-bezier(0.22,1,0.36,1);">
+        <div class="setup-card-img" style="width:100%; height:clamp(200px,26vh,300px); border-radius:clamp(14px,1.6vw,22px); position:relative; overflow:hidden; border:1.5px solid rgba(255,255,255,0.1); box-shadow:0 4px 20px rgba(0,0,0,0.35); background:#0d0820;">
+          <div style="position:absolute; inset:0; background-image:url('assets/images/feed/feed_29-travel-goa-coastal-road.jpg'); background-size:cover; background-position:center;"></div>
+          <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(4,2,14,0.55) 0%, transparent 55%);"></div>
+        </div>
+        <div class="setup-card-label">Not quite</div>
+      </div>
+    </div>
+
+    <div id="blr-skip-wrap" style="margin-top:clamp(6px,1vh,12px); text-align:center; display:none;">
+      <button onclick="goToScreen('tv-content')"
+        style="background:none; border:none; cursor:pointer; font-size:clamp(11px,1.0vw,14px); font-weight:500; font-family:'Plus Jakarta Sans',system-ui,sans-serif; color:rgba(255,255,255,0.25); padding:6px 20px; border-radius:999px; transition:color 0.18s ease;">
+        Press down twice to skip this question
+      </button>
+    </div>
+
+    <!-- Fly layer -->
+    <div id="blr-fly-layer" style="position:absolute; inset:0; z-index:40; pointer-events:none;"></div>
+    <!-- Agent reply -->
+    <div id="blr-agent" style="position:absolute; top:300px; left:50%; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:clamp(14px,2vh,24px); z-index:42; pointer-events:none; width:clamp(280px,50vw,680px); opacity:0;">
+      <div id="blr-reply" class="setup-reply"></div>
+    </div>
+
+    <div class="fg-progress-bar">
+      <div class="fg-pip fg-pip--active"></div>
+      <div class="fg-pip"></div><div class="fg-pip"></div><div class="fg-pip"></div>
+      <div class="fg-pip"></div><div class="fg-pip"></div><div class="fg-pip"></div>
+    </div>
+  </div><!-- /screen-bangalore -->
+
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       SCREEN 2 — TV CONTENT (Q2 of 7)
+  ═══════════════════════════════════════════════════════════════════════ -->
+  <div id="screen-tv-content" class="fg-screen" data-step="tv-content" style="display:none;">
+    <div class="fg-bg-glow fg-bg-glow--q1"></div>
+    <div class="fg-brand">
+      <img src="assets/logo/glance-logo.png" class="fg-logo-icon" width="28" height="28" alt="Glance" />
+      <span class="fg-logo-word">glance</span>
+      <span class="fg-logo-star">✦</span>
+    </div>
+
+    <div id="tvc-mascot" class="fg-q-mascot" style="opacity:0;"><div class="mascot-sm-placeholder"></div></div>
+
+    <div id="tvc-question" style="display:flex; flex-direction:column; align-items:center; width:100%;">
+      <div class="fg-progress-label">2 of 7</div>
+      <div class="fg-q-title" style="margin:0; margin-bottom:18px;">
+        <span id="tvc-question-text" class="cr-text" aria-label="What's this TV usually playing?"></span>
+      </div>
+    </div>
+
+    <div id="tvc-subtitle" class="fg-q-subtitle" style="opacity:0; transform:translateY(10px); margin-bottom:clamp(28px,4.5vh,48px);">
+      Choose everything that fits — or skip if it varies
+    </div>
+
+    <div id="tvc-cards-row" class="cards-row-4" style="opacity:0;">
+      <div class="setup-card-wrapper" id="tvc-card-0" onclick="toggleCard('tvc',0)" data-selected="false" style="transform:scale(0.94);">
+        <div class="setup-card-img"><div class="card-bg" style="background-image:url('assets/images/setup/setup_q1_sports.jpg');"></div><div class="card-check">✓</div></div>
+        <div class="setup-card-label">Sports &amp; big moments</div>
+      </div>
+      <div class="setup-card-wrapper" id="tvc-card-1" onclick="toggleCard('tvc',1)" data-selected="false" style="transform:scale(0.94);">
+        <div class="setup-card-img"><div class="card-bg" style="background-image:url('assets/images/setup/setup_q1_movies.jpg');"></div><div class="card-check">✓</div></div>
+        <div class="setup-card-label">Movies &amp; series</div>
+      </div>
+      <div class="setup-card-wrapper" id="tvc-card-2" onclick="toggleCard('tvc',2)" data-selected="false" style="transform:scale(0.94);">
+        <div class="setup-card-img"><div class="card-bg" style="background-image:url('assets/images/setup/setup_q1_music.jpg');"></div><div class="card-check">✓</div></div>
+        <div class="setup-card-label">Music &amp; performances</div>
+      </div>
+      <div class="setup-card-wrapper" id="tvc-card-3" onclick="toggleCard('tvc',3)" data-selected="false" style="transform:scale(0.94);">
+        <div class="setup-card-img"><div class="card-bg" style="background-image:url('assets/images/setup/setup_q1_news.jpg');"></div><div class="card-check">✓</div></div>
+        <div class="setup-card-label">News &amp; infotainment</div>
+      </div>
+    </div>
+
+    <div id="tvc-actions" class="q-actions" style="opacity:0;">
+      <button id="tvc-next-btn" class="q-next-btn" disabled onclick="handleMultiSelectDone('tvc')">Next</button>
+    </div>
+
+    <button class="skip-question-btn" id="tvc-skip-btn" style="display:none;" onclick="goToScreen('audience')">Skip question</button>
+
+    <div id="tvc-fly-layer" class="fly-layer"></div>
+    <div id="tvc-agent" class="agent-overlay" style="opacity:0; top:300px;">
+      <div id="tvc-reply" class="setup-reply"></div>
+    </div>
+
+    <div class="fg-progress-bar">
+      <div class="fg-pip fg-pip--done"></div>
+      <div class="fg-pip fg-pip--active"></div>
+      <div class="fg-pip"></div><div class="fg-pip"></div><div class="fg-pip"></div>
+      <div class="fg-pip"></div><div class="fg-pip"></div>
+    </div>
+  </div><!-- /screen-tv-content -->
+
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       SCREEN 3 — AUDIENCE (Q3 of 7)
+  ═══════════════════════════════════════════════════════════════════════ -->
+  <div id="screen-audience" class="fg-screen" data-step="audience" style="display:none;">
+    <div class="fg-bg-glow fg-bg-glow--q1"></div>
+    <div class="fg-brand">
+      <img src="assets/logo/glance-logo.png" class="fg-logo-icon" width="28" height="28" alt="Glance" />
+      <span class="fg-logo-word">glance</span>
+      <span class="fg-logo-star">✦</span>
+    </div>
+
+    <div id="aud-mascot" class="fg-q-mascot" style="opacity:0;"><div class="mascot-sm-placeholder"></div></div>
+
+    <div id="aud-question" style="display:flex; flex-direction:column; align-items:center; width:100%;">
+      <div class="fg-progress-label">3 of 7</div>
+      <div class="fg-q-title" style="margin:0; margin-bottom:18px;">
+        <span id="aud-question-text" class="cr-text" aria-label="Who watches this TV?"></span>
+      </div>
+    </div>
+
+    <div id="aud-subtitle" class="fg-q-subtitle" style="opacity:0; transform:translateY(10px); margin-bottom:clamp(28px,4.5vh,48px);">
+      This helps me get the tone right from the start
+    </div>
+
+    <div id="aud-cards-row" class="cards-row-4" style="opacity:0;">
+      <div class="setup-card-wrapper" id="aud-card-0" onclick="handleSingleSelect('aud',0)" style="transform:scale(0.94);">
+        <div class="setup-card-img"><div class="card-bg" style="background-image:url('assets/images/setup/setup_q2_solo.jpg');"></div><div class="card-check">✓</div></div>
+        <div class="setup-card-label">Mostly me</div>
+      </div>
+      <div class="setup-card-wrapper" id="aud-card-1" onclick="handleSingleSelect('aud',1)" style="transform:scale(0.94);">
+        <div class="setup-card-img"><div class="card-bg" style="background-image:url('assets/images/setup/setup_q2_pair.jpg');"></div><div class="card-check">✓</div></div>
+        <div class="setup-card-label">My partner and I</div>
+      </div>
+      <div class="setup-card-wrapper" id="aud-card-2" onclick="handleSingleSelect('aud',2)" style="transform:scale(0.94);">
+        <div class="setup-card-img"><div class="card-bg" style="background-image:url('assets/images/setup/setup_q2_kids.jpg');"></div><div class="card-check">✓</div></div>
+        <div class="setup-card-label">Kids watch it too</div>
+      </div>
+      <div class="setup-card-wrapper" id="aud-card-3" onclick="handleSingleSelect('aud',3)" style="transform:scale(0.94);">
+        <div class="setup-card-img"><div class="card-bg" style="background-image:url('assets/images/setup/setup_q2_friends.jpg');"></div><div class="card-check">✓</div></div>
+        <div class="setup-card-label">Friends &amp; family</div>
+      </div>
+    </div>
+
+    <button class="skip-question-btn" id="aud-skip-btn" style="display:none;" onclick="goToScreen('show-more')">Skip question</button>
+
+    <div id="aud-fly-layer" class="fly-layer"></div>
+    <div id="aud-agent" class="agent-overlay" style="opacity:0; top:300px;">
+      <div id="aud-reply" class="setup-reply"></div>
+    </div>
+
+    <div class="fg-progress-bar">
+      <div class="fg-pip fg-pip--done"></div><div class="fg-pip fg-pip--done"></div>
+      <div class="fg-pip fg-pip--active"></div>
+      <div class="fg-pip"></div><div class="fg-pip"></div><div class="fg-pip"></div><div class="fg-pip"></div>
+    </div>
+  </div><!-- /screen-audience -->
+
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       SCREEN 4 — SHOW MORE (Q4 of 7)
+  ═══════════════════════════════════════════════════════════════════════ -->
+  <div id="screen-show-more" class="fg-screen" data-step="show-more" style="display:none;">
+    <div class="fg-bg-glow fg-bg-glow--q2"></div>
+    <div class="fg-brand">
+      <img src="assets/logo/glance-logo.png" class="fg-logo-icon" width="28" height="28" alt="Glance" />
+      <span class="fg-logo-word">glance</span>
+      <span class="fg-logo-star">✦</span>
+    </div>
+
+    <div id="sm-mascot" class="fg-q-mascot" style="opacity:0;"><div class="mascot-sm-placeholder"></div></div>
+
+    <div id="sm-question" style="display:flex; flex-direction:column; align-items:center; width:100%;">
+      <div class="fg-progress-label">4 of 7</div>
+      <div class="fg-q-title" style="margin:0; margin-bottom:18px;">
+        <span id="sm-question-text" class="cr-text" aria-label="What should this TV show more of?"></span>
+      </div>
+    </div>
+
+    <div id="sm-subtitle" class="fg-q-subtitle" style="opacity:0; transform:translateY(10px); margin-bottom:clamp(24px,3.5vh,40px);">
+      Pick what you'd love to see more of — as many as you like
+    </div>
+
+    <!-- Cards scroll area -->
+    <div id="sm-scroll-wrap" style="position:relative; width:clamp(400px,90vw,1500px); opacity:0; margin-bottom:clamp(20px,3vh,36px);">
+      <div id="sm-scroll-inner" style="display:flex; gap:clamp(10px,1.2vw,16px); justify-content:center; overflow-x:auto; padding:8px 16px; scrollbar-width:none;">
+        <!-- Initial 3 cards -->
+        <div class="setup-card-wrapper sm-card" id="sm-card-0" onclick="toggleCard('sm',0)" data-selected="false" style="flex-shrink:0; width:clamp(200px,18vw,300px); transform:scale(0.94);">
+          <div class="setup-card-img" style="height:clamp(200px,26vh,300px);"><div class="card-bg" style="background-image:url('assets/images/setup/setup_q3_travel.jpg');"></div><div class="card-check">✓</div></div>
+          <div class="setup-card-label">Travel &amp; escapes</div>
+        </div>
+        <div class="setup-card-wrapper sm-card" id="sm-card-1" onclick="toggleCard('sm',1)" data-selected="false" style="flex-shrink:0; width:clamp(200px,18vw,300px); transform:scale(0.94);">
+          <div class="setup-card-img" style="height:clamp(200px,26vh,300px);"><div class="card-bg" style="background-image:url('assets/images/setup/setup_q3_fitness.jpg');"></div><div class="card-check">✓</div></div>
+          <div class="setup-card-label">Health &amp; wellness</div>
+        </div>
+        <div class="setup-card-wrapper sm-card" id="sm-card-2" onclick="toggleCard('sm',2)" data-selected="false" style="flex-shrink:0; width:clamp(200px,18vw,300px); transform:scale(0.94);">
+          <div class="setup-card-img" style="height:clamp(200px,26vh,300px);"><div class="card-bg" style="background-image:url('assets/images/setup/setup_q3_sports.jpg');"></div><div class="card-check">✓</div></div>
+          <div class="setup-card-label">Sports</div>
+        </div>
+        <!-- Extra 6 cards (hidden until expanded) -->
+        <div class="setup-card-wrapper sm-card sm-extra" id="sm-card-3" onclick="toggleCard('sm',3)" data-selected="false" style="flex-shrink:0; width:clamp(200px,18vw,300px); transform:scale(0.94); display:none;">
+          <div class="setup-card-img" style="height:clamp(200px,26vh,300px);"><div class="card-bg" style="background-image:url('assets/images/setup/setup_q3_music.jpg');"></div><div class="card-check">✓</div></div>
+          <div class="setup-card-label">Music &amp; performances</div>
+        </div>
+        <div class="setup-card-wrapper sm-card sm-extra" id="sm-card-4" onclick="toggleCard('sm',4)" data-selected="false" style="flex-shrink:0; width:clamp(200px,18vw,300px); transform:scale(0.94); display:none;">
+          <div class="setup-card-img" style="height:clamp(200px,26vh,300px);"><div class="card-bg" style="background-image:url('assets/images/setup/setup_q3_fashion.jpg');"></div><div class="card-check">✓</div></div>
+          <div class="setup-card-label">Fashion &amp; style</div>
+        </div>
+        <div class="setup-card-wrapper sm-card sm-extra" id="sm-card-5" onclick="toggleCard('sm',5)" data-selected="false" style="flex-shrink:0; width:clamp(200px,18vw,300px); transform:scale(0.94); display:none;">
+          <div class="setup-card-img" style="height:clamp(200px,26vh,300px);"><div class="card-bg" style="background-image:url('assets/images/setup/setup_q3_home.jpg');"></div><div class="card-check">✓</div></div>
+          <div class="setup-card-label">Home &amp; interiors</div>
+        </div>
+        <div class="setup-card-wrapper sm-card sm-extra" id="sm-card-6" onclick="toggleCard('sm',6)" data-selected="false" style="flex-shrink:0; width:clamp(200px,18vw,300px); transform:scale(0.94); display:none;">
+          <div class="setup-card-img" style="height:clamp(200px,26vh,300px);"><div class="card-bg" style="background-image:url('assets/images/setup/setup_q3_arts.jpg');"></div><div class="card-check">✓</div></div>
+          <div class="setup-card-label">Arts &amp; culture</div>
+        </div>
+        <div class="setup-card-wrapper sm-card sm-extra" id="sm-card-7" onclick="toggleCard('sm',7)" data-selected="false" style="flex-shrink:0; width:clamp(200px,18vw,300px); transform:scale(0.94); display:none;">
+          <div class="setup-card-img" style="height:clamp(200px,26vh,300px);"><div class="card-bg" style="background-image:url('assets/images/setup/setup_q3_tech.jpg');"></div><div class="card-check">✓</div></div>
+          <div class="setup-card-label">Tech &amp; new things</div>
+        </div>
+        <div class="setup-card-wrapper sm-card sm-extra" id="sm-card-8" onclick="toggleCard('sm',8)" data-selected="false" style="flex-shrink:0; width:clamp(200px,18vw,300px); transform:scale(0.94); display:none;">
+          <div class="setup-card-img" style="height:clamp(200px,26vh,300px);"><div class="card-bg" style="background-image:url('assets/images/setup/setup_q3_food.jpg');"></div><div class="card-check">✓</div></div>
+          <div class="setup-card-label">Food &amp; dining</div>
+        </div>
+      </div>
+      <!-- Edge gradient overlays (for scrollable state) -->
+      <div id="sm-edge-left" style="position:absolute; left:0; top:0; bottom:0; width:48px; background:linear-gradient(to right,rgba(7,5,21,0.95),transparent); pointer-events:none; display:none;"></div>
+      <div id="sm-edge-right" style="position:absolute; right:0; top:0; bottom:0; width:48px; background:linear-gradient(to left,rgba(7,5,21,0.95),transparent); pointer-events:none; display:none;"></div>
+    </div>
+
+    <div id="sm-actions" class="q-actions" style="opacity:0; flex-direction:column; align-items:center; gap:12px;">
+      <button id="sm-next-btn" class="q-next-btn" disabled onclick="handleMultiSelectDone('sm')">Next</button>
+      <button id="sm-explore-btn" class="explore-more-btn" onclick="expandShowMore()">
+        <span>Explore more</span>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1L13 7L7 13M1 7H13" stroke="rgba(200,180,255,0.7)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+
+    <button class="skip-question-btn" id="sm-skip-btn" style="display:none;" onclick="goToScreen('weekend')">Skip question</button>
+
+    <div id="sm-fly-layer" class="fly-layer"></div>
+    <div id="sm-agent" class="agent-overlay" style="opacity:0; top:300px;">
+      <div id="sm-reply" class="setup-reply"></div>
+    </div>
+
+    <div class="fg-progress-bar">
+      <div class="fg-pip fg-pip--done"></div><div class="fg-pip fg-pip--done"></div>
+      <div class="fg-pip fg-pip--done"></div>
+      <div class="fg-pip fg-pip--active"></div>
+      <div class="fg-pip"></div><div class="fg-pip"></div><div class="fg-pip"></div>
+    </div>
+  </div><!-- /screen-show-more -->
+
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       SCREEN 5 — WEEKEND (Q5 of 7)
+  ═══════════════════════════════════════════════════════════════════════ -->
+  <div id="screen-weekend" class="fg-screen" data-step="weekend" style="display:none;">
+    <div class="fg-bg-glow fg-bg-glow--q2"></div>
+    <div class="fg-brand">
+      <img src="assets/logo/glance-logo.png" class="fg-logo-icon" width="28" height="28" alt="Glance" />
+      <span class="fg-logo-word">glance</span>
+      <span class="fg-logo-star">✦</span>
+    </div>
+
+    <div id="wkd-mascot" class="fg-q-mascot" style="opacity:0;"><div class="mascot-sm-placeholder"></div></div>
+
+    <div id="wkd-question" style="display:flex; flex-direction:column; align-items:center; width:100%;">
+      <div class="fg-progress-label">5 of 7</div>
+      <div class="fg-q-title" style="margin:0; margin-bottom:18px;">
+        <span id="wkd-question-text" class="cr-text" aria-label="What's your kind of weekend?"></span>
+      </div>
+    </div>
+
+    <div id="wkd-subtitle" class="fg-q-subtitle" style="opacity:0; transform:translateY(10px); margin-bottom:clamp(28px,4.5vh,48px);">
+      Helps me understand the pace and vibe you like
+    </div>
+
+    <div id="wkd-cards-row" class="cards-row-4" style="opacity:0;">
+      <div class="setup-card-wrapper" id="wkd-card-0" onclick="toggleCard('wkd',0)" data-selected="false" style="transform:scale(0.94);">
+        <div class="setup-card-img"><div class="card-bg" style="background-image:url('assets/images/setup/setup_q4_home.jpg');"></div><div class="card-check">✓</div></div>
+        <div class="setup-card-label">Slow at home</div>
+      </div>
+      <div class="setup-card-wrapper" id="wkd-card-1" onclick="toggleCard('wkd',1)" data-selected="false" style="transform:scale(0.94);">
+        <div class="setup-card-img"><div class="card-bg" style="background-image:url('assets/images/setup/setup_q4_local.jpg');"></div><div class="card-check">✓</div></div>
+        <div class="setup-card-label">Local experiences</div>
+      </div>
+      <div class="setup-card-wrapper" id="wkd-card-2" onclick="toggleCard('wkd',2)" data-selected="false" style="transform:scale(0.94);">
+        <div class="setup-card-img"><div class="card-bg" style="background-image:url('assets/images/setup/setup_q4_nightout.jpg');"></div><div class="card-check">✓</div></div>
+        <div class="setup-card-label">A night out</div>
+      </div>
+      <div class="setup-card-wrapper" id="wkd-card-3" onclick="toggleCard('wkd',3)" data-selected="false" style="transform:scale(0.94);">
+        <div class="setup-card-img"><div class="card-bg" style="background-image:url('assets/images/setup/setup_q4_outoftown.jpg');"></div><div class="card-check">✓</div></div>
+        <div class="setup-card-label">Out of town</div>
+      </div>
+    </div>
+
+    <div id="wkd-actions" class="q-actions" style="opacity:0;">
+      <button id="wkd-next-btn" class="q-next-btn" disabled onclick="handleMultiSelectDone('wkd')">Next</button>
+    </div>
+
+    <button class="skip-question-btn" id="wkd-skip-btn" style="display:none;" onclick="goToScreen('style')">Skip question</button>
+
+    <div id="wkd-fly-layer" class="fly-layer"></div>
+    <div id="wkd-agent" class="agent-overlay" style="opacity:0; top:300px;">
+      <div id="wkd-reply" class="setup-reply"></div>
+    </div>
+
+    <div class="fg-progress-bar">
+      <div class="fg-pip fg-pip--done"></div><div class="fg-pip fg-pip--done"></div>
+      <div class="fg-pip fg-pip--done"></div><div class="fg-pip fg-pip--done"></div>
+      <div class="fg-pip fg-pip--active"></div>
+      <div class="fg-pip"></div><div class="fg-pip"></div>
+    </div>
+  </div><!-- /screen-weekend -->
+
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       SCREEN 6 — STYLE (Q6 of 7)
+  ═══════════════════════════════════════════════════════════════════════ -->
+  <div id="screen-style" class="fg-screen" data-step="style" style="display:none;">
+    <div class="fg-bg-glow fg-bg-glow--q2"></div>
+    <div class="fg-brand">
+      <img src="assets/logo/glance-logo.png" class="fg-logo-icon" width="28" height="28" alt="Glance" />
+      <span class="fg-logo-word">glance</span>
+      <span class="fg-logo-star">✦</span>
+    </div>
+
+    <div id="sty-mascot" class="fg-q-mascot" style="opacity:0;"><div class="mascot-sm-placeholder"></div></div>
+
+    <div id="sty-question" style="display:flex; flex-direction:column; align-items:center; width:100%;">
+      <div class="fg-progress-label">6 of 7</div>
+      <div class="fg-q-title" style="margin:0; margin-bottom:18px;">
+        <span id="sty-question-text" class="cr-text" aria-label="What's your style?"></span>
+      </div>
+    </div>
+
+    <div id="sty-subtitle" class="fg-q-subtitle" style="opacity:0; transform:translateY(10px); margin-bottom:clamp(28px,4.5vh,48px);">
+      Sets the visual feel of what I'll surface for you
+    </div>
+
+    <div id="sty-cards-row" class="cards-row-4" style="opacity:0;">
+      <div class="setup-card-wrapper" id="sty-card-0" onclick="toggleCard('sty',0)" data-selected="false" style="transform:scale(0.94);">
+        <div class="setup-card-img"><div class="card-bg" style="background-image:url('assets/images/setup/setup_q5_casual.jpg');"></div><div class="card-check">✓</div></div>
+        <div class="setup-card-label">Easy &amp; casual</div>
+      </div>
+      <div class="setup-card-wrapper" id="sty-card-1" onclick="toggleCard('sty',1)" data-selected="false" style="transform:scale(0.94);">
+        <div class="setup-card-img"><div class="card-bg" style="background-image:url('assets/images/setup/setup_q5_classy.jpg');"></div><div class="card-check">✓</div></div>
+        <div class="setup-card-label">Classy</div>
+      </div>
+      <div class="setup-card-wrapper" id="sty-card-2" onclick="toggleCard('sty',2)" data-selected="false" style="transform:scale(0.94);">
+        <div class="setup-card-img"><div class="card-bg" style="background-image:url('assets/images/setup/setup_q5_trending.jpg');"></div><div class="card-check">✓</div></div>
+        <div class="setup-card-label">Trending</div>
+      </div>
+      <div class="setup-card-wrapper" id="sty-card-3" onclick="toggleCard('sty',3)" data-selected="false" style="transform:scale(0.94);">
+        <div class="setup-card-img"><div class="card-bg" style="background-image:url('assets/images/setup/setup_q5_bold.jpg');"></div><div class="card-check">✓</div></div>
+        <div class="setup-card-label">Bold &amp; statement</div>
+      </div>
+    </div>
+
+    <div id="sty-actions" class="q-actions" style="opacity:0;">
+      <button id="sty-next-btn" class="q-next-btn" disabled onclick="handleMultiSelectDone('sty')">Next</button>
+    </div>
+
+    <button class="skip-question-btn" id="sty-skip-btn" style="display:none;" onclick="goToScreen('done')">Skip question</button>
+
+    <div id="sty-fly-layer" class="fly-layer"></div>
+    <div id="sty-agent" class="agent-overlay" style="opacity:0; top:300px;">
+      <div id="sty-reply" class="setup-reply"></div>
+    </div>
+
+    <div class="fg-progress-bar">
+      <div class="fg-pip fg-pip--done"></div><div class="fg-pip fg-pip--done"></div>
+      <div class="fg-pip fg-pip--done"></div><div class="fg-pip fg-pip--done"></div>
+      <div class="fg-pip fg-pip--done"></div>
+      <div class="fg-pip fg-pip--active"></div>
+      <div class="fg-pip"></div>
+    </div>
+  </div><!-- /screen-style -->
+
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       SCREEN 7 — DONE / TUNING
+  ═══════════════════════════════════════════════════════════════════════ -->
+  <div id="screen-done" class="fg-screen" data-step="done" style="display:none;">
+    <div class="fg-bg-glow"></div>
+    <div class="fg-brand">
+      <img src="assets/logo/glance-logo.png" class="fg-logo-icon" width="28" height="28" alt="Glance" />
+      <span class="fg-logo-word">glance</span>
+      <span class="fg-logo-star">✦</span>
+    </div>
+    <div class="fg-welcome-stage">
+      <div id="done-mascot" class="fg-welcome-mascot" style="opacity:0; position:relative; width:140px; height:130px; display:flex; align-items:center; justify-content:center;">
+        <div class="mascot-placeholder"></div>
+        <div class="mascot-glow-ring"></div>
+      </div>
+      <div id="done-text" style="opacity:0; text-align:center; margin-top:32px;">
+        <div style="font-size:42px; font-weight:700; color:rgba(255,255,255,0.96); font-family:'Instrument Sans','Plus Jakarta Sans',sans-serif; letter-spacing:-0.02em; margin-bottom:12px;">
+          Your feed is being shaped.
+        </div>
+        <div style="font-size:22px; font-weight:400; color:rgba(255,255,255,0.55); font-family:'Plus Jakarta Sans',sans-serif;">
+          Everything you picked will show up in what I surface next.
+        </div>
+      </div>
+      <div id="done-cta" style="opacity:0; margin-top:52px;">
+        <button onclick="restartFlow()" style="padding:clamp(10px,1.4vh,14px) clamp(32px,4vw,56px); font-size:clamp(14px,1.3vw,18px); font-weight:700; font-family:'Plus Jakarta Sans',system-ui,sans-serif; background:rgba(255,255,255,0.18); color:rgba(255,255,255,0.8); border:1.5px solid rgba(255,255,255,0.3); border-radius:999px; cursor:pointer; transition:all 0.18s ease;">
+          Start over
+        </button>
+      </div>
+    </div>
+    <div class="fg-progress-bar">
+      <div class="fg-pip fg-pip--done"></div><div class="fg-pip fg-pip--done"></div>
+      <div class="fg-pip fg-pip--done"></div><div class="fg-pip fg-pip--done"></div>
+      <div class="fg-pip fg-pip--done"></div><div class="fg-pip fg-pip--done"></div>
+      <div class="fg-pip fg-pip--active"></div>
+    </div>
+  </div><!-- /screen-done -->
+
+</div><!-- /stage -->
+
+<!-- GSAP CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<!-- App logic -->
+<script src="script.js"></script>
+</body>
+</html>

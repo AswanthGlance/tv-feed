@@ -9,6 +9,7 @@ import { composeFeed, rerankTail } from './logic/ranking';
 import { evaluateBadges } from './data/badges';
 import { FEED_ITEMS } from './data/feedItems';
 import { INTERSTITIAL_QUESTIONS } from './data/preferenceQuestions';
+import { WARM_START_FEED_ITEMS } from './data/warmStartFeedItems';
 import { composeFeedWithPreferences } from './logic/feedComposer';
 import type { UnifiedFeedItem } from './logic/feedComposer';
 import type { FeedItem } from './data/types';
@@ -22,6 +23,7 @@ import {
 import type { GlanceProfileDraft } from './logic/profileDraft';
 
 // ── Screen components ────────────────────────────────────────────────────────
+import WarmProfile1CrispL0Glance from './components/L0/WarmProfile1CrispL0Glance';
 import TVStage from './components/TVStage';
 import WelcomeScreen from './components/Activation/WelcomeScreen';
 import BangaloreConfirm from './components/Activation/BangaloreConfirm';
@@ -67,7 +69,7 @@ export type AppState = {
   signalLog: SignalLogEntry[];
 };
 
-export default function App() {
+export default function App({ warmFeedMode = false }: { warmFeedMode?: boolean }) {
   /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
   const [_sliders, _setSliders] = useState({ interactionCap: 1, interstitialN: 10, decayFactor: 0.97 });
   const [fromWelcome, setFromWelcome] = useState(false);
@@ -118,8 +120,8 @@ export default function App() {
       derivedTokens,
       Object.fromEntries(derivedTokens.map(t => [t, (seededProfile.weights[t] || 0) - (profile.weights[t] || 0)])),
     ) : null;
-    const composed = composeFeed(FEED_ITEMS, seededProfile);
-    const unified  = composeFeedWithPreferences(composed, INTERSTITIAL_QUESTIONS);
+    const composed = warmFeedMode ? WARM_START_FEED_ITEMS : composeFeed(FEED_ITEMS, seededProfile);
+    const unified  = composeFeedWithPreferences(composed, warmFeedMode ? [] : INTERSTITIAL_QUESTIONS);
     const badges = evaluateBadges(seededProfile.weights, 0, true);
     window.GLANCE_STATE = 'warm';
     setState(s => ({
@@ -454,6 +456,18 @@ export default function App() {
                 interactionFollowUpsToday={interactionFollowUpsToday}
                 onOpenDataPanel={() => setState(s => ({ ...s, dataPanelOpen: true }))}
                 toast={toast}
+                {...(warmFeedMode ? {
+                  renderL0: (item, paused) => (
+                    <WarmProfile1CrispL0Glance
+                      key={item.id}
+                      item={item}
+                      profile={profile}
+                      paused={paused}
+                      onCTAClick={() => {}}
+                      onTimelineComplete={() => {}}
+                    />
+                  ),
+                } : {})}
               />
             )}
 
