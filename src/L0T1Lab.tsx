@@ -44,7 +44,7 @@ if (typeof window !== 'undefined') {
   (window as any).GLANCE_CTX = { city: 'Bangalore', weather: 'rainy', day: 'Saturday', timeOfDay: 'morning', upcomingContext: 'weekend' };
   (window as any).GLANCE_STATE = 'warm';
   setProfileOverrides({
-    'ws-coorg': "Attikan won the Indian Coffee Board's specialty cup last season and runs estate stays through monsoon — six hours from Bangalore, peak green this fortnight. I'll shortlist three for you: Ama, Attikan, and one more, two nights each.",
+    'ws-coorg': "Attikan won the specialty cup and runs estate stays — peak green this fortnight. I'll shortlist Ama and Attikan for two nights.",
   });
 }
 
@@ -55,7 +55,7 @@ const CARD = {
   title:       'A Coffee Estate at First Light',
   tag1:        'Weekend Escapes',
   tag2:        'Travel',
-  reasoning:   "Attikan won the Indian Coffee Board's specialty cup last season and runs estate stays through monsoon — six hours from Bangalore, peak green this fortnight. I'll shortlist three for you: Ama, Attikan, and one more, two nights each.",
+  reasoning:   "Attikan won the specialty cup and runs estate stays — peak green this fortnight. I'll shortlist Ama and Attikan for two nights.",
   reasoningHls: ['peak green this fortnight', 'Attikan'],
   ctaLabel:    'Want me to shortlist estate stays?',
   signal1:     WARM_CARD_SIGNAL_DATA_CRISP['ws-coorg']?.signal1 ?? '',
@@ -650,7 +650,7 @@ export default function L0T1Lab() {
 
   return (
     <div ref={containerRef} style={{
-      position: 'relative', width: '100vw', height: '100vh',
+      position: 'relative', width: 1920, height: 1080,
       overflow: 'hidden', background: '#040208',
       transformOrigin: 'center center',
     }}>
@@ -758,11 +758,15 @@ export default function L0T1Lab() {
           fontFamily: '"Plus Jakarta Sans", system-ui',
           fontWeight: 400,
           fontSize: 32,
-          lineHeight: 1.25,
+          lineHeight: 1.35,
           letterSpacing: '0.01em',
           color: 'rgba(255,255,255,0.8)',
           willChange: 'opacity, transform',
           transformOrigin: 'left top',
+          display: '-webkit-box',
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: 'vertical',
+          overflow: 'hidden',
         }}>
           <GlanceTextReveal
             text={CARD.reasoning}
