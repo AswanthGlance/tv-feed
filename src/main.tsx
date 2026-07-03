@@ -24,6 +24,13 @@ import WarmProfile1CrisperApp from './WarmProfile1CrisperApp'
 import WarmProfile2CrispApp from './WarmProfile2CrispApp'
 import ColdProfile1App from './ColdProfile1App'
 import L0T1App from './L0T1App'
+import MascotPlaygroundApp from './MascotPlaygroundApp'
+import L1EmbeddedCTAPrototype from './components/L1/L1EmbeddedCTAPrototype'
+import L1ExpandedCardPrototype from './components/L1/L1ExpandedCardPrototype'
+import L1ContinuousCTAPrototype from './components/L1/L1ContinuousCTAPrototype'
+import L1TextTablePrototype from './components/L1/L1TextTablePrototype'
+import CTAExplorationIndex from './CTAExplorationIndex'
+import L1ShoppingTemplate from './components/L1/L1ShoppingTemplate'
 
 declare global { interface Window { __L0_PREVIEW__?: string; __BEAM_POC__?: boolean; __INTERSTITIAL_PREVIEW__?: boolean; __L0_EXPORT__?: boolean } }
 
@@ -58,6 +65,19 @@ const isL0Lab         = window.location.pathname === '/l0_experiment'
 const isSetup         = window.location.pathname === '/setup';
 const isL0T1          = window.location.pathname === '/l0_t1'
                      || window.location.pathname === '/l0-t1';
+const isMascotPlayground = window.location.pathname === '/mascot-playground'
+                     || window.location.pathname === '/mascot_playground';
+const isEmbeddedCTA    = window.location.pathname === '/l1-embedded-cta'
+                      || window.location.pathname === '/l1_embedded_cta';
+const isExpandedCard   = window.location.pathname === '/l1-expanded-card'
+                      || window.location.pathname === '/l1_expanded_card';
+const isContinuousCTA  = window.location.pathname === '/l1-continuous-cta'
+                      || window.location.pathname === '/l1_continuous_cta';
+const isTextTable      = window.location.pathname === '/l1-text-table'
+                      || window.location.pathname === '/l1_text_table';
+const isCTAIndex       = window.location.pathname === '/cta-exploration';
+const isL1Final        = window.location.pathname === '/l1_final'
+                      || window.location.pathname === '/l1-final';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -78,6 +98,13 @@ createRoot(document.getElementById('root')!).render(
      isL0Lab        ? <L0AnimationLabApp /> :
      isSetup        ? <App warmFeedMode /> :
      isL0T1         ? <L0T1App /> :
-                      <App />}
+     isMascotPlayground ? <MascotPlaygroundApp /> :
+     isEmbeddedCTA      ? <L1EmbeddedCTAPrototype /> :
+     isExpandedCard     ? <L1ExpandedCardPrototype /> :
+     isContinuousCTA    ? <L1ContinuousCTAPrototype /> :
+     isTextTable        ? <L1TextTablePrototype /> :
+     isCTAIndex         ? <CTAExplorationIndex /> :
+     isL1Final          ? <L1ShoppingTemplate /> :
+                          <App />}
   </StrictMode>,
 )

@@ -1,0 +1,847 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   Mascot Playground — Multi-size + Expression Controls Layout
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* ─── Root shell ──────────────────────────────────────────────────────────── */
+
+.mp-root {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  background: #08080f;
+  color: #e2e2ec;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+  overflow: hidden;
+}
+
+/* ─── Top row (left · center · right) ────────────────────────────────────── */
+
+.mp-top-row {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ─── Bottom row ──────────────────────────────────────────────────────────── */
+
+.mp-bottom-row {
+  display: flex;
+  height: 160px;
+  min-height: 140px;
+  border-top: 1px solid #181828;
+  flex-shrink: 0;
+}
+
+/* ─── Sidebar (left) ──────────────────────────────────────────────────────── */
+
+.mp-sidebar {
+  width: 240px;
+  min-width: 220px;
+  border-right: 1px solid #181828;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.mp-sidebar-header {
+  padding: 18px 18px 12px;
+  border-bottom: 1px solid #181828;
+  flex-shrink: 0;
+}
+
+.mp-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e2e2ec;
+  margin: 0 0 2px;
+  letter-spacing: -0.02em;
+}
+
+.mp-count {
+  font-size: 10px;
+  color: #33334a;
+}
+
+.mp-sidebar-section-label {
+  padding: 10px 18px 4px;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #2a2a44;
+  flex-shrink: 0;
+}
+
+.mp-state-list {
+  overflow-y: auto;
+  padding: 2px 0;
+}
+
+.mp-state-list::-webkit-scrollbar { width: 2px; }
+.mp-state-list::-webkit-scrollbar-thumb { background: #1e1e30; border-radius: 2px; }
+
+.mp-state-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 18px;
+  background: transparent;
+  border: none;
+  border-left: 2px solid transparent;
+  color: #555;
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+
+.mp-state-btn:hover { background: #0e0e1c; color: #bbb; }
+.mp-state-btn--active { color: #e2e2ec; }
+
+.mp-state-btn-label { flex: 1; font-weight: 500; }
+
+.mp-state-btn-emotion {
+  font-size: 9px;
+  color: #2e2e48;
+  flex-shrink: 0;
+}
+
+/* Variant list in sidebar */
+.mp-variant-sidebar-list {
+  overflow-y: auto;
+  padding: 2px 0;
+  flex: 1;
+}
+
+.mp-variant-sidebar-list::-webkit-scrollbar { width: 2px; }
+.mp-variant-sidebar-list::-webkit-scrollbar-thumb { background: #1e1e30; border-radius: 2px; }
+
+.mp-variant-sidebar-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 18px;
+  background: transparent;
+  border: none;
+  border-left: 2px solid transparent;
+  color: #444;
+  font-size: 11px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+
+.mp-variant-sidebar-btn:hover { background: #0e0e1c; color: #aaa; }
+.mp-variant-sidebar-btn--active { color: #ccc; }
+
+.mp-variant-sidebar-text {
+  flex: 1;
+  line-height: 1.35;
+  font-size: 10.5px;
+  color: inherit;
+}
+
+.mp-variant-badge-sm {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  font-size: 9px;
+  font-weight: 700;
+  color: #000;
+  flex-shrink: 0;
+}
+
+.mp-sidebar-note {
+  padding: 10px 18px 14px;
+  font-size: 10px;
+  color: #2a2a40;
+  line-height: 1.7;
+  border-top: 1px solid #111120;
+  flex-shrink: 0;
+}
+
+/* ─── Stage (center) ──────────────────────────────────────────────────────── */
+
+.mp-stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  gap: 20px;
+  padding: 24px 20px 16px;
+  overflow: hidden;
+}
+
+.mp-stage-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transition: background 0.5s ease;
+}
+
+.mp-large-preview-wrap {
+  position: relative;
+  z-index: 1;
+}
+
+.mp-stage-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  z-index: 1;
+}
+
+.mp-stage-emotion {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.9;
+}
+
+.mp-stage-state-name {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  color: #e2e2ec;
+}
+
+.mp-stage-variant-name {
+  font-size: 11px;
+  color: #44445a;
+  max-width: 320px;
+  text-align: center;
+}
+
+.mp-principles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  justify-content: center;
+  max-width: 520px;
+  z-index: 1;
+}
+
+.mp-principle-tag {
+  padding: 2px 8px;
+  border-radius: 20px;
+  border: 1px solid #1a1a2e;
+  background: #0b0b18;
+  font-size: 9px;
+  color: #33334a;
+  letter-spacing: 0.02em;
+}
+
+/* ─── Controls panel (right) ──────────────────────────────────────────────── */
+
+.mp-controls {
+  width: 220px;
+  min-width: 200px;
+  border-left: 1px solid #181828;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding-bottom: 12px;
+}
+
+.mp-controls::-webkit-scrollbar { width: 2px; }
+.mp-controls::-webkit-scrollbar-thumb { background: #1e1e30; border-radius: 2px; }
+
+.mp-preview-section {
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid #111120;
+}
+
+.mp-preview-section-label {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #33334a;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mp-size-badge {
+  font-size: 8px;
+  padding: 2px 5px;
+  border-radius: 3px;
+  background: #3b1d6e;
+  color: #c4b5fd;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  font-weight: 500;
+}
+
+.mp-preview-slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60px;
+  border-radius: 8px;
+  background: #0b0b18;
+  padding: 8px;
+}
+
+.mp-preview-slot--size-mode {
+  background: #0a0a1c;
+  border: 1px solid #1e1a38;
+}
+
+.mp-controls-divider {
+  height: 1px;
+  background: #181828;
+  margin: 4px 0;
+}
+
+/* ─── Toggle controls ─────────────────────────────────────────────────────── */
+
+.mp-toggles-section {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.mp-toggles-title {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #2a2a44;
+  margin-bottom: 8px;
+}
+
+.mp-toggle {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 5px 0;
+  color: #888;
+  font-size: 11px;
+  width: 100%;
+  text-align: left;
+  transition: color 0.1s ease;
+}
+
+.mp-toggle:hover { color: #ccc; }
+
+.mp-toggle-track {
+  width: 28px;
+  height: 15px;
+  border-radius: 8px;
+  position: relative;
+  flex-shrink: 0;
+  transition: background 0.18s ease;
+}
+
+.mp-toggle--on .mp-toggle-track  { background: #7C3AED; }
+.mp-toggle--off .mp-toggle-track { background: #1e1e30; }
+
+.mp-toggle-thumb {
+  position: absolute;
+  top: 2.5px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #fff;
+  transition: left 0.18s ease;
+}
+
+.mp-toggle--on  .mp-toggle-thumb { left: 16px; }
+.mp-toggle--off .mp-toggle-thumb { left: 2px; }
+
+.mp-toggle-label {
+  font-size: 11px;
+  color: inherit;
+  user-select: none;
+}
+
+.mp-toggle--on .mp-toggle-label { color: #ccc; }
+
+/* ─── Bottom panels ───────────────────────────────────────────────────────── */
+
+.mp-bottom-panel {
+  flex: 1;
+  padding: 12px 18px;
+  border-right: 1px solid #181828;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.mp-bottom-panel:last-child { border-right: none; }
+
+.mp-bottom-panel--mid {
+  flex: 0 0 260px;
+}
+
+.mp-bottom-panel-title {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #2a2a44;
+  flex-shrink: 0;
+}
+
+.mp-bottom-variant-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #888;
+  flex-shrink: 0;
+}
+
+.mp-bottom-body {
+  font-size: 11px;
+  color: #555;
+  line-height: 1.55;
+}
+
+.mp-bottom-use-case {
+  font-size: 10px;
+  color: #33334a;
+  margin-top: 2px;
+}
+
+.mp-bottom-hint {
+  font-size: 10px;
+  color: #3a2a60;
+  background: #110e20;
+  border-radius: 5px;
+  padding: 5px 8px;
+  margin-top: 2px;
+}
+
+/* ─── Readability badge ───────────────────────────────────────────────────── */
+
+.mp-readability-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+  width: fit-content;
+}
+
+.mp-readability-badge--excellent {
+  background: #0d2b1e;
+  color: #10B981;
+  border: 1px solid #10B98130;
+}
+
+.mp-readability-badge--good {
+  background: #1a2412;
+  color: #84cc16;
+  border: 1px solid #84cc1630;
+}
+
+.mp-readability-badge--fair {
+  background: #2a1f0a;
+  color: #f59e0b;
+  border: 1px solid #f59e0b30;
+}
+
+/* ─── Active layers list ──────────────────────────────────────────────────── */
+
+.mp-layers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  overflow-y: auto;
+}
+
+.mp-layer-entry {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10.5px;
+}
+
+.mp-layer-key {
+  color: #2a2a44;
+  min-width: 52px;
+  flex-shrink: 0;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.mp-layer-val {
+  flex: 1;
+  font-size: 10.5px;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mp-layer-val--active { color: #a78bfa; }
+.mp-layer-val--none   { color: #2a2a40; font-style: italic; }
+.mp-layer-val--hidden { color: #3a3a58; }
+
+.mp-layer-tag {
+  font-size: 8.5px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: #1e1220;
+  color: #7c4aaa;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* ─── Mascot frame (shared) ───────────────────────────────────────────────── */
+
+.mp-mascot-frame {
+  position: relative;
+  width: 300px;
+  height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mp-shadow {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 130px;
+  height: 20px;
+  background: radial-gradient(ellipse, rgba(0,0,0,0.55) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.mp-glow {
+  position: absolute;
+  inset: -28px;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0.65;
+  transform-origin: center;
+}
+
+.mp-wrap {
+  position: relative;
+  z-index: 2;
+  transform-origin: center bottom;
+}
+
+.mp-body {
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  overflow: visible;
+  position: relative;
+  transform-origin: center;
+}
+
+/* ─── Eye system ──────────────────────────────────────────────────────────── */
+
+.mp-eye-group {
+  position: absolute;
+  width: 54px;
+  height: 70px;
+  pointer-events: none;
+  z-index: 2;
+  transform-origin: center center;
+  top: 60px;
+}
+
+.mp-eye-group-left  { left:  51px; }
+.mp-eye-group-right { right: 67px; }
+
+.mp-eye-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255,255,255,0.60)  0%,
+    rgba(210,185,255,0.45) 35%,
+    rgba(170,130,255,0.22) 60%,
+    transparent 80%
+  );
+  filter: blur(7px);
+  pointer-events: none;
+}
+
+.mp-eye-pill {
+  position: absolute;
+  width: 19px;
+  height: 45px;
+  left: 17px;
+  top: 12px;
+  border-radius: 10px;
+  background: #ffffff;
+  pointer-events: none;
+}
+
+/* ─── Eyelids ─────────────────────────────────────────────────────────────── */
+
+.mp-lid {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+  top: 80px;
+}
+
+.mp-lid-left  { left:  77px; }
+.mp-lid-right { right: 94px; }
+
+/* ─── Eyebrows ────────────────────────────────────────────────────────────── */
+
+.mp-brow {
+  position: absolute;
+  width: 22px;
+  height: 10px;
+  border: 3px solid rgba(255,255,255,0.85);
+  border-bottom: none;
+  border-radius: 22px 22px 0 0;
+  background: transparent;
+  pointer-events: none;
+  transform-origin: center;
+  opacity: 0;
+  z-index: 3;
+  top: 54px;
+}
+
+.mp-brow-left  { left:  67px; }
+.mp-brow-right { right: 83px; }
+
+/* ─── Hide-via-toggle classes ─────────────────────────────────────────────── */
+/* visibility:hidden keeps layout and GSAP tweens intact, elements just don't paint */
+
+.mp-hide-brows   .mp-brow   { visibility: hidden !important; }
+.mp-hide-mouth   .mp-smile,
+.mp-hide-mouth   .mp-mouth,
+.mp-hide-mouth   .mp-cheek  { visibility: hidden !important; }
+.mp-hide-effects .mp-float,
+.mp-hide-effects .mp-particle { visibility: hidden !important; }
+
+/* ─── Smile ───────────────────────────────────────────────────────────────── */
+
+.mp-smile {
+  position: absolute;
+  width: 44px;
+  height: 20px;
+  border: 4px solid transparent;
+  border-bottom-color: rgba(255,255,255,0.9);
+  border-radius: 0 0 44px 44px;
+  background: transparent;
+  pointer-events: none;
+  opacity: 0;
+  left: 50%;
+  top: 122px;
+  transform: translateX(-50%);
+  transform-origin: center;
+}
+
+/* ─── Mouth ───────────────────────────────────────────────────────────────── */
+
+.mp-mouth {
+  position: absolute;
+  width: 28px;
+  height: 14px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.7);
+  pointer-events: none;
+  opacity: 0;
+  left: 50%;
+  top: 124px;
+  transform: translateX(-50%);
+  transform-origin: center;
+}
+
+/* ─── Cheek blush ─────────────────────────────────────────────────────────── */
+
+.mp-cheek {
+  position: absolute;
+  width: 26px;
+  height: 14px;
+  border-radius: 50%;
+  background: rgba(251,113,133,0.45);
+  pointer-events: none;
+  opacity: 0;
+  top: 110px;
+  filter: blur(5px);
+}
+
+.mp-cheek-left  { left:  48px; }
+.mp-cheek-right { right: 48px; }
+
+/* ─── Floating elements ───────────────────────────────────────────────────── */
+
+.mp-float {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0;
+  transform-origin: center;
+  z-index: 10;
+  font-size: 22px;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.mp-float-heart    { color: #f472b6; }
+.mp-float-question { color: #a78bfa; font-weight: 700; font-size: 40px; }
+
+.mp-float-q1 { left: 30%; transform: translateX(-50%); font-size: 36px; }
+.mp-float-q2 { left: 50%; transform: translateX(-50%); font-size: 48px; }
+.mp-float-q3 { left: 70%; transform: translateX(-50%); font-size: 34px; }
+
+/* ─── Particles ───────────────────────────────────────────────────────────── */
+
+.mp-particles-wrap {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mp-particle {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  opacity: 0;
+  transform-origin: center;
+}
+
+/* ─── Acting props ────────────────────────────────────────────────────────── */
+
+/* Sound-wave arcs — listening */
+.mp-wave {
+  position: absolute;
+  width: 28px;
+  height: 52px;
+  border: 2.5px solid rgba(180, 150, 255, 0.75);
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  top: 42px;
+  transform-origin: center;
+}
+.mp-wave-left  {
+  left: 10px;
+  border-right: none;
+  border-radius: 50% 0 0 50%;
+}
+.mp-wave-right {
+  right: 10px;
+  border-left: none;
+  border-radius: 0 50% 50% 0;
+}
+
+/* Magnifying glass — searching */
+.mp-mag-glass {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0;
+  font-size: 32px;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  transform-origin: center bottom;
+  z-index: 12;
+  filter: drop-shadow(0 0 6px rgba(160,120,255,0.7));
+}
+
+/* Scan ring — processing */
+.mp-scan-ring {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 2px solid rgba(140, 100, 255, 0.5);
+  pointer-events: none;
+  opacity: 0;
+  z-index: 1;
+  box-shadow: 0 0 12px rgba(120, 80, 255, 0.3), inset 0 0 12px rgba(120, 80, 255, 0.15);
+}
+
+/* Z floats — sleep */
+.mp-z-float {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+  font-weight: 700;
+  color: rgba(180, 150, 255, 0.85);
+  text-shadow: 0 0 8px rgba(140, 100, 255, 0.6);
+  transform-origin: center;
+  z-index: 12;
+}
+.mp-z-1 { font-size: 16px; top: 30px;  left: 62%; }
+.mp-z-2 { font-size: 22px; top: 10px;  left: 70%; }
+.mp-z-3 { font-size: 13px; top: 48px;  left: 74%; }
+
+/* ─── Hand ────────────────────────────────────────────────────────────────── */
+
+/* The hand is positioned to the right side of the mascot body, roughly where
+   the arm notch sits on the body image. It's a small rounded blob that waves. */
+.mp-hand {
+  position: absolute;
+  width: 38px;
+  height: 32px;
+  border-radius: 50% 55% 50% 45% / 55% 50% 55% 50%;
+  background: radial-gradient(ellipse at 40% 38%, #9b7fe8 0%, #6b46c1 60%, #4c2f99 100%);
+  box-shadow: 0 0 10px rgba(150, 110, 255, 0.55);
+  pointer-events: none;
+  opacity: 0;
+  /* Upper-right of body — near the arm notch (body is 220px wide, centered) */
+  top: 62px;
+  right: 28px;
+  transform-origin: center bottom;
+  z-index: 5;
+}
+
+/* Three small "finger" dots above the hand blob */
+.mp-hand::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: 6px;
+  width: 7px;
+  height: 9px;
+  border-radius: 50%;
+  background: #8b5cf6;
+  box-shadow: 9px 0 0 #8b5cf6, 18px 0 0 #8b5cf6;
+}
+
+/* Hide acting props with effects toggle */
+.mp-hide-effects .mp-wave,
+.mp-hide-effects .mp-mag-glass,
+.mp-hide-effects .mp-scan-ring,
+.mp-hide-effects .mp-z-float,
+.mp-hide-effects .mp-hand { visibility: hidden !important; }
