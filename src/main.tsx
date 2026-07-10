@@ -31,6 +31,9 @@ import L1ContinuousCTAPrototype from './components/L1/L1ContinuousCTAPrototype'
 import L1TextTablePrototype from './components/L1/L1TextTablePrototype'
 import CTAExplorationIndex from './CTAExplorationIndex'
 import L1ShoppingTemplate from './components/L1/L1ShoppingTemplate'
+import PrototypeIndex from './PrototypeIndex'
+import MascotIntroApp from './MascotIntroApp'
+import AgentHubApp from './AgentHubApp'
 
 declare global { interface Window { __L0_PREVIEW__?: string; __BEAM_POC__?: boolean; __INTERSTITIAL_PREVIEW__?: boolean; __L0_EXPORT__?: boolean } }
 
@@ -46,7 +49,9 @@ const isWarmProfile1  = window.location.pathname === '/warm_profile_1'
                      || window.location.pathname === '/warm-profile-1';
 const isWarmProfile1Crisp = window.location.pathname === '/warm_profile_1_crisp'
                      || window.location.pathname === '/warm-profile-1-crisp';
-const isWarmProfile1Crisper = window.location.pathname === '/warm_profile_1_crisper'
+const isWarmProfile1Crisper = window.location.pathname === '/agent_hub_exploration'
+                     || window.location.pathname === '/agent-hub-exploration'
+                     || window.location.pathname === '/warm_profile_1_crisper'
                      || window.location.pathname === '/warm-profile-1-crisper';
 const isWarmProfile2Crisp = window.location.pathname === '/warm_profile_2_crisp'
                      || window.location.pathname === '/warm-profile-2-crisp';
@@ -78,6 +83,12 @@ const isTextTable      = window.location.pathname === '/l1-text-table'
 const isCTAIndex       = window.location.pathname === '/cta-exploration';
 const isL1Final        = window.location.pathname === '/l1_final'
                       || window.location.pathname === '/l1-final';
+const isIndex          = window.location.pathname === '/index'
+                      || window.location.pathname === '/prototype-index';
+const isMascotIntro    = window.location.pathname === '/mascot-intro'
+                      || window.location.pathname === '/mascot_intro';
+const isAgentHub       = window.location.pathname === '/agent-hub'
+                      || window.location.pathname === '/agent_hub';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -105,6 +116,9 @@ createRoot(document.getElementById('root')!).render(
      isTextTable        ? <L1TextTablePrototype /> :
      isCTAIndex         ? <CTAExplorationIndex /> :
      isL1Final          ? <L1ShoppingTemplate /> :
+     isIndex            ? <PrototypeIndex /> :
+     isMascotIntro      ? <MascotIntroApp /> :
+     isAgentHub         ? <AgentHubApp onBack={() => window.history.back()} /> :
                           <App />}
   </StrictMode>,
 )

@@ -15,10 +15,12 @@ import {
   shouldShowPrompt,
 } from '../../logic/promptScheduler';
 import DeepDive from './DeepDive';
+import L0ToL1Transition from './L0ToL1Transition';
 import GeneralQuestion from '../Polls/GeneralQuestion';
 import L0Glance from '../L0/L0Glance';
 import PreferenceCard from './PreferenceCard';
 import type { UnifiedFeedItem } from '../../logic/feedComposer';
+import { getConversationalCTA } from '../../logic/ctaGenerator';
 
 /*
  * OVERLAYS_ENABLED = false:
@@ -84,6 +86,10 @@ type FeedScreenProps = {
   renderL0?: (item: FeedItem, paused: boolean, onCTAClick: () => void) => React.ReactNode;
   /** Optional override for the idle auto-advance timer (ms). Defaults to 12000. */
   idleMs?: number;
+  /** If provided, pressing ← navigates to Agent Hub instead of opening the nav rail. */
+  onAgentHub?: () => void;
+  /** When true, the Agent Hub overlay is open — FeedScreen keyboard handler is muted. */
+  hubOpen?: boolean;
 };
 
 type Overlay =
@@ -124,6 +130,8 @@ export default function FeedScreen({
   toast,
   renderL0,
   idleMs = 12000,
+  onAgentHub,
+  hubOpen = false,
 }: FeedScreenProps) {
   /* Resolve the current unified feed item if available */
   const unifiedCurrent = unifiedFeed?.[feedIdx];
@@ -186,6 +194,10 @@ export default function FeedScreen({
   // L1 exit follow-up (after deep-dive close)
   const [showL1Exit, setShowL1Exit] = useState(false);
 
+  // L0→L1 transition
+  const [showTransition, setShowTransition] = useState(false);
+  const [transitionCTARect, setTransitionCTARect] = useState<DOMRect | null>(null);
+
   // Idle auto-advance — after 12s of no interaction, move to next card
   const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const userInteractedRef = useRef(false);
@@ -199,11 +211,16 @@ export default function FeedScreen({
     }, idleMs);
   }, [onNext]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Start idle timer on mount and each card change
+  // Start idle timer on mount and each card change.
+  // When the hub overlay is open, L0 is frozen — do not auto-advance.
   useEffect(() => {
+    if (hubOpen) {
+      if (idleTimer.current) clearTimeout(idleTimer.current);
+      return;
+    }
     resetIdleTimer();
     return () => { if (idleTimer.current) clearTimeout(idleTimer.current); };
-  }, [feedIdx]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [feedIdx, hubOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Data panel nav item
   // Nav rail: Home + Settings only. Signal Log is internal — S key only.
@@ -335,6 +352,9 @@ export default function FeedScreen({
     if (!item) return;
 
     const handler = (e: KeyboardEvent) => {
+      // Agent Hub overlay is open — let AgentHubPanel handle all keys
+      if (hubOpen) return;
+
       const key = e.key;
 
       // Any keypress resets the idle auto-advance timer
@@ -495,7 +515,9 @@ export default function FeedScreen({
 
       if (key === 'ArrowUp') { onPrev(Date.now() - cardShownAt.current); setShowContextual(false); }
       if (key === 'ArrowDown') { onNext(Date.now() - cardShownAt.current); setShowContextual(false); }
-      if (key === 'ArrowLeft' && !isPreferenceCard) { setNavOpen(true); setNavFocusIdx(0); }
+      if (key === 'ArrowLeft' && !isPreferenceCard) {
+        if (onAgentHub) { onAgentHub(); } else { setNavOpen(true); setNavFocusIdx(0); }
+      }
       if (key === 'ArrowRight') { setActionsVisible(true); setPollFocusIdx(0); }
       if (key === ' ') {
         // Space = pause / resume the current L0 animation
@@ -518,10 +540,15 @@ export default function FeedScreen({
         });
       }
       if (key === 'Enter') {
-        // CTA click = strong positive + open L1
+        // CTA click = strong positive + play L0→L1 transition before opening L1
         onThumbsUp(item, { categories: [item.category], subCategories: item.subCategories.slice(0, 2) } as any, 'cta_click');
         deepDiveOpenedAt.current = Date.now();
-        setOverlay('deep-dive');
+        // Use a centered fallback rect since keyboard nav has no pointer position
+        const fallbackRect = new DOMRect(
+          window.innerWidth / 2 - 140, window.innerHeight - 160, 280, 64
+        );
+        setTransitionCTARect(fallbackRect);
+        setShowTransition(true);
       }
       if (key === 'Escape' || key === 'Backspace') { toast('↑↓ to browse · ← for menu'); }
     };
@@ -549,6 +576,8 @@ export default function FeedScreen({
     profile.familyFriendly,
     showPayoffChip,
     resetIdleTimer,
+    onAgentHub,
+    hubOpen,
   ]);
 
   if (!item) {
@@ -624,21 +653,30 @@ export default function FeedScreen({
         />
       ) : renderL0 ? renderL0(
           item,
-          feedPaused,
+          feedPaused || hubOpen,
           () => {
             onThumbsUp(item, { categories: [item.category], subCategories: item.subCategories.slice(0, 2) } as any, 'cta_click');
             deepDiveOpenedAt.current = Date.now();
-            setOverlay('deep-dive');
+            // Estimate CTA rect from the click event target via a document query
+            const ctaBtn = document.querySelector<HTMLButtonElement>('[data-cta-pill]');
+            const rect = ctaBtn?.getBoundingClientRect() ??
+              new DOMRect(window.innerWidth / 2 - 140, window.innerHeight - 160, 280, 64);
+            setTransitionCTARect(rect);
+            setShowTransition(true);
           },
         ) : (
         <L0Glance
           item={item}
           profile={profile}
-          paused={feedPaused}
+          paused={feedPaused || hubOpen}
           onCTAClick={() => {
             onThumbsUp(item, { categories: [item.category], subCategories: item.subCategories.slice(0, 2) } as any, 'cta_click');
             deepDiveOpenedAt.current = Date.now();
-            setOverlay('deep-dive');
+            const ctaBtn = document.querySelector<HTMLButtonElement>('[data-cta-pill]');
+            const rect = ctaBtn?.getBoundingClientRect() ??
+              new DOMRect(window.innerWidth / 2 - 140, window.innerHeight - 160, 280, 64);
+            setTransitionCTARect(rect);
+            setShowTransition(true);
           }}
         />
       )}
@@ -969,6 +1007,19 @@ export default function FeedScreen({
             </div>
           </div>
         </div>
+      )}
+
+      {/* L0→L1 cinematic transition */}
+      {showTransition && transitionCTARect && (
+        <L0ToL1Transition
+          item={item}
+          ctaLabel={getConversationalCTA(item)}
+          ctaRect={transitionCTARect}
+          onComplete={() => {
+            setShowTransition(false);
+            setOverlay('deep-dive');
+          }}
+        />
       )}
 
       {/* DeepDive overlay */}

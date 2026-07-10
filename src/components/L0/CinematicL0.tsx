@@ -536,6 +536,7 @@ export default function CinematicL0({
               <button
                 ref={ctaPillRef}
                 tabIndex={-1}
+                data-cta-pill="1"
                 onClick={onCTAClick}
                 style={{
                   display: 'inline-flex', alignItems: 'center',

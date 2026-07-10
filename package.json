@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "update:index": "node scripts/update-index.mjs"
   },
   "dependencies": {
     "@lottiefiles/dotlottie-react": "^0.19.4",
