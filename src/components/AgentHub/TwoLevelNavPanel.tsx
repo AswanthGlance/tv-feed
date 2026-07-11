@@ -379,12 +379,14 @@ function C2Topic({ topic, items, idx, focused }: { topic: Topic; items: C2Item[]
       {/* Explore gateway */}
       <MiniLabel text="Explore" />
       {(() => {
-        const on = focused && idx === 0;
+        const on = focused && idx === 0;           // actively focused
+        const active = idx === 0;                  // selected (drives C3) even when column blurred
+        const sel = on || active;
         return (
           <div style={{
             display: 'flex', alignItems: 'center', gap: 14, padding: '15px 18px', borderRadius: 16, cursor: 'pointer', marginBottom: 22,
-            background: on ? `linear-gradient(110deg, rgba(${rgb},0.2), rgba(255,255,255,0.05))` : 'rgba(255,255,255,0.045)',
-            border: on ? `1.5px solid rgba(${rgb},0.6)` : `1px solid rgba(${rgb},0.22)`,
+            background: sel ? `linear-gradient(110deg, rgba(${rgb},${on ? 0.2 : 0.11}), rgba(255,255,255,0.05))` : 'rgba(255,255,255,0.045)',
+            border: on ? `1.5px solid rgba(${rgb},0.6)` : active ? `1.5px solid rgba(${rgb},0.32)` : `1px solid rgba(${rgb},0.22)`,
             boxShadow: on ? `0 12px 32px rgba(${rgb},0.2)` : 'none', transform: on ? 'translateX(5px)' : 'none',
             transition: 'all 0.22s cubic-bezier(0.22,0.61,0.36,1)',
           }}>
@@ -405,20 +407,24 @@ function C2Topic({ topic, items, idx, focused }: { topic: Topic; items: C2Item[]
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {items.map((it, i) => {
           if (it.kind !== 'card') return null;
-          const on = focused && idx === i;
+          const on = focused && idx === i;        // actively focused in C2
+          const active = idx === i;               // selected — drives C3 even when focus is in C3
           const c = it.card;
 
-          // Focused → full-image hero
-          if (on) {
+          // Focused OR selected → full-image hero (dimmed when selected-but-not-focused)
+          if (on || active) {
             return (
               <div key={c.id} style={{
                 position: 'relative', borderRadius: 18, overflow: 'hidden', cursor: 'pointer', height: 200,
-                border: `2px solid rgba(${rgb},0.7)`, boxShadow: `0 20px 50px rgba(${rgb},0.28)`,
+                border: on ? `2px solid rgba(${rgb},0.7)` : `2px solid rgba(${rgb},0.4)`,
+                boxShadow: on ? `0 20px 50px rgba(${rgb},0.28)` : `0 10px 30px rgba(${rgb},0.14)`,
                 background: '#111', transition: 'all 0.28s cubic-bezier(0.22,0.61,0.36,1)',
                 animation: 'tln-hero-in 0.3s cubic-bezier(0.22,0.61,0.36,1)',
               }}>
-                <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${c.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+                <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${c.image})`, backgroundSize: 'cover', backgroundPosition: 'center', opacity: on ? 1 : 0.82 }} />
                 <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(4,3,10,0.95) 0%, rgba(4,3,10,0.4) 50%, transparent 82%)' }} />
+                {/* dim veil when selected but focus is elsewhere */}
+                {!on && <div style={{ position: 'absolute', inset: 0, background: 'rgba(4,3,10,0.32)' }} />}
                 {c.isCurrentL0 && (
                   <div style={{
                     position: 'absolute', top: 14, left: 14, display: 'flex', alignItems: 'center', gap: 7,
@@ -430,14 +436,25 @@ function C2Topic({ topic, items, idx, focused }: { topic: Topic; items: C2Item[]
                     {topic.currentLabel}
                   </div>
                 )}
+                {/* "Selected" pill (top-right) when driving C3 without focus */}
+                {!on && (
+                  <div style={{
+                    position: 'absolute', top: 14, right: 14, display: 'flex', alignItems: 'center', gap: 6,
+                    padding: '4px 11px', borderRadius: 999, background: 'rgba(0,0,0,0.5)', border: `1px solid rgba(${rgb},0.5)`,
+                    backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)',
+                    fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif', fontSize: 10, fontWeight: 700, color: `rgba(${rgb},0.95)`, textTransform: 'uppercase', letterSpacing: '0.06em',
+                  }}>Selected  ›</div>
+                )}
                 <div style={{ position: 'absolute', left: 20, right: 20, bottom: 16 }}>
                   <div style={{ fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif', fontWeight: 800, fontSize: 25, color: '#FFFFFF', letterSpacing: '-0.02em', lineHeight: 1.12 }}>{c.title}</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 6 }}>
                     <span style={{ fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif', fontSize: 14, color: 'rgba(255,255,255,0.78)' }}>{c.sub}</span>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                      <kbd style={{ background: 'rgba(255,255,255,0.92)', color: '#0A0812', borderRadius: 5, padding: '2px 7px', fontSize: 9.5, fontWeight: 800, fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif' }}>Enter</kbd>
-                      <span style={{ fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif', fontSize: 11.5, fontWeight: 600, color: 'rgba(255,255,255,0.8)' }}>Open</span>
-                    </span>
+                    {on && (
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                        <kbd style={{ background: 'rgba(255,255,255,0.92)', color: '#0A0812', borderRadius: 5, padding: '2px 7px', fontSize: 9.5, fontWeight: 800, fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif' }}>Enter</kbd>
+                        <span style={{ fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif', fontSize: 11.5, fontWeight: 600, color: 'rgba(255,255,255,0.8)' }}>Open</span>
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
