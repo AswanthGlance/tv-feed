@@ -26,6 +26,7 @@ import Toast from './components/Toast';
 import RemoteOverlay from './components/RemoteOverlay';
 import AgentHubPanel from './components/AgentHub/AgentHubPanel';
 import CurvedNavPanel from './components/AgentHub/CurvedNavPanel';
+import FloatingWidgetsPanel from './components/AgentHub/FloatingWidgetsPanel';
 import TwoLevelNavPanel from './components/AgentHub/TwoLevelNavPanel';
 import ExploreFirstPanel from './components/AgentHub/ExploreFirstPanel';
 
@@ -249,8 +250,8 @@ export default function WarmProfile1CrisperApp() {
   }, [cancelHold, toast]);
 
   // ── Navigation-concept exploration selector (dev, L0-only) ──────────────────
-  // 1 = full-screen Agent Hub · 2 = curved vertical nav · 3 = AI Workspace · 4 = Explore-first
-  type NavOption = 1 | 2 | 3 | 4;
+  // 1 = full-screen Agent Hub · 2 = curved vertical nav · 2.5 = floating widgets · 3 = AI Workspace · 4 = Explore-first
+  type NavOption = 1 | 2 | 2.5 | 3 | 4;
   const [navOption, setNavOption] = useState<NavOption>(3);
   const [navOpenConcept, setNavOpenConcept] = useState<NavOption | null>(null);
   const navOpen = navOpenConcept !== null;
@@ -259,7 +260,9 @@ export default function WarmProfile1CrisperApp() {
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (navOpen) return;
-      // Options 1, 2 and 4 are hidden for now — only Option 3 is active.
+      // Option 1 and 4 are hidden for now — Options 2, 2.5 and 3 are active.
+      if (e.key === '2') { setNavOption(2); toast('← opens Option 2 · Nav Rail'); }
+      if (e.key === '5') { setNavOption(2.5); toast('← opens Option 2.5 · Floating Widgets'); }
       if (e.key === '3') { setNavOption(3); toast('← opens Option 3 · AI Workspace'); }
     };
     window.addEventListener('keydown', handler);
@@ -275,8 +278,14 @@ export default function WarmProfile1CrisperApp() {
   const l0Treatment: React.CSSProperties =
     navOpenConcept === 1
       ? { filter: 'brightness(0.45)', opacity: 0.7, transform: 'none' }
+      : navOpenConcept === 2
+      // Option 2 nav rail: L0 shifts right, mild dim, stays clearly recognisable
+      ? { filter: 'brightness(0.68) saturate(0.75)', opacity: 0.88, transform: 'translateX(110px) scale(0.91)' }
+      : navOpenConcept === 2.5
+      // Option 2.5 floating widgets: L0 stays frozen in place — only slightly
+      // softer contrast/saturation; the widgets float on top of it.
+      ? { filter: 'brightness(0.88) saturate(0.78) contrast(0.96)', opacity: 1, transform: 'none' }
       : navOpenConcept === 3 || navOpenConcept === 4
-      // Option 3 & 4: recognizable but clearly secondary — dimmed, desaturated, mild blur, pushed right
       ? { filter: 'brightness(0.6) saturate(0.7) blur(3px)', opacity: 0.9, transform: 'translateX(90px) scale(0.9)' }
       : navOpen
       ? { filter: 'brightness(0.82) blur(2px)', opacity: 0.92, transform: 'translateX(64px) scale(0.94)' }
@@ -355,6 +364,9 @@ export default function WarmProfile1CrisperApp() {
             {navOpenConcept === 2 && (
               <CurvedNavPanel onBack={closeNav} onToast={toast} />
             )}
+            {navOpenConcept === 2.5 && (
+              <FloatingWidgetsPanel onBack={closeNav} onToast={toast} />
+            )}
             {navOpenConcept === 3 && (
               <TwoLevelNavPanel
                 onBack={closeNav}
@@ -409,13 +421,26 @@ function LeftEdgeAffordance({ onOpen }: { onOpen: () => void }) {
         animation: 'l0-edge-pulse 3.4s ease-in-out infinite',
         pointerEvents: 'none',
       }} />
-      {/* minimal chevron */}
+      {/* "← Agents" nudge pill */}
       <div style={{
-        marginLeft: 12, fontSize: 22, lineHeight: 1,
-        color: 'rgba(255,255,255,0.55)',
+        marginLeft: 12,
+        display: 'flex', alignItems: 'center', gap: 7,
+        padding: '7px 14px 7px 10px', borderRadius: 999,
+        background: 'rgba(12,9,24,0.55)',
+        backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)',
+        boxShadow: '0 0 0 1px rgba(167,134,229,0.28), 0 8px 24px rgba(0,0,0,0.4)',
         animation: 'l0-chevron-drift 3.4s ease-in-out infinite',
         pointerEvents: 'none',
-      }}>‹</div>
+      }}>
+        <span style={{
+          fontSize: 15, lineHeight: 1, color: 'rgba(199,182,245,0.9)',
+        }}>←</span>
+        <span style={{
+          fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif',
+          fontSize: 11.5, fontWeight: 700, letterSpacing: '0.02em',
+          color: 'rgba(255,255,255,0.78)',
+        }}>Agents</span>
+      </div>
       <style>{`
         @keyframes l0-edge-pulse {
           0%, 100% { opacity: 0.4; }
@@ -434,10 +459,12 @@ function LeftEdgeAffordance({ onOpen }: { onOpen: () => void }) {
 // Chooses which navigation concept ← opens. Keys 1/2/3 also switch it.
 
 function NavOptionSelector({ active, onSelect }: {
-  active: 1 | 2 | 3 | 4; onSelect: (o: 1 | 2 | 3 | 4) => void;
+  active: 1 | 2 | 2.5 | 3 | 4; onSelect: (o: 1 | 2 | 2.5 | 3 | 4) => void;
 }) {
-  // Options 1, 2 and 4 are hidden for now — only Option 3 is shown.
-  const options: { n: 1 | 2 | 3 | 4; label: string }[] = [
+  // Options 1 and 4 are hidden for now — Options 2, 2.5 and 3 are shown.
+  const options: { n: 1 | 2 | 2.5 | 3 | 4; label: string }[] = [
+    { n: 2, label: 'Nav Rail' },
+    { n: 2.5, label: 'Floating Widgets' },
     { n: 3, label: 'Workspace' },
   ];
   return (

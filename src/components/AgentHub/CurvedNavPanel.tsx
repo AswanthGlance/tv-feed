@@ -1,178 +1,272 @@
 /**
- * CurvedNavPanel — Option 2: vertical global navigation rail.
+ * CurvedNavPanel — Option 2: agent-widget rail.
  *
- * A living vertical rail emerging from the left edge. The selected destination
- * sits at the vertical center, enlarged, showing an information-rich live
- * preview and one action. Neighbours sit above/below, smaller and lighter.
+ * Floating overlay on top of L0 (opened with ←):
+ *   · Search pill at the top
+ *   · Agent widgets — every hub destination (agents + AI Gallery, Wishlist,
+ *     Recent) shares one card system. Compact = 122px square (icon chip +
+ *     agent name + one glanceable value). Focused = 400×244 widget where the
+ *     agent identity is the hero and the rotating content sits under a fixed
+ *     KICKER label. Photos only as inset thumbs.
+ *   · Only Settings remains as a plain row at the bottom.
  *
- * This is GLOBAL ambient navigation, not a list of AI domains.
- * Destinations: Search · Home · Chats · AI Gallery · Wishlist · Settings
+ * Card identity (deliberately NOT the Apple-widget look): each card carries a
+ * soft wash of its agent tint and a chat-bubble silhouette (one tight corner,
+ * bottom-left) — the agents "speak". Focus = bright ring + outer tint glow,
+ * with the mascot sitting inside the card footer next to its line.
  *
- * All previews are grounded in real ambient context (window.GLANCE_CTX) and the
- * warm profile's actual interests — no random filler. Settings surfaces the
- * ambient state itself: location, weather, selfie, profile, privacy.
+ * Scroll system: rAF tween on the same curve/duration as the card expansion
+ * toward targets computed from known settled heights (never DOM measurement
+ * mid-animation), plus top/bottom fade masks so cards dissolve at the edges.
  *
- * Visual language: near-black, monochrome surfaces, frosted glass, thin white
- * borders, restrained color only in icons / thumbnails / status dots.
- *
- * TV navigation (deterministic, no looping):
- *   ↑ / ↓    → previous / next destination
- *   →        → dismiss, return to L0
- *   Back/Esc → dismiss, return to L0
- *   Enter/OK → open selected destination (toast for now)
+ * Navigation:
+ *   ↑/↓     move focus (search → widgets → settings)
+ *   ←/Esc   back to L0
+ *   Enter   open focused item
  */
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import AgentMascot from '../Shared/AgentMascot';
 
-// ─── Ambient context (live, from window.GLANCE_CTX) ─────────────────────────────
+// ─── Types ──────────────────────────────────────────────────────────────────
 
-type Ambient = { city: string; weather: string; day: string; timeOfDay: string; upcomingContext: string };
+type Pattern = 'photo' | 'shopping' | 'weather' | 'stat';
 
-function readAmbient(): Ambient {
-  const c = (typeof window !== 'undefined' && window.GLANCE_CTX) || {};
-  return {
-    city: c.city || 'Bangalore',
-    weather: c.weather || 'clear',
-    day: c.day || 'Today',
-    timeOfDay: c.timeOfDay || 'morning',
-    upcomingContext: c.upcomingContext || 'weekend',
-  };
-}
-
-const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
-const weatherIcon = (w: string) =>
-  ({ rainy: '🌧', sunny: '☀', cloudy: '☁', stormy: '⛈', clear: '✦' } as Record<string, string>)[w] || '☁';
-
-// ─── Types ─────────────────────────────────────────────────────────────────────
-
-type Dest = {
+type AgentDef = {
   id: string;
   label: string;
   icon: string;
-  tint: string;                       // small accent, used sparingly
-  status: string;                     // one short status/action line
-  preview: PreviewSpec;
+  tint: string;
+  pattern: Pattern;
+  image?: string;
+  /** Image behind the compact square (defaults to `image`) — recognition without reading */
+  compactImage?: string;
+  /** Compact: ONE glanceable value (number / delta / count / time) */
+  compactValue: string;
+  /** Compact: what the value refers to */
+  compactSub: string;
+  /** Fresh-update dot on the compact square */
+  fresh?: boolean;
+  /** Persistent agent-level state under the agent name */
+  statusLine: string;
+  /** Fixed uppercase label framing the rotating item */
+  kicker: string;
+  /** The rotating/timely content title (secondary) */
+  itemTitle: string;
+  /** One factual proof point */
+  detailLine: string;
+  /** The one tinted line (number / urgency) */
+  accentLine: string;
+  mascotLine: string;
 };
 
-type Row = { label: string; value: string; state?: 'ok' | 'attention' };
+// ─── Agent widgets ───────────────────────────────────────────────────────────
 
-type PreviewSpec =
-  | { kind: 'search'; hint: string; suggestions: string[] }
-  | { kind: 'home'; glance: string; sub: string; upNext: string; contextLine: string }
-  | { kind: 'chats'; threads: { title: string; snippet: string; agent: string; unread?: boolean }[] }
-  | { kind: 'gallery'; count: number; last: string; prompts: string[]; thumbs: string[] }
-  | { kind: 'wishlist'; items: { name: string; note: string }[]; count: number }
-  | { kind: 'settings'; rows: Row[] };
+const AGENTS: AgentDef[] = [
+  {
+    id: 'travel', label: 'Travel', icon: '🌄', tint: '#4DD0C4', pattern: 'photo',
+    image: '/images/warm-start/coorg.jpg',
+    compactValue: '4 hrs away', compactSub: 'Coorg',
+    statusLine: '1 trip saved · 2 chats open',
+    kicker: 'This weekend', itemTitle: 'Coorg',
+    detailLine: 'Coffee estates · Monsoon season',
+    accentLine: '₹3,500 – ₹5,500 / night',
+    mascotLine: "Let's plan your weekend.",
+  },
+  {
+    id: 'recipes', label: 'Recipes', icon: '🍝', tint: '#FFB86B', pattern: 'photo',
+    image: '/images/feed/feed_42-food-japanese-ramen-counter.jpg',
+    compactValue: '25 min', compactSub: 'Naan Pizza',
+    statusLine: 'Meal plan in progress · 5 recipes',
+    kicker: "Tonight's pick", itemTitle: 'Butter Garlic Naan Pizza',
+    detailLine: 'Ingredients you likely have',
+    accentLine: '25 min · 6 ingredients',
+    mascotLine: 'I can help you cook tonight.',
+  },
+  {
+    id: 'shopping', label: 'Shopping', icon: '🎧', tint: '#6BD98A', pattern: 'shopping',
+    image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=400&q=70',
+    compactValue: '↓ ₹2,000', compactSub: 'Sony XM5', fresh: true,
+    statusLine: 'Watching 12 items · 2 drops this week',
+    kicker: 'Price drop', itemTitle: 'Sony WH-1000XM5',
+    detailLine: 'In stock · Free delivery',
+    accentLine: '↓ ₹2,000 · lowest this month',
+    mascotLine: 'I found a better deal.',
+  },
+  {
+    id: 'fashion', label: 'Fashion', icon: '👕', tint: '#F79BC3', pattern: 'photo',
+    image: '/images/feed/feed_31-fashion-streetwear-editorial.jpg',
+    compactValue: '3 looks', compactSub: 'Rain-ready',
+    statusLine: "4 looks saved · styled for today's rain",
+    kicker: 'Ready to wear', itemTitle: 'Weekend Layers',
+    detailLine: 'Rain-ready · Smart casual',
+    accentLine: 'Bengaluru monsoon this weekend',
+    mascotLine: "I've put together some looks.",
+  },
+  {
+    id: 'weather', label: 'Weather', icon: '🌧', tint: '#6FB9FF', pattern: 'weather',
+    compactValue: '24°', compactSub: 'Rain at 5 PM', fresh: true,
+    statusLine: 'Bengaluru · monsoon watch on',
+    kicker: 'Right now', itemTitle: 'Bengaluru · Feels like 26°',
+    detailLine: 'Light jacket recommended',
+    accentLine: 'Rain in 2 hours',
+    mascotLine: 'Carry an umbrella today.',
+  },
+  {
+    id: 'wellness', label: 'Wellness', icon: '🧘', tint: '#7FD8A8', pattern: 'stat',
+    compactImage: '/images/feed/feed_32-wellness-sunrise-yoga-lake.jpg',
+    compactValue: '10 min', compactSub: 'Breathing',
+    statusLine: 'Better Sleep · 4-day streak',
+    kicker: 'Ready now', itemTitle: 'Breathing & mindfulness',
+    detailLine: 'No equipment needed',
+    accentLine: 'Good for monsoon evenings',
+    mascotLine: "This one's great for winding down.",
+  },
+  {
+    id: 'pets', label: 'Pets', icon: '🐶', tint: '#F5C878', pattern: 'photo',
+    image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=400&q=70',
+    compactValue: 'Mon 21', compactSub: 'Vaccination',
+    statusLine: 'Bruno · vet visit in 3 days',
+    kicker: 'Coming up', itemTitle: "Bruno's vaccination",
+    detailLine: 'Golden Retriever · 3 yrs',
+    accentLine: 'Due Mon 21',
+    mascotLine: "Bruno's due for a check-in.",
+  },
+  {
+    id: 'home-decor', label: 'Home', icon: '💡', tint: '#E8CE8A', pattern: 'photo',
+    image: '/images/feed/feed_24-home-cozy-monsoon-living-room.jpg',
+    compactValue: '5 lamps', compactSub: 'Warm Lighting',
+    statusLine: '1 AI design · 9-item shopping list',
+    kicker: 'New idea', itemTitle: 'Warm Lighting',
+    detailLine: 'Layered glow · monsoon evenings',
+    accentLine: '₹2,500 – ₹8,000 range',
+    mascotLine: 'I found some great lighting ideas.',
+  },
+  {
+    id: 'sports', label: 'Sports', icon: '🏏', tint: '#79C7FF', pattern: 'photo',
+    image: '/images/warm-start/ind-vs-afg.png',
+    compactValue: '7:30 PM', compactSub: 'RCB vs CSK', fresh: true,
+    statusLine: 'Following RCB · 1 reminder set',
+    kicker: 'Tonight 7:30 PM', itemTitle: 'RCB vs CSK',
+    detailLine: 'M. Chinnaswamy Stadium',
+    accentLine: 'Live in 3 hrs · reminder set',
+    mascotLine: 'Big match tonight.',
+  },
+  {
+    id: 'news', label: 'News', icon: '📰', tint: '#93AFC9', pattern: 'stat',
+    compactImage: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=400&q=70',
+    compactValue: '6 stories', compactSub: 'Morning Brief', fresh: true,
+    statusLine: 'Following 3 topics · 1 new update',
+    kicker: 'Morning brief', itemTitle: 'Bengaluru focus · India · Tech · Local',
+    detailLine: 'Updated 2h ago',
+    accentLine: 'Read in 90 seconds',
+    mascotLine: "Here's what's happening today.",
+  },
+  {
+    id: 'vtone', label: 'VTone', icon: '📸', tint: '#F484B8', pattern: 'stat',
+    compactImage: 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=400&q=70',
+    compactValue: '3 new fits', compactSub: 'Try-on ready',
+    statusLine: '12 styles saved',
+    kicker: 'New for you', itemTitle: 'A New Look',
+    detailLine: 'Upload a selfie · virtual try-on',
+    accentLine: '12 saved styles · 3 new fits',
+    mascotLine: "Let's create a new look.",
+  },
+  {
+    id: 'ai-gallery', label: 'AI Gallery', icon: '✦', tint: '#B9A6F0', pattern: 'photo',
+    image: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=400&q=70',
+    compactValue: '24 images', compactSub: '2h ago',
+    statusLine: '3 collections · 1 draft open',
+    kicker: 'Latest creation', itemTitle: 'Coorg Estate in the Mist',
+    detailLine: 'Generated 2h ago',
+    accentLine: '24 total creations',
+    mascotLine: 'Your recent creations are here.',
+  },
+  {
+    id: 'wishlist', label: 'Wishlist', icon: '♡', tint: '#FF97B5', pattern: 'stat',
+    compactImage: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=400&q=70',
+    compactValue: '12 saved', compactSub: '2 updates', fresh: true,
+    statusLine: 'Saved across 5 topics',
+    kicker: 'Price update', itemTitle: 'Sony WH-1000XM5',
+    detailLine: 'Coorg stay · dates open',
+    accentLine: '↓ ₹2,000 this week',
+    mascotLine: 'Some saved items have updates.',
+  },
+  {
+    id: 'recent', label: 'Recent', icon: '⟲', tint: '#8FB8DE', pattern: 'stat',
+    compactImage: 'https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e6?auto=format&fit=crop&w=400&q=70',
+    compactValue: '2 days ago', compactSub: 'Coffee Machines',
+    statusLine: '4 threads this week',
+    kicker: 'Continue', itemTitle: 'Coffee Machine Comparison',
+    detailLine: '4 options compared',
+    accentLine: 'Also: Coorg trip planning',
+    mascotLine: 'Pick up where you left off.',
+  },
+];
 
-// ─── Build destinations from live ambient context ────────────────────────────────
-// Order is the navigation order. Content is grounded in the warm profile (Akshay:
-// Bangalore, sports/triathlon, travel, wellness, music) and window.GLANCE_CTX.
+// ─── Bottom rows (only Settings is a plain row) ──────────────────────────────
 
-function buildDestinations(a: Ambient): Dest[] {
-  const when = `${a.day} ${a.timeOfDay}`;
-  return [
-    {
-      id: 'search', label: 'Search', icon: '⌕', tint: '#9FB4FF',
-      status: 'Ask anything',
-      preview: {
-        kind: 'search',
-        hint: `Search or ask — ${a.city}, ${cap(a.timeOfDay)}`,
-        suggestions: [
-          `Weekend escapes near ${a.city}`,
-          a.weather === 'rainy' ? 'Cosy rainy-day recipes' : 'Things to do outdoors today',
-          'India vs Afghanistan — start time',
-        ],
-      },
-    },
-    {
-      id: 'home', label: 'Home', icon: '◉', tint: '#A786E5',
-      status: 'Ambient feed · Live',
-      preview: {
-        kind: 'home',
-        glance: 'A Coffee Estate at First Light',
-        sub: 'Coorg · Weekend escape',
-        upNext: 'Up next · The Nandi Hills Ride',
-        contextLine: `${a.city} · ${weatherIcon(a.weather)} ${cap(a.weather)} · ${when}`,
-      },
-    },
-    {
-      id: 'chats', label: 'Chats', icon: '❒', tint: '#7FD1C4',
-      status: '2 active threads',
-      preview: {
-        kind: 'chats',
-        threads: [
-          { title: 'Coorg trip planning', snippet: '3 estate stays under ₹4,500 · dates for the weekend', agent: 'Travel', unread: true },
-          { title: 'Triathlon training block', snippet: 'This week: 2 rides, 1 swim — Nandi loop on Sunday', agent: 'Fitness' },
-        ],
-      },
-    },
-    {
-      id: 'gallery', label: 'AI Gallery', icon: '✦', tint: '#E5A9F0',
-      status: '24 creations',
-      preview: {
-        kind: 'gallery',
-        count: 24, last: '2h ago',
-        prompts: ['Coorg estate in the mist', 'Nandi Hills sunrise ride'],
-        thumbs: ['#2E2A4A', '#25384A', '#3E2A38'],
-      },
-    },
-    {
-      id: 'wishlist', label: 'Wishlist', icon: '♥', tint: '#F0A9B4',
-      status: '12 saved',
-      preview: {
-        kind: 'wishlist',
-        count: 12,
-        items: [
-          { name: 'Ama Plantation, Coorg', note: 'Saved since February · dates open for the weekend' },
-          { name: 'Sony WH-1000XM5', note: '↓ ₹8,000 since you saved it' },
-        ],
-      },
-    },
-    {
-      id: 'settings', label: 'Settings', icon: '⚙', tint: '#B9BEC9',
-      status: 'Ambient context',
-      preview: {
-        kind: 'settings',
-        rows: [
-          { label: 'Location', value: `${a.city} · confirmed`, state: 'ok' },
-          { label: 'Weather', value: `${weatherIcon(a.weather)} ${cap(a.weather)} · ${cap(a.timeOfDay)}`, state: 'ok' },
-          { label: 'Selfie', value: 'Not added — set up your looks', state: 'attention' },
-          { label: 'Profile', value: 'Akshay · Warm', state: 'ok' },
-          { label: 'Privacy', value: 'On-device · 6 services linked', state: 'ok' },
-        ],
-      },
-    },
-  ];
+type MenuDef = { id: string; icon: string; label: string; sub: string };
+
+const MENU: MenuDef[] = [
+  { id: 'settings', icon: '⚙', label: 'Settings', sub: 'Bengaluru · 24°' },
+];
+
+// ─── Constants ───────────────────────────────────────────────────────────────
+
+const FONT = '"Plus Jakarta Sans",system-ui,sans-serif';
+const RAIL_W = 448;          // outer rail (incl. padding)
+const CARD_W = 400;          // expanded widget width
+const SQ = 122;              // compact square size
+const GAP = 14;              // breathing room between widgets
+const EXP_H = 244;           // ONE expanded height for all agents (2 × SQ)
+const PAD_TOP = 34;          // scroller padding-top (air under the search pill)
+const PAD_BOT = 30;          // scroller padding-bottom
+
+// Silky size curve — shared by card size AND scroll tween
+const SIZE_EASE = 'cubic-bezier(0.25, 0.8, 0.25, 1)';
+const SIZE_MS = 560;
+
+// Chat-bubble silhouette — one tight corner (bottom-left): the agents "speak".
+const RADIUS_COMPACT = '22px 22px 22px 7px';
+const RADIUS_FOCUSED = '26px 26px 26px 9px';
+
+const RING_REST = 'inset 0 0 0 1px rgba(255,255,255,0.07), inset 0 1px 0 rgba(255,255,255,0.05), 0 4px 14px rgba(0,0,0,0.30)';
+const ringFocus = (tint: string) =>
+  `inset 0 0 0 1px rgba(255,255,255,0.42), inset 0 1px 0 rgba(255,255,255,0.12), 0 0 0 1.5px ${tint}73, 0 0 22px ${tint}59, 0 0 54px ${tint}47, 0 24px 64px rgba(0,0,0,0.55)`;
+/** Focused card nudges toward screen center — embossed, coming forward */
+const FOCUS_SHIFT = 16;
+/** Horizontal breathing room inside the scroller so the glow isn't clipped */
+const GLOW_PAD_L = 26;
+const GLOW_PAD_R = 44;
+
+// Card surface: graphite with a soft wash of the agent tint from the top-left
+const surface = (tint: string) =>
+  `linear-gradient(145deg, ${tint}1F 0%, rgba(24,24,31,0.94) 52%)`;
+
+// cubic-bezier(0.32, 0.72, 0.28, 1) sampler for the scroll tween
+function cubicBezier(x1: number, y1: number, x2: number, y2: number) {
+  const cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx;
+  const cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by;
+  const sampleX = (t: number) => ((ax * t + bx) * t + cx) * t;
+  const sampleY = (t: number) => ((ay * t + by) * t + cy) * t;
+  const sampleDX = (t: number) => (3 * ax * t + 2 * bx) * t + cx;
+  return (x: number) => {
+    let t = x;
+    for (let i = 0; i < 5; i++) {
+      const dx = sampleX(t) - x;
+      const d = sampleDX(t);
+      if (Math.abs(dx) < 1e-4 || d === 0) break;
+      t -= dx / d;
+    }
+    return sampleY(t);
+  };
 }
+const scrollEase = cubicBezier(0.25, 0.8, 0.25, 1);
 
-// ─── Layout math ─────────────────────────────────────────────────────────────────
-//
-// Vertical rail. Every node shares one left anchor (RAIL_X) — no horizontal drift.
-// The selected node sits at the vertical center, expanded. Neighbours are pushed
-// clear of the tall card (first step clears half the card) so nothing overlaps,
-// then spaced evenly outward. Distant nodes fade but never clip meaningfully.
+const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 
-const STAGE_H = 1080;
-const CENTER_Y = STAGE_H / 2;      // 540
-const RAIL_X = 88;                  // shared left anchor for all nodes
-const SELECTED_HALF = 210;          // ~half the expanded card height (richer content)
-const COMPACT_H = 56;               // compact node height
-const GAP = 20;                     // breathing room between nodes
-
-// signed vertical offset for a node at distance d from the selected node
-function nodeY(d: number): number {
-  if (d === 0) return CENTER_Y;
-  const sign = Math.sign(d);
-  const first = SELECTED_HALF + GAP + COMPACT_H / 2; // clear the tall card
-  const step = COMPACT_H + GAP;
-  return CENTER_Y + sign * (first + (Math.abs(d) - 1) * step);
-}
-
-function nodeOpacity(d: number): number {
-  return Math.max(0.3, 1 - Math.abs(d) * 0.22);
-}
-
-// ─── Component ─────────────────────────────────────────────────────────────────
+// ─── Component ───────────────────────────────────────────────────────────────
 
 export type CurvedNavPanelProps = {
   onBack: () => void;
@@ -180,438 +274,494 @@ export type CurvedNavPanelProps = {
 };
 
 export default function CurvedNavPanel({ onBack, onToast }: CurvedNavPanelProps) {
-  const dests = useMemo(() => buildDestinations(readAmbient()), []);
-  const [selected, setSelected] = useState(1); // default: Home
+  // navSlot: -1 = search · 0..A-1 = agent widgets · A..A+M-1 = bottom rows
+  const A = AGENTS.length;
+  const MAX = A + MENU.length - 1;
+  const [navSlot, setNavSlot] = useState(0);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const rafRef = useRef(0);
+
+  // Deterministic scroll: target computed from settled heights, driven by a
+  // rAF tween on the SAME curve/duration as the card expand — never measured
+  // from the DOM mid-animation, so the focused card can't land under the pill.
+  useEffect(() => {
+    const c = scrollRef.current;
+    if (!c) return;
+    const vh = c.clientHeight;
+    const contentFocused = PAD_TOP + PAD_BOT + (A - 1) * (SQ + GAP) + EXP_H;
+    const contentCompact = PAD_TOP + PAD_BOT + A * SQ + (A - 1) * GAP;
+    let target: number;
+    if (navSlot >= 0 && navSlot < A) {
+      const finalTop = PAD_TOP + navSlot * (SQ + GAP);
+      target = clamp(finalTop - (vh - EXP_H) / 2, 0, Math.max(0, contentFocused - vh));
+    } else if (navSlot === -1) {
+      target = 0;
+    } else {
+      target = clamp(c.scrollTop, 0, Math.max(0, contentCompact - vh));
+    }
+
+    cancelAnimationFrame(rafRef.current);
+    const from = c.scrollTop;
+    if (Math.abs(target - from) < 1) return;
+    const t0 = performance.now();
+    const step = (now: number) => {
+      const p = clamp((now - t0) / SIZE_MS, 0, 1);
+      c.scrollTop = from + (target - from) * scrollEase(p);
+      if (p < 1) rafRef.current = requestAnimationFrame(step);
+    };
+    rafRef.current = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [navSlot, A]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      const key = e.key;
-      if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Enter',' ','Escape','Backspace'].includes(key)) {
-        e.preventDefault();
-      }
-      if (key === 'Escape' || key === 'Backspace' || key === 'ArrowRight') { onBack(); return; }
-      if (key === 'ArrowUp')   { setSelected(i => Math.max(0, i - 1)); return; }
-      if (key === 'ArrowDown') { setSelected(i => Math.min(dests.length - 1, i + 1)); return; }
-      if (key === 'Enter' || key === ' ') {
-        onToast?.(`Opening ${dests[selected].label}…`);
-        return;
+      const k = e.key;
+      if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Enter',' ','Escape','Backspace'].includes(k)) e.preventDefault();
+      if (k === 'Escape' || k === 'Backspace' || k === 'ArrowLeft') { onBack(); return; }
+      if (k === 'ArrowUp')   { setNavSlot(s => Math.max(-1, s - 1)); return; }
+      if (k === 'ArrowDown') { setNavSlot(s => Math.min(MAX, s + 1)); return; }
+      if (k === 'Enter' || k === ' ') {
+        if (navSlot === -1) { onToast?.('Opening Search…'); return; }
+        if (navSlot < A)    { onToast?.(`Opening ${AGENTS[navSlot].label}…`); return; }
+        onToast?.(`Opening ${MENU[navSlot - A].label}…`);
       }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [selected, dests, onBack, onToast]);
+  }, [navSlot, A, MAX, onBack, onToast]);
 
-  const select = useCallback((i: number) => setSelected(i), []);
+  const edgeMask = `linear-gradient(to bottom, transparent 0, black 26px, black calc(100% - 30px), transparent 100%)`;
 
   return (
     <div style={{
-      position: 'absolute', inset: 0, overflow: 'hidden',
-      // dark, depth-separating wash concentrated on the left — L0 stays legible on the right
-      background: [
-        'radial-gradient(1100px 1100px at -8% 50%, rgba(8,6,16,0.94), rgba(6,5,12,0.6) 45%, transparent 68%)',
-        'linear-gradient(100deg, rgba(4,3,10,0.92) 0%, rgba(4,3,10,0.5) 34%, transparent 52%)',
-      ].join(', '),
-      animation: 'cnav-panel-in 0.34s cubic-bezier(0.22,0.61,0.36,1) forwards',
-      pointerEvents: 'auto',
+      position: 'absolute', inset: 0,
+      overflow: 'hidden', pointerEvents: 'auto',
+      animation: 'wrl-in 0.25s ease forwards',
     }}>
-      {/* Nodes */}
-      {dests.map((d, i) => {
-        const dist = i - selected;
-        const isSel = i === selected;
-        return (
-          <NavNode
-            key={d.id}
-            dest={d}
-            selected={isSel}
-            y={nodeY(dist)}
-            opacity={isSel ? 1 : nodeOpacity(dist)}
-            near={Math.abs(dist) <= 1}
-            onClick={() => select(i)}
-          />
-        );
-      })}
-
-      {/* Bottom hint strip */}
+      {/* Gradient backdrop */}
       <div style={{
-        position: 'absolute', left: RAIL_X, bottom: 40,
-        display: 'flex', alignItems: 'center', gap: 14,
-        fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif',
-        fontSize: 12, color: 'rgba(255,255,255,0.3)',
+        position: 'absolute', left: 0, top: 0, bottom: 0, width: 700,
+        background: 'linear-gradient(to right, rgba(4,4,10,0.96) 0%, rgba(4,4,10,0.84) 42%, rgba(4,4,10,0.34) 70%, transparent 100%)',
+        pointerEvents: 'none',
+      }} />
+
+      {/* Rail */}
+      <div style={{
+        position: 'absolute', left: 0, top: 0, bottom: 0, width: RAIL_W,
+        display: 'flex', flexDirection: 'column',
+        padding: '28px 24px 22px 24px',
+        animation: 'wrl-slide-in 0.38s cubic-bezier(0.22,0.61,0.36,1) forwards',
       }}>
-        {[['↑↓','Browse'],['Enter','Open'],['→','Back to feed']].map(([k,l]) => (
-          <span key={k} style={{ display:'flex', alignItems:'center', gap:6 }}>
-            <kbd style={{
-              background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.14)',
-              borderRadius:5, padding:'2px 8px', fontSize:11, fontWeight:600, color:'rgba(255,255,255,0.5)',
-            }}>{k}</kbd>
-            <span>{l}</span>
-          </span>
-        ))}
+        {/* Logo */}
+        <div style={{ flexShrink: 0, marginBottom: 16 }}>
+          <img src="/glance-logo.png" alt="Glance" style={{ height: 24, opacity: 0.88 }} />
+        </div>
+
+        {/* Search pill */}
+        <SearchPill focused={navSlot === -1} onClick={() => setNavSlot(-1)} />
+
+        {/* Scrollable widget rail — edge fades instead of hard clipping */}
+        <div
+          ref={scrollRef}
+          style={{
+            flex: 1, overflowY: 'auto', overflowX: 'hidden',
+            scrollbarWidth: 'none',
+            display: 'flex', flexDirection: 'column', gap: GAP,
+            margin: `0 -${GLOW_PAD_R}px 0 -${GLOW_PAD_L}px`,
+            padding: `${PAD_TOP}px ${GLOW_PAD_R}px ${PAD_BOT}px ${GLOW_PAD_L}px`,
+            maskImage: edgeMask,
+            WebkitMaskImage: edgeMask,
+          }}
+        >
+          <style>{`::-webkit-scrollbar{display:none}`}</style>
+          {AGENTS.map((agent, i) => (
+            <WidgetCard
+              key={agent.id}
+              agent={agent}
+              focused={navSlot === i}
+              animDelay={i * 0.022 + 0.06}
+              onClick={() => setNavSlot(i)}
+            />
+          ))}
+        </div>
+
+        {/* Settings — the one plain row */}
+        <div style={{ flexShrink: 0 }}>
+          <div style={{
+            height: 1, margin: '0 4px 10px',
+            background: 'linear-gradient(to right, rgba(255,255,255,0.1), rgba(255,255,255,0.03), transparent)',
+          }} />
+          {MENU.map((m, i) => (
+            <MenuRow
+              key={m.id}
+              item={m}
+              focused={navSlot === A + i}
+              onClick={() => setNavSlot(A + i)}
+            />
+          ))}
+        </div>
+
+        {/* Nav hints */}
+        <div style={{ flexShrink: 0, display: 'flex', gap: 12, paddingTop: 12 }}>
+          {[['↑↓','Navigate'],['Enter','Open'],['←','Back']].map(([k,l]) => (
+            <span key={k} style={{ display: 'flex', alignItems: 'center', gap: 5, fontFamily: FONT, fontSize: 10, color: 'rgba(255,255,255,0.2)' }}>
+              <kbd style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 4, padding: '1px 6px', fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.28)', fontFamily: FONT }}>{k}</kbd>
+              {l}
+            </span>
+          ))}
+        </div>
       </div>
 
-      <style>{CNAV_KF}</style>
+      {/* Position dots — where you are, and how far Settings is */}
+      <div style={{
+        position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)',
+        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
+        zIndex: 2, pointerEvents: 'none',
+        animation: 'wrl-in 0.4s 0.2s both',
+      }}>
+        {AGENTS.map((a, i) => (
+          <span key={a.id} style={{
+            width: 4, height: navSlot === i ? 18 : 4, borderRadius: 99,
+            background: navSlot === i ? a.tint : 'rgba(255,255,255,0.22)',
+            boxShadow: navSlot === i ? `0 0 10px ${a.tint}99` : 'none',
+            transition: `height 0.4s ${SIZE_EASE}, background 0.35s ease, box-shadow 0.35s ease`,
+          }} />
+        ))}
+        {/* settings marker */}
+        <span style={{
+          fontSize: 8, lineHeight: 1, marginTop: 4,
+          color: navSlot >= A ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.3)',
+          transition: 'color 0.35s ease',
+        }}>⚙</span>
+      </div>
+
+      <style>{KEYFRAMES}</style>
     </div>
   );
 }
 
-// ─── Node ────────────────────────────────────────────────────────────────────────
+// ─── SearchPill ───────────────────────────────────────────────────────────────
 
-function NavNode({ dest, selected, y, opacity, near, onClick }: {
-  dest: Dest; selected: boolean;
-  y: number; opacity: number; near: boolean;
+function SearchPill({ focused, onClick }: { focused: boolean; onClick: () => void }) {
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        flexShrink: 0, alignSelf: 'flex-start', boxSizing: 'border-box',
+        width: focused ? CARD_W : 148,
+        display: 'flex', alignItems: 'center', gap: 10,
+        padding: '11px 18px', borderRadius: 999,
+        cursor: 'pointer', overflow: 'hidden', whiteSpace: 'nowrap',
+        background: focused ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.055)',
+        border: `1px solid ${focused ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.09)'}`,
+        backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)',
+        boxShadow: focused ? '0 0 34px rgba(167,134,229,0.25), 0 10px 34px rgba(0,0,0,0.4)' : 'none',
+        transition: `width ${SIZE_MS}ms ${SIZE_EASE}, background 0.25s ease, border-color 0.25s ease, box-shadow 0.3s ease`,
+      }}
+    >
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" style={{ opacity: 0.55, flexShrink: 0 }}>
+        <circle cx="11" cy="11" r="7" stroke="white" strokeWidth="2"/>
+        <path d="M16.5 16.5L21 21" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+      </svg>
+      <span style={{ fontFamily: FONT, fontSize: 14, fontWeight: 500, color: focused ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.42)', transition: 'color 0.25s ease' }}>
+        {focused ? 'Search or ask anything' : 'Search'}
+      </span>
+    </div>
+  );
+}
+
+// ─── WidgetCard — square ↔ expanded on one shared surface ───────────────────
+
+function WidgetCard({ agent, focused, animDelay, onClick }: {
+  agent: AgentDef;
+  focused: boolean;
+  animDelay: number;
   onClick: () => void;
 }) {
-  const rgb = hexRgb(dest.tint);
-
-  const commonTransition = 'top 0.44s cubic-bezier(0.22,0.61,0.36,1), opacity 0.4s ease';
-
-  if (selected) {
-    return (
-      <div
-        onClick={onClick}
-        style={{
-          position: 'absolute', left: RAIL_X, top: y,
-          transform: 'translateY(-50%)',
-          width: 480,
-          transition: commonTransition,
-          zIndex: 30,
-        }}
-      >
-        <div style={{
-          borderRadius: 26,
-          background: 'linear-gradient(150deg, rgba(255,255,255,0.13) 0%, rgba(255,255,255,0.05) 100%)',
-          border: '1.5px solid rgba(255,255,255,0.28)',
-          boxShadow: '0 24px 80px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.05) inset',
-          backdropFilter: 'blur(26px)', WebkitBackdropFilter: 'blur(26px)',
-          padding: '26px 28px',
-          position: 'relative', overflow: 'hidden',
-          animation: 'cnav-sel-in 0.44s cubic-bezier(0.22,0.61,0.36,1)',
-        }}>
-          {/* subtle tint glow anchored to the icon */}
-          <div style={{
-            position: 'absolute', top: -40, left: -40, width: 220, height: 220,
-            background: `radial-gradient(circle, rgba(${rgb},0.16), transparent 68%)`,
-            pointerEvents: 'none',
-          }} />
-
-          {/* Header: icon + title + status */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16, position: 'relative' }}>
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        flexShrink: 0, position: 'relative', overflow: 'hidden', cursor: 'pointer',
+        width: focused ? CARD_W : SQ,
+        height: focused ? EXP_H : SQ,
+        borderRadius: focused ? RADIUS_FOCUSED : RADIUS_COMPACT,
+        background: surface(agent.tint),
+        backdropFilter: 'blur(40px) saturate(140%)', WebkitBackdropFilter: 'blur(40px) saturate(140%)',
+        boxShadow: focused ? ringFocus(agent.tint) : RING_REST,
+        transform: focused ? `translateX(${FOCUS_SHIFT}px)` : 'translateX(0)',
+        willChange: 'width, height, transform',
+        transition: `width ${SIZE_MS}ms ${SIZE_EASE}, height ${SIZE_MS}ms ${SIZE_EASE}, border-radius ${SIZE_MS}ms ${SIZE_EASE}, transform ${SIZE_MS}ms ${SIZE_EASE}, box-shadow 0.45s ease`,
+        animation: `wrl-item-in 0.38s ${animDelay.toFixed(2)}s both`,
+      }}
+    >
+      {/* Compact face — fixed square metrics so it never reflows */}
+      <div style={{
+        position: 'absolute', top: 0, left: 0, width: SQ, height: SQ,
+        padding: '12px 13px', boxSizing: 'border-box',
+        display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+        opacity: focused ? 0 : 1,
+        transition: `opacity 0.26s ${focused ? '0s' : '0.22s'} ease`,
+        pointerEvents: 'none',
+      }}>
+        {/* Image background — recognise the agent without reading */}
+        {(agent.compactImage || agent.image) && (
+          <>
+            <img src={agent.compactImage ?? agent.image} alt="" style={{
+              position: 'absolute', inset: 0, width: '100%', height: '100%',
+              objectFit: 'cover', filter: 'brightness(0.62) saturate(0.95)',
+            }} />
             <div style={{
-              width: 60, height: 60, borderRadius: 18, flexShrink: 0,
-              background: `rgba(${rgb},0.16)`,
-              border: `1px solid rgba(${rgb},0.4)`,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 28, color: dest.tint,
-              boxShadow: `0 4px 20px rgba(${rgb},0.2)`,
-            }}>{dest.icon}</div>
-            <div style={{ minWidth: 0 }}>
-              <div style={{
-                fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif',
-                fontWeight: 800, fontSize: 26, color: '#FFFFFF',
-                letterSpacing: '-0.02em', lineHeight: 1.1,
-              }}>{dest.label}</div>
-              <div style={{
-                display: 'flex', alignItems: 'center', gap: 7, marginTop: 5,
-                fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif',
-                fontSize: 12, fontWeight: 600, color: `rgba(${rgb},0.95)`,
-                textTransform: 'uppercase', letterSpacing: '0.08em',
-              }}>
-                <span style={{
-                  width: 6, height: 6, borderRadius: '50%', background: dest.tint,
-                  boxShadow: `0 0 8px ${dest.tint}`,
-                }} />
-                {dest.status}
-              </div>
+              position: 'absolute', inset: 0,
+              background: 'linear-gradient(to top, rgba(12,12,18,0.92) 0%, rgba(12,12,18,0.42) 52%, rgba(12,12,18,0.18) 100%)',
+            }} />
+          </>
+        )}
+        <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <IconChip agent={agent} size={32} onImage={!!(agent.compactImage || agent.image)} />
+          {agent.fresh && (
+            <span style={{ width: 7, height: 7, borderRadius: '50%', background: agent.tint, marginTop: 2, boxShadow: `0 0 8px ${agent.tint}` }} />
+          )}
+        </div>
+        <div style={{ position: 'relative', minWidth: 0 }}>
+          <div style={{ fontFamily: FONT, fontSize: 9, fontWeight: 800, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)', textShadow: '0 1px 4px rgba(0,0,0,0.6)' }}>
+            {agent.label}
+          </div>
+          <div style={{ fontFamily: FONT, fontSize: 15, fontWeight: 800, color: agent.tint, letterSpacing: '-0.01em', marginTop: 3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', textShadow: '0 1px 5px rgba(0,0,0,0.55)' }}>
+            {agent.compactValue}
+          </div>
+          <div style={{ fontFamily: FONT, fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.62)', marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', textShadow: '0 1px 4px rgba(0,0,0,0.6)' }}>
+            {agent.compactSub}
+          </div>
+        </div>
+      </div>
+
+      {/* Expanded face — fixed expanded metrics, cross-fades in */}
+      <div style={{
+        position: 'absolute', top: 0, left: 0, width: CARD_W, height: EXP_H,
+        boxSizing: 'border-box',
+        opacity: focused ? 1 : 0,
+        transition: `opacity 0.36s ${focused ? '0.18s' : '0s'} ease`,
+        pointerEvents: 'none',
+      }}>
+        <ExpandedFace agent={agent} active={focused} />
+      </div>
+    </div>
+  );
+}
+
+// ─── Expanded face — one template, agent identity first ─────────────────────
+
+function IconChip({ agent, size, onImage }: { agent: AgentDef; size: number; onImage?: boolean }) {
+  return (
+    <div style={{
+      width: size, height: size, borderRadius: Math.round(size * 0.32), flexShrink: 0,
+      background: onImage ? 'rgba(12,12,18,0.55)' : `${agent.tint}26`,
+      backdropFilter: onImage ? 'blur(10px)' : undefined,
+      WebkitBackdropFilter: onImage ? 'blur(10px)' : undefined,
+      boxShadow: onImage ? `inset 0 0 0 1px ${agent.tint}40` : 'none',
+      display: 'grid', placeItems: 'center', fontSize: Math.round(size * 0.55),
+    }}>
+      {agent.icon}
+    </div>
+  );
+}
+
+function Kicker({ agent }: { agent: AgentDef }) {
+  return (
+    <div style={{ fontFamily: FONT, fontSize: 10, fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: agent.tint }}>
+      {agent.kicker}
+    </div>
+  );
+}
+
+function Thumb({ src }: { src: string }) {
+  return (
+    <div style={{
+      width: 112, height: 112, borderRadius: 18, overflow: 'hidden', flexShrink: 0,
+      position: 'relative',
+    }}>
+      <img src={src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+      <div style={{ position: 'absolute', inset: 0, borderRadius: 18, boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.10)' }} />
+    </div>
+  );
+}
+
+function ExpandedFace({ agent, active }: { agent: AgentDef; active: boolean }) {
+  return (
+    <div style={{ width: '100%', height: '100%', padding: 20, boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
+      {/* Zone A — agent identity only; light and instant */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 11, flexShrink: 0 }}>
+        <IconChip agent={agent} size={34} />
+        <div style={{ fontFamily: FONT, fontSize: 19, fontWeight: 800, color: 'rgba(255,255,255,0.96)', letterSpacing: '-0.02em', lineHeight: 1.1, minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          {agent.label}
+        </div>
+      </div>
+
+      {/* Zone B — the rotating item, framed by the kicker */}
+      <div style={{ flex: 1, marginTop: 13, minHeight: 0 }}>
+        <ZoneB agent={agent} />
+      </div>
+
+      {/* Zone C — the agent speaks: mascot inside the card + its line */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 9, flexShrink: 0, marginTop: 10, minWidth: 0 }}>
+        <div style={{ flexShrink: 0, width: 32, height: 32, display: 'grid', placeItems: 'center' }}>
+          {active && <AgentMascot agentMode="looking" size={32} />}
+        </div>
+        <span style={{ fontFamily: FONT, fontSize: 11.5, fontWeight: 600, color: 'rgba(255,255,255,0.62)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          {agent.mascotLine}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function ZoneB({ agent }: { agent: AgentDef }) {
+  // photo — three light lines + inset thumbnail
+  if (agent.pattern === 'photo') {
+    return (
+      <div style={{ display: 'flex', gap: 16, height: '100%' }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <Kicker agent={agent} />
+          <div style={{ fontFamily: FONT, fontSize: 18, fontWeight: 800, color: 'rgba(255,255,255,0.96)', letterSpacing: '-0.015em', lineHeight: 1.2, marginTop: 8 }}>
+            {agent.itemTitle}
+          </div>
+          <div style={{ fontFamily: FONT, fontSize: 12.5, fontWeight: 700, color: agent.tint, marginTop: 8 }}>
+            {agent.accentLine}
+          </div>
+        </div>
+        {agent.image && <Thumb src={agent.image} />}
+      </div>
+    );
+  }
+
+  // shopping — price + solid-tint drop pill + thumbnail
+  if (agent.pattern === 'shopping') {
+    return (
+      <div style={{ display: 'flex', gap: 16, height: '100%' }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <Kicker agent={agent} />
+          <div style={{ fontFamily: FONT, fontSize: 15, fontWeight: 700, color: 'rgba(255,255,255,0.92)', marginTop: 8 }}>
+            {agent.itemTitle}
+          </div>
+          <div style={{ fontFamily: FONT, fontSize: 26, fontWeight: 900, color: '#fff', letterSpacing: '-0.03em', marginTop: 4 }}>
+            ₹24,990
+          </div>
+          <span style={{
+            display: 'inline-block', fontFamily: FONT, fontSize: 10.5, fontWeight: 800,
+            color: '#0C1510', background: agent.tint, borderRadius: 999, padding: '3px 10px', marginTop: 8,
+          }}>
+            {agent.accentLine}
+          </span>
+        </div>
+        {agent.image && <Thumb src={agent.image} />}
+      </div>
+    );
+  }
+
+  // weather — big temp + hourly bar meter
+  if (agent.pattern === 'weather') {
+    const bars = [16, 22, 30, 40, 46, 42, 34, 27, 21, 16, 12, 11, 14, 18];
+    return (
+      <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
+          <div style={{ fontFamily: FONT, fontSize: 44, fontWeight: 900, color: '#fff', letterSpacing: '-0.045em', lineHeight: 1 }}>
+            {agent.compactValue}
+          </div>
+          <div style={{ minWidth: 0, paddingTop: 2 }}>
+            <Kicker agent={agent} />
+            <div style={{ fontFamily: FONT, fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.92)', marginTop: 4 }}>
+              {agent.itemTitle}
+            </div>
+            <div style={{ fontFamily: FONT, fontSize: 11.5, fontWeight: 700, color: agent.tint, marginTop: 3 }}>
+              {agent.accentLine}
             </div>
           </div>
-
-          {/* Divider */}
-          <div style={{
-            height: 1, margin: '20px 0 18px',
-            background: 'linear-gradient(to right, rgba(255,255,255,0.02), rgba(255,255,255,0.16), rgba(255,255,255,0.02))',
-          }} />
-
-          {/* Live preview body */}
-          <PreviewBody spec={dest.preview} rgb={rgb} tint={dest.tint} />
-
-          {/* Action */}
-          <div style={{
-            marginTop: 20,
-            display: 'inline-flex', alignItems: 'center', gap: 9,
-            padding: '10px 22px', borderRadius: 999,
-            background: 'rgba(255,255,255,0.12)',
-            border: '1.5px solid rgba(255,255,255,0.3)',
-            fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif',
-            fontWeight: 700, fontSize: 13, color: '#FFFFFF', letterSpacing: '-0.01em',
-          }}>
-            {actionLabel(dest)}
-            <span style={{ fontSize: 11, opacity: 0.7 }}>›</span>
+        </div>
+        <div style={{ marginTop: 'auto' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: 5, height: 40 }}>
+            {bars.map((h, i) => (
+              <div key={i} style={{
+                flex: 1, height: h * 0.85, borderRadius: 99,
+                background: `hsl(${262 - i * 17}, 82%, 62%)`,
+                opacity: 0.92,
+              }} />
+            ))}
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
+            {['Now', '3 PM', '6 PM', '9 PM'].map(t => (
+              <span key={t} style={{ fontFamily: FONT, fontSize: 9.5, fontWeight: 600, color: 'rgba(255,255,255,0.35)' }}>{t}</span>
+            ))}
           </div>
         </div>
       </div>
     );
   }
 
-  // Compact (non-selected) node — same left anchor, vertically centered on y
+  // stat — big value + one line, with an image thumb (wellness, news, vtone, wishlist, recent)
+  const statThumb = agent.image ?? agent.compactImage;
   return (
-    <div
-      onClick={onClick}
-      style={{
-        position: 'absolute', left: RAIL_X, top: y,
-        transform: 'translateY(-50%)',
-        opacity,
-        transition: commonTransition,
-        display: 'flex', alignItems: 'center', gap: 14,
-        cursor: 'pointer', zIndex: 10,
-      }}
-    >
-      <div style={{
-        width: COMPACT_H, height: COMPACT_H, borderRadius: 16, flexShrink: 0,
-        background: 'rgba(255,255,255,0.06)',
-        border: '1px solid rgba(255,255,255,0.16)',
-        backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: 24, color: `rgba(${rgb},0.9)`,
-      }}>{dest.icon}</div>
-      {near && (
-        <div style={{
-          fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif',
-          fontWeight: 700, fontSize: 17, color: 'rgba(255,255,255,0.72)',
-          letterSpacing: '-0.01em', whiteSpace: 'nowrap',
-        }}>{dest.label}</div>
-      )}
+    <div style={{ display: 'flex', gap: 16, height: '100%' }}>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <Kicker agent={agent} />
+        <div style={{ fontFamily: FONT, fontSize: 30, fontWeight: 900, color: '#fff', letterSpacing: '-0.035em', lineHeight: 1, marginTop: 8 }}>
+          {agent.compactValue}
+        </div>
+        <div style={{ fontFamily: FONT, fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginTop: 6 }}>
+          {agent.itemTitle}
+        </div>
+        <div style={{ fontFamily: FONT, fontSize: 12, fontWeight: 700, color: agent.tint, marginTop: 8 }}>
+          {agent.accentLine}
+        </div>
+      </div>
+      {statThumb && <Thumb src={statThumb} />}
     </div>
   );
 }
 
-// ─── Preview bodies ──────────────────────────────────────────────────────────────
+// ─── MenuRow — plain row at the bottom of the rail (Settings) ────────────────
 
-function PreviewBody({ spec, rgb, tint }: { spec: PreviewSpec; rgb: string; tint: string }) {
-  const labelStyle: React.CSSProperties = {
-    fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif',
-    fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.4)',
-    textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 7,
-  };
-  const primaryStyle: React.CSSProperties = {
-    fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif',
-    fontSize: 18, fontWeight: 700, color: '#FFFFFF',
-    letterSpacing: '-0.01em', lineHeight: 1.3,
-  };
-  const subStyle: React.CSSProperties = {
-    fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif',
-    fontSize: 13, color: 'rgba(255,255,255,0.5)', marginTop: 5, lineHeight: 1.4,
-  };
-
-  const rowLabel: React.CSSProperties = {
-    fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif',
-    fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.85)', lineHeight: 1.35,
-  };
-  const rowSub: React.CSSProperties = {
-    fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif',
-    fontSize: 11.5, color: 'rgba(255,255,255,0.5)', lineHeight: 1.4, marginTop: 2,
-  };
-
-  switch (spec.kind) {
-    case 'search':
-      return (
-        <div>
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 12,
-            padding: '12px 16px', borderRadius: 14,
-            background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.16)',
-          }}>
-            <span style={{ fontSize: 17, color: tint }}>⌕</span>
-            <span style={{
-              fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif',
-              fontSize: 14, color: 'rgba(255,255,255,0.55)', fontWeight: 500,
-            }}>{spec.hint}</span>
-            <span style={{ marginLeft: 'auto', fontSize: 15, color: 'rgba(255,255,255,0.35)' }}>🎙</span>
-          </div>
-          <div style={{ ...labelStyle, marginTop: 14, marginBottom: 8 }}>Try asking</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
-            {spec.suggestions.map((s, i) => (
-              <div key={i} style={{
-                display: 'flex', alignItems: 'center', gap: 9,
-                padding: '8px 12px', borderRadius: 10,
-                background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
-                fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif',
-                fontSize: 13, color: 'rgba(255,255,255,0.75)',
-              }}>
-                <span style={{ color: `rgba(${rgb},0.8)`, fontSize: 12 }}>›</span>{s}
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-
-    case 'home':
-      return (
-        <div>
-          <div style={labelStyle}>Now playing</div>
-          <div style={primaryStyle}>{spec.glance}</div>
-          <div style={subStyle}>{spec.sub}</div>
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 12, marginTop: 14, paddingTop: 14,
-            borderTop: '1px solid rgba(255,255,255,0.08)',
-          }}>
-            <span style={{ ...rowSub, marginTop: 0, color: `rgba(${rgb},0.85)`, fontWeight: 600 }}>{spec.upNext}</span>
-          </div>
-          <div style={{ ...rowSub, marginTop: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span style={{ color: 'rgba(255,255,255,0.35)' }}>Context</span>· {spec.contextLine}
-          </div>
-        </div>
-      );
-
-    case 'chats':
-      return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
-          {spec.threads.map((t, i) => (
-            <div key={i} style={{
-              padding: '11px 14px', borderRadius: 13,
-              background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.11)',
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                <span style={{
-                  padding: '1px 8px', borderRadius: 999,
-                  background: `rgba(${rgb},0.16)`, border: `1px solid rgba(${rgb},0.32)`,
-                  fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif',
-                  fontSize: 9.5, fontWeight: 700, color: tint, textTransform: 'uppercase', letterSpacing: '0.06em',
-                }}>{t.agent}</span>
-                <span style={rowLabel}>{t.title}</span>
-                {t.unread && (
-                  <span style={{
-                    marginLeft: 'auto', width: 7, height: 7, borderRadius: '50%',
-                    background: tint, boxShadow: `0 0 7px ${tint}`,
-                  }} />
-                )}
-              </div>
-              <div style={rowSub}>{t.snippet}</div>
-            </div>
-          ))}
-        </div>
-      );
-
-    case 'gallery':
-      return (
-        <div>
-          <div style={{ display: 'flex', gap: 10, marginBottom: 12 }}>
-            {spec.thumbs.map((c, i) => (
-              <div key={i} style={{
-                flex: 1, height: 74, borderRadius: 12,
-                background: `linear-gradient(140deg, ${c}, rgba(255,255,255,0.06))`,
-                border: '1px solid rgba(255,255,255,0.14)',
-                position: 'relative', overflow: 'hidden',
-              }}>
-                <div style={{
-                  position: 'absolute', inset: 0,
-                  background: 'radial-gradient(circle at 30% 25%, rgba(255,255,255,0.16), transparent 60%)',
-                }} />
-              </div>
-            ))}
-          </div>
-          <div style={{ ...labelStyle, marginBottom: 7 }}>Recent prompts</div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7, marginBottom: 10 }}>
-            {spec.prompts.map((p, i) => (
-              <span key={i} style={{
-                padding: '5px 11px', borderRadius: 999,
-                background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
-                fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif',
-                fontSize: 12, color: 'rgba(255,255,255,0.72)',
-              }}>“{p}”</span>
-            ))}
-          </div>
-          <div style={subStyle}>
-            <span style={{ color: '#FFFFFF', fontWeight: 700 }}>{spec.count} creations</span>
-            <span style={{ color: 'rgba(255,255,255,0.35)' }}> · last {spec.last}</span>
-          </div>
-        </div>
-      );
-
-    case 'wishlist':
-      return (
-        <div>
-          <div style={{ ...labelStyle, marginBottom: 9 }}>Saved · {spec.count} items</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
-            {spec.items.map((it, i) => (
-              <div key={i} style={{
-                display: 'flex', alignItems: 'center', gap: 13,
-                padding: '10px 13px', borderRadius: 13,
-                background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.11)',
-              }}>
-                <div style={{
-                  width: 44, height: 44, borderRadius: 11, flexShrink: 0,
-                  background: 'linear-gradient(140deg, #2A2A30, rgba(255,255,255,0.08))',
-                  border: '1px solid rgba(255,255,255,0.14)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 19,
-                }}>{i === 0 ? '⛰' : '🎧'}</div>
-                <div style={{ minWidth: 0 }}>
-                  <div style={rowLabel}>{it.name}</div>
-                  <div style={{ ...rowSub, color: it.note.startsWith('↓') ? `rgba(${rgb},0.95)` : 'rgba(255,255,255,0.5)', fontWeight: it.note.startsWith('↓') ? 600 : 400 }}>{it.note}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-
-    case 'settings':
-      return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
-          {spec.rows.map((r) => {
-            const attn = r.state === 'attention';
-            const dot = attn ? '#F0C36A' : '#7FD1A0';
-            return (
-              <div key={r.label} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <span style={{
-                  width: 7, height: 7, borderRadius: '50%', flexShrink: 0,
-                  background: dot, boxShadow: `0 0 7px ${dot}`,
-                }} />
-                <span style={{
-                  fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif',
-                  fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.4)',
-                  textTransform: 'uppercase', letterSpacing: '0.08em', minWidth: 76,
-                }}>{r.label}</span>
-                <span style={{
-                  fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif',
-                  fontSize: 13.5, fontWeight: 600,
-                  color: attn ? '#F0C36A' : 'rgba(255,255,255,0.85)',
-                }}>{r.value}</span>
-              </div>
-            );
-          })}
-        </div>
-      );
-  }
+function MenuRow({ item, focused, onClick }: { item: MenuDef; focused: boolean; onClick: () => void }) {
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        display: 'flex', alignItems: 'center', gap: 11,
+        padding: '8px 13px', borderRadius: 12, cursor: 'pointer',
+        background: focused ? 'rgba(255,255,255,0.12)' : 'transparent',
+        border: `1px solid ${focused ? 'rgba(255,255,255,0.16)' : 'transparent'}`,
+        transition: 'background 0.18s ease, border-color 0.18s ease',
+      }}
+    >
+      <span style={{ width: 18, textAlign: 'center', fontSize: 14, color: focused ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.45)', transition: 'color 0.18s ease' }}>
+        {item.icon}
+      </span>
+      <span style={{ fontFamily: FONT, fontSize: 13.5, fontWeight: 600, color: focused ? '#fff' : 'rgba(255,255,255,0.6)', flex: 1, transition: 'color 0.18s ease' }}>
+        {item.label}
+      </span>
+      <span style={{ fontFamily: FONT, fontSize: 10.5, fontWeight: 500, color: focused ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.25)', transition: 'color 0.18s ease' }}>
+        {item.sub}
+      </span>
+      <span style={{ fontFamily: FONT, fontSize: 12, color: focused ? 'rgba(255,255,255,0.55)' : 'transparent', transition: 'color 0.18s ease' }}>
+        ›
+      </span>
+    </div>
+  );
 }
 
-function actionLabel(d: Dest): string {
-  switch (d.preview.kind) {
-    case 'search':   return 'Start a search';
-    case 'home':     return 'Return to feed';
-    case 'chats':    return 'Open chats';
-    case 'gallery':  return 'View gallery';
-    case 'wishlist': return 'View wishlist';
-    case 'settings': return 'Manage settings';
-  }
-}
+// ─── Keyframes ────────────────────────────────────────────────────────────────
 
-// ─── Utility ───────────────────────────────────────────────────────────────────
-
-function hexRgb(hex: string): string {
-  const c = hex.replace('#', '');
-  const n = parseInt(c, 16);
-  return `${(n >> 16) & 255},${(n >> 8) & 255},${n & 255}`;
-}
-
-// ─── Keyframes ─────────────────────────────────────────────────────────────────
-
-const CNAV_KF = `
-@keyframes cnav-panel-in {
+const KEYFRAMES = `
+@keyframes wrl-in {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
-@keyframes cnav-sel-in {
-  from { opacity: 0; transform: translateX(-14px) scale(0.96); }
-  to   { opacity: 1; transform: translateX(0) scale(1); }
+@keyframes wrl-slide-in {
+  from { transform: translateX(-32px); opacity: 0; }
+  to   { transform: translateX(0);     opacity: 1; }
+}
+@keyframes wrl-item-in {
+  from { opacity: 0; transform: translateX(-16px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
 `;
