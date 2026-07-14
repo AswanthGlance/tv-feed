@@ -261,6 +261,7 @@ export default function WarmProfile1CrisperApp() {
     const handler = (e: KeyboardEvent) => {
       if (navOpen) return;
       // Option 1 and 4 are hidden for now — Options 2, 2.5 and 3 are active.
+      if (e.key === '1') { setNavOption(1); toast('← opens Option 1 · Agent Hub'); }
       if (e.key === '2') { setNavOption(2); toast('← opens Option 2 · Nav Rail'); }
       if (e.key === '5') { setNavOption(2.5); toast('← opens Option 2.5 · Floating Widgets'); }
       if (e.key === '3') { setNavOption(3); toast('← opens Option 3 · AI Workspace'); }
@@ -461,8 +462,8 @@ function LeftEdgeAffordance({ onOpen }: { onOpen: () => void }) {
 function NavOptionSelector({ active, onSelect }: {
   active: 1 | 2 | 2.5 | 3 | 4; onSelect: (o: 1 | 2 | 2.5 | 3 | 4) => void;
 }) {
-  // Options 1 and 4 are hidden for now — Options 2, 2.5 and 3 are shown.
   const options: { n: 1 | 2 | 2.5 | 3 | 4; label: string }[] = [
+    { n: 1, label: 'Agent Hub' },
     { n: 2, label: 'Nav Rail' },
     { n: 2.5, label: 'Floating Widgets' },
     { n: 3, label: 'Workspace' },
