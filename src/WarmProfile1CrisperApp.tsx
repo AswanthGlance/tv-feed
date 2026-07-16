@@ -26,7 +26,7 @@ import Toast from './components/Toast';
 import RemoteOverlay from './components/RemoteOverlay';
 import AgentHubPanel from './components/AgentHub/AgentHubPanel';
 import CurvedNavPanel from './components/AgentHub/CurvedNavPanel';
-import FloatingWidgetsPanel from './components/AgentHub/FloatingWidgetsPanel';
+import HybridHubPanel, { PinnedWidgetsRail, DEFAULT_PINNED } from './components/AgentHub/HybridHubPanel';
 import TwoLevelNavPanel from './components/AgentHub/TwoLevelNavPanel';
 import ExploreFirstPanel from './components/AgentHub/ExploreFirstPanel';
 
@@ -250,11 +250,20 @@ export default function WarmProfile1CrisperApp() {
   }, [cancelHold, toast]);
 
   // ── Navigation-concept exploration selector (dev, L0-only) ──────────────────
-  // 1 = full-screen Agent Hub · 2 = curved vertical nav · 2.5 = floating widgets · 3 = AI Workspace · 4 = Explore-first
+  // 1 = full-screen Agent Hub · 2 = curved vertical nav · 2.5 = hybrid hub (pinned widgets → overlay) · 3 = AI Workspace · 4 = Explore-first
   type NavOption = 1 | 2 | 2.5 | 3 | 4;
   const [navOption, setNavOption] = useState<NavOption>(3);
   const [navOpenConcept, setNavOpenConcept] = useState<NavOption | null>(null);
   const navOpen = navOpenConcept !== null;
+
+  // Option 2.5: which agent the hub focuses on entry — set by the pinned
+  // widget the user clicked, defaults to the first pinned agent.
+  const hybridEntryAgent = useRef<string | undefined>(undefined);
+  // User-pinned agents (max 3) — shown on L0 and as the hub's 4th column.
+  const [pinnedIds, setPinnedIds] = useState<string[]>(DEFAULT_PINNED);
+  const togglePin = useCallback((agentId: string) => {
+    setPinnedIds(ids => ids.includes(agentId) ? ids.filter(id => id !== agentId) : [...ids, agentId]);
+  }, []);
 
   // While L0 is focused (nav closed), keys 1/2/3/4 switch the concept the ← opens.
   useEffect(() => {
@@ -263,15 +272,23 @@ export default function WarmProfile1CrisperApp() {
       // Option 1 and 4 are hidden for now — Options 2, 2.5 and 3 are active.
       if (e.key === '1') { setNavOption(1); toast('← opens Option 1 · Agent Hub'); }
       if (e.key === '2') { setNavOption(2); toast('← opens Option 2 · Nav Rail'); }
-      if (e.key === '5') { setNavOption(2.5); toast('← opens Option 2.5 · Floating Widgets'); }
+      if (e.key === '5') { setNavOption(2.5); toast('← opens Option 2.5 · Hybrid Hub'); }
       if (e.key === '3') { setNavOption(3); toast('← opens Option 3 · AI Workspace'); }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, [navOpen, toast]);
 
-  const openNav = useCallback(() => setNavOpenConcept(navOption), [navOption]);
+  const openNav = useCallback(() => {
+    if (navOption === 2.5) hybridEntryAgent.current = pinnedIds[0];
+    setNavOpenConcept(navOption);
+  }, [navOption, pinnedIds]);
   const closeNav = useCallback(() => setNavOpenConcept(null), []);
+
+  const openHybridHub = useCallback((agentId: string) => {
+    hybridEntryAgent.current = agentId;
+    setNavOpenConcept(2.5);
+  }, []);
 
   // Per-concept L0 treatment while the nav is open.
   // Option 1 (full-screen hub): dim heavily. Option 2/3 (left panels): keep L0
@@ -283,9 +300,9 @@ export default function WarmProfile1CrisperApp() {
       // Option 2 nav rail: L0 shifts right, mild dim, stays clearly recognisable
       ? { filter: 'brightness(0.68) saturate(0.75)', opacity: 0.88, transform: 'translateX(110px) scale(0.91)' }
       : navOpenConcept === 2.5
-      // Option 2.5 floating widgets: L0 stays frozen in place — only slightly
-      // softer contrast/saturation; the widgets float on top of it.
-      ? { filter: 'brightness(0.88) saturate(0.78) contrast(0.96)', opacity: 1, transform: 'none' }
+      // Option 2.5 hybrid hub: L0 frozen, slightly shrunk and shifted right —
+      // still clearly alive; the 30% overlay floats to its left.
+      ? { filter: 'brightness(0.9) saturate(0.85)', opacity: 1, transform: 'translateX(130px) scale(0.94)' }
       : navOpenConcept === 3 || navOpenConcept === 4
       ? { filter: 'brightness(0.6) saturate(0.7) blur(3px)', opacity: 0.9, transform: 'translateX(90px) scale(0.9)' }
       : navOpen
@@ -355,8 +372,12 @@ export default function WarmProfile1CrisperApp() {
               <NavOptionSelector active={navOption} onSelect={setNavOption} />
             )}
 
-            {/* Subtle left-edge affordance — hints "press ← to explore" */}
-            {!navOpen && <LeftEdgeAffordance onOpen={openNav} />}
+            {/* Subtle left-edge affordance — hints "press ← to explore".
+                Option 2.5 replaces it with the always-visible pinned widgets. */}
+            {!navOpen && navOption !== 2.5 && <LeftEdgeAffordance onOpen={openNav} />}
+            {!navOpen && navOption === 2.5 && (
+              <PinnedWidgetsRail pinnedIds={pinnedIds} onOpen={openHybridHub} />
+            )}
 
             {/* Selected navigation concept — slides in from the left */}
             {navOpenConcept === 1 && (
@@ -366,7 +387,13 @@ export default function WarmProfile1CrisperApp() {
               <CurvedNavPanel onBack={closeNav} onToast={toast} />
             )}
             {navOpenConcept === 2.5 && (
-              <FloatingWidgetsPanel onBack={closeNav} onToast={toast} />
+              <HybridHubPanel
+                onBack={closeNav}
+                onToast={toast}
+                initialAgentId={hybridEntryAgent.current}
+                pinnedIds={pinnedIds}
+                onTogglePin={togglePin}
+              />
             )}
             {navOpenConcept === 3 && (
               <TwoLevelNavPanel
@@ -465,7 +492,7 @@ function NavOptionSelector({ active, onSelect }: {
   const options: { n: 1 | 2 | 2.5 | 3 | 4; label: string }[] = [
     { n: 1, label: 'Agent Hub' },
     { n: 2, label: 'Nav Rail' },
-    { n: 2.5, label: 'Floating Widgets' },
+    { n: 2.5, label: 'Hybrid Hub' },
     { n: 3, label: 'Workspace' },
   ];
   return (
