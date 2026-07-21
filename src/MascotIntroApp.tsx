@@ -11,6 +11,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import TVStage from './components/TVStage';
 import StaticL0RestingState from './components/L0/StaticL0RestingState';
 import L0ToL1Transition from './components/Feed/L0ToL1Transition';
+import AgentCapabilityIntro from './components/Feed/AgentCapabilityIntro';
 import { getConversationalCTA } from './logic/ctaGenerator';
 import { getReasoning } from './logic/reasoningEngine';
 import { WARM_START_FEED_ITEMS } from './data/warmStartFeedItems';
@@ -22,7 +23,7 @@ const DEMO_ITEMS: FeedItem[] = [
   WARM_START_FEED_ITEMS.find(i => i.id === 'ws-india-afg')!,
 ].filter(Boolean);
 
-type Stage = 'resting' | 'transition' | 'done';
+type Stage = 'resting' | 'capability-intro' | 'transition' | 'done';
 
 export default function MascotIntroApp() {
   const [itemIdx, setItemIdx]   = useState(0);
@@ -42,7 +43,7 @@ export default function MascotIntroApp() {
     const rect = ctaBtn?.getBoundingClientRect() ??
       new DOMRect(window.innerWidth / 2 - 160, window.innerHeight - 140, 320, 64);
     setCtaRect(rect);
-    setStage('transition');
+    setStage('capability-intro');
   }, [stage]);
 
   const replay = useCallback((nextIdx?: number) => {
@@ -78,7 +79,16 @@ export default function MascotIntroApp() {
             onCTAClick={triggerTransition}
           />
 
-          {/* ── Transition overlay ────────────────────────────────── */}
+          {/* ── Agent capability intro ──────────────────────────── */}
+          {stage === 'capability-intro' && (
+            <AgentCapabilityIntro
+              key={`cap-${mountKey}`}
+              ctaLabel={ctaLabel}
+              onComplete={() => setStage('transition')}
+            />
+          )}
+
+          {/* ── L0→L1 transition overlay ──────────────────────── */}
           {(stage === 'transition' || stage === 'done') && ctaRect && (
             <L0ToL1Transition
               key={`tr-${mountKey}`}

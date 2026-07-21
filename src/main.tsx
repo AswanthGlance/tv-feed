@@ -31,6 +31,9 @@ import L1ContinuousCTAPrototype from './components/L1/L1ContinuousCTAPrototype'
 import L1TextTablePrototype from './components/L1/L1TextTablePrototype'
 import CTAExplorationIndex from './CTAExplorationIndex'
 import L1ShoppingTemplate from './components/L1/L1ShoppingTemplate'
+import FoodL1Scenarios from './components/L1/FoodL1Scenarios'
+import TravelL1 from './components/L1/TravelL1'
+import L1Scenarios from './components/L1/L1Scenarios'
 import PrototypeIndex from './PrototypeIndex'
 import MascotIntroApp from './MascotIntroApp'
 import AgentHubApp from './AgentHubApp'
@@ -89,6 +92,12 @@ const isMascotIntro    = window.location.pathname === '/mascot-intro'
                       || window.location.pathname === '/mascot_intro';
 const isAgentHub       = window.location.pathname === '/agent-hub'
                       || window.location.pathname === '/agent_hub';
+const isFoodL1         = window.location.pathname === '/food-l1'
+                      || window.location.pathname === '/food_l1';
+const isTravelL1       = window.location.pathname === '/travel-l1'
+                      || window.location.pathname === '/travel_l1';
+const isL1Scenarios    = window.location.pathname === '/l1-scenarios'
+                      || window.location.pathname === '/l1_scenarios';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -119,6 +128,9 @@ createRoot(document.getElementById('root')!).render(
      isIndex            ? <PrototypeIndex /> :
      isMascotIntro      ? <MascotIntroApp /> :
      isAgentHub         ? <AgentHubApp onBack={() => window.history.back()} /> :
+     isFoodL1           ? <FoodL1Scenarios /> :
+     isTravelL1         ? <TravelL1 /> :
+     isL1Scenarios      ? <L1Scenarios /> :
                           <App />}
   </StrictMode>,
 )

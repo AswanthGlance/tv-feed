@@ -1,0 +1,16 @@
+<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="FrameCorners" clip-path="url(#clip0_0_77)">
+<g id="Vector">
+</g>
+<g id="Group 2095587945">
+<circle id="Ellipse 246698" cx="5" cy="15.5" r="2.5" fill="var(--fill-0, white)" stroke="var(--stroke-0, white)"/>
+<circle id="Ellipse 246699" cx="16" cy="15.5" r="2.5" fill="var(--fill-0, white)" stroke="var(--stroke-0, white)"/>
+<circle id="Ellipse 246700" cx="27" cy="15.5" r="2.5" fill="var(--fill-0, white)" stroke="var(--stroke-0, white)"/>
+</g>
+</g>
+<defs>
+<clipPath id="clip0_0_77">
+<rect width="32" height="32" fill="white"/>
+</clipPath>
+</defs>
+</svg>
