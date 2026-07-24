@@ -44,13 +44,29 @@ const RENDERER_MAP = {
 type Zone = 'middle' | 'bottom';
 
 interface Props {
-  config: RendererConfig;
+  // `id` is relaxed to `string` (RendererType still satisfies it) so
+  // config-only consumers — like the category "conversation start" states —
+  // can carry an id outside the 8 renderer types without widening
+  // RendererType itself.
+  config: Omit<RendererConfig, 'id'> & { id: string };
   allRenderers: RendererConfig[];
+  // Additive, all optional, all default to current behavior — used by the
+  // category clarification screens to reuse this exact shell without cards.
+  hideContent?: boolean;          // skip the renderer layer entirely
+  showTemplateSwitcher?: boolean; // debug-only widget; irrelevant off the template gallery
+  queryIsPlaceholder?: boolean;   // dim the query chip so it reads as "not answered yet"
+  onPromptSelect?: (index: number) => void; // called on Enter/click of a bottom-row chip
 }
 
-export default function L1Page({ config, allRenderers }: Props) {
+export default function L1Page({
+  config, allRenderers,
+  hideContent = false, showTemplateSwitcher = true, queryIsPlaceholder = false,
+  onPromptSelect,
+}: Props) {
   /* ── TV nav ──────────────────────────────────────────────────────────────── */
-  const [zone,   setZone]   = useState<Zone>('middle');
+  // With no renderer content, there's nothing to focus in the middle zone —
+  // start focus in the prompt row instead (mic-focused, botIdx -1).
+  const [zone,   setZone]   = useState<Zone>(hideContent ? 'bottom' : 'middle');
   const [midIdx, setMidIdx] = useState(0);
   const [botIdx, setBotIdx] = useState(-1);
 
@@ -220,17 +236,23 @@ export default function L1Page({ config, allRenderers }: Props) {
         else                   setBotIdx(i => Math.max(-1, i - 1));
       }
       if (e.key === 'ArrowDown' && zone === 'middle') { e.preventDefault(); setZone('bottom'); setBotIdx(0); }
-      if (e.key === 'ArrowUp'   && zone === 'bottom') { e.preventDefault(); setZone('middle'); }
+      if (e.key === 'ArrowUp'   && zone === 'bottom' && !hideContent) { e.preventDefault(); setZone('middle'); }
+      if ((e.key === 'Enter' || e.key === ' ') && zone === 'bottom' && botIdx >= 0) {
+        e.preventDefault();
+        onPromptSelect?.(botIdx);
+      }
     };
     window.addEventListener('keydown', handle);
     return () => window.removeEventListener('keydown', handle);
-  }, [zone, config.maxIdx, BOT_MAX, currentIdx, allRenderers, navigate]);
+  }, [zone, botIdx, config.maxIdx, BOT_MAX, currentIdx, allRenderers, navigate, hideContent, onPromptSelect]);
 
   /* ── Derived display state ───────────────────────────────────────────────── */
   const isThinking   = phase === ScreenPhase.AGENT;
   const isMicFoc     = zone === 'bottom' && botIdx === -1;
   const isBot        = (i: number) => zone === 'bottom' && botIdx === i;
-  const RendererComp = RENDERER_MAP[config.id];
+  const RendererComp = !hideContent && config.id in RENDERER_MAP
+    ? RENDERER_MAP[config.id as keyof typeof RENDERER_MAP]
+    : undefined;
   const agentMode    = isThinking ? 'thinking' : agentSpeaking ? 'looking' : 'idle';
 
   return (
@@ -276,7 +298,8 @@ export default function L1Page({ config, allRenderers }: Props) {
           borderRadius: 999,
           padding: '12px 28px',
           fontSize: 20, fontWeight: 500,
-          letterSpacing: '-0.01em', color: 'rgba(255,255,255,0.90)',
+          letterSpacing: '-0.01em',
+          color: queryIsPlaceholder ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.90)',
           opacity: 0,
         }}>
           {config.query}
@@ -331,11 +354,14 @@ export default function L1Page({ config, allRenderers }: Props) {
         </div>
       </div>
 
-      {/* ── ROW 2 (renderer layer) — gated: nothing until PRIMARY_CONTENT ─── */}
-      <RendererComp
-        focusIdx={zone === 'middle' ? midIdx : -1}
-        phase={phase}
-      />
+      {/* ── ROW 2 (renderer layer) — gated: nothing until PRIMARY_CONTENT,
+          and skipped entirely when hideContent (clarification state) ───── */}
+      {RendererComp && (
+        <RendererComp
+          focusIdx={zone === 'middle' ? midIdx : -1}
+          phase={phase}
+        />
+      )}
 
       {/* ── ROW 3: Prompt pivot row ───────────────────────────────────────── */}
       <div style={{
@@ -368,6 +394,7 @@ export default function L1Page({ config, allRenderers }: Props) {
                 <div
                   key={i}
                   ref={el => { chipRefs.current[i] = el; }}
+                  onClick={() => { setZone('bottom'); setBotIdx(i); onPromptSelect?.(i); }}
                   style={{
                     flex: '0 0 248px', height: 86,
                     background: focused ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.065)',
@@ -392,12 +419,14 @@ export default function L1Page({ config, allRenderers }: Props) {
         </div>
       </div>
 
-      {/* ── Template switcher ─────────────────────────────────────────────── */}
-      <TemplateSwitcher
-        renderers={allRenderers}
-        currentIdx={currentIdx}
-        onNavigate={navigate}
-      />
+      {/* ── Template switcher — debug-only, hidden off the template gallery ── */}
+      {showTemplateSwitcher && (
+        <TemplateSwitcher
+          renderers={allRenderers}
+          currentIdx={currentIdx}
+          onNavigate={navigate}
+        />
+      )}
     </div>
   );
 }

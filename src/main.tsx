@@ -37,6 +37,8 @@ import L1Scenarios from './components/L1/L1Scenarios'
 import PrototypeIndex from './PrototypeIndex'
 import MascotIntroApp from './MascotIntroApp'
 import AgentHubApp from './AgentHubApp'
+import NewConversationApp from './NewConversationApp'
+import CapabilityL1App from './CapabilityL1App'
 
 declare global { interface Window { __L0_PREVIEW__?: string; __BEAM_POC__?: boolean; __INTERSTITIAL_PREVIEW__?: boolean; __L0_EXPORT__?: boolean } }
 
@@ -92,12 +94,16 @@ const isMascotIntro    = window.location.pathname === '/mascot-intro'
                       || window.location.pathname === '/mascot_intro';
 const isAgentHub       = window.location.pathname === '/agent-hub'
                       || window.location.pathname === '/agent_hub';
+const isNewConversation = window.location.pathname === '/new-conversation'
+                       || window.location.pathname === '/new_conversation';
 const isFoodL1         = window.location.pathname === '/food-l1'
                       || window.location.pathname === '/food_l1';
 const isTravelL1       = window.location.pathname === '/travel-l1'
                       || window.location.pathname === '/travel_l1';
 const isL1Scenarios    = window.location.pathname === '/l1-scenarios'
                       || window.location.pathname === '/l1_scenarios';
+const isCapabilityL1   = window.location.pathname.startsWith('/l1-category')
+                      || window.location.pathname.startsWith('/l1_category');
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -128,9 +134,11 @@ createRoot(document.getElementById('root')!).render(
      isIndex            ? <PrototypeIndex /> :
      isMascotIntro      ? <MascotIntroApp /> :
      isAgentHub         ? <AgentHubApp onBack={() => window.history.back()} /> :
+     isNewConversation  ? <NewConversationApp /> :
      isFoodL1           ? <FoodL1Scenarios /> :
      isTravelL1         ? <TravelL1 /> :
      isL1Scenarios      ? <L1Scenarios /> :
+     isCapabilityL1     ? <CapabilityL1App /> :
                           <App />}
   </StrictMode>,
 )
