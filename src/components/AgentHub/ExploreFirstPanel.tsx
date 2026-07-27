@@ -1,627 +1,875 @@
 /**
- * ExploreFirstPanel — Option 4: exploration-first Agent Hub.
+ * ExploreFirstPanel — Option 5: exploration-first Agent Hub.
  *
- * Same IA columns as Option 3, but the hierarchy is flipped:
- *   Column 1 — identical global nav (Search · Agents · Gallery · Wishlist · Recent · Settings)
- *   Column 2 — EXPLORE layer (promoted): visual category cards + Your Activity
- *   Column 3 — content browser filtered by the selected category; exactly one
- *              card expands at a time. A COMPACT AI preview attaches to the
- *              focused card; the full conversation only appears after Enter
- *              (progressive AI, not a permanent third of the screen).
+ * Concept: Agent → Explore → Browse — presented as L0 UNFOLDING into Explore,
+ * never as a page switch.
  *
- * Navigation:
- *   C1: ↑↓ · → C2 · ← exit L0 · Back exit L0
- *   C2: ↑↓ categories + activity · ← C1 · → C3 · Enter → C3
- *   C3: ↑↓ content (focus expands) · ← C2 · Enter → open AI conversation
- *   AI conversation overlay: ↑↓ prompts · Enter send · ← / Back → close
+ * ONE navigation system, two states (see ExploreNav):
+ *   collapsed — the three-icon rail on L0: context (compass) · mic · settings
+ *   expanded  — the same icons at the same anchor, grown into the full nav:
+ *               CONTINUE (current L0 context) → Ask Glance (the mic) →
+ *               agents → AI Gallery/Wishlist/Recent → Settings (the gear)
+ *
+ * The current L0 card (title · journey · image) becomes the first expanded
+ * entry, so the user always knows why they arrived. The matching agent is
+ * pre-selected and its Explore grid is already showing. The pinned dock stays
+ * fixed at the extreme right in both states.
+ *
+ * Visual language: inherited from Option 4 (HybridHubPanel) — same icons,
+ * focus chrome, glass, gradients, typography, adaptive cards.
  */
 
-import { useState, useEffect, useMemo } from 'react';
-import AgentMascot, { type AgentMode } from '../Shared/AgentMascot';
+import { useState, useEffect, useRef } from 'react';
 import {
-  TOPICS, buildGlobals, resolveTopicIdx, GALLERY_TOPIC_ID,
-  type Topic, type ContentCard, type Global,
-} from './agentHubData';
+  FONT, RADIUS, chrome, Icon, SectionLabel, PinSquare, KEYFRAMES, HOLD_MS,
+  PRIMARY, MAX_PINS, pinnableById, registerPinnable,
+  type PinMeta,
+} from './HybridHubPanel';
 
-function readAmbient() {
-  const c = (typeof window !== 'undefined' && window.GLANCE_CTX) || {};
-  return { city: c.city || 'Bangalore', weather: c.weather || 'clear' };
-}
-const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+// ─── Current-L0 context — the reason the user pressed ← ─────────────────────
 
-// ─── Category → content filtering ──────────────────────────────────────────────
-// The data model doesn't tag cards by category, so we derive a sensible mapping
-// per topic. Each explore category maps to a subset of the topic's cards; a
-// category with no explicit mapping shows all cards (still a real content set).
-
-const CATEGORY_CARDS: Record<string, Record<string, string[]>> = {
-  recipes: {
-    'Dinner Tonight': ['r-pizza', 'r-biryani', 'r-pasta', 'r-soup'],
-    'Quick Meals': ['r-ramen', 'r-paneer', 'r-soup'],
-    'Breakfast': ['r-pizza', 'r-paneer'],
-    'Healthy': ['r-paneer', 'r-soup', 'r-ramen'],
-    'Desserts': ['r-pizza'],
-    'Italian': ['r-pasta', 'r-pizza'],
-    'Indian': ['r-biryani', 'r-paneer'],
-    'High Protein': ['r-paneer', 'r-biryani'],
-  },
-  travel: {
-    'Weekend Escapes': ['t-coorg', 't-gokarna', 't-pondi'],
-    'Road Trips': ['t-ooty', 't-coorg'],
-    'Hidden Gems': ['t-gokarna', 't-wayanad'],
-    'Beach': ['t-gokarna', 't-pondi'],
-    'Mountains': ['t-munnar', 't-ooty', 't-coorg'],
-    'International': ['t-munnar'],
-    'Food Travel': ['t-coorg', 't-pondi'],
-    'Cultural Trips': ['t-pondi', 't-wayanad'],
-  },
-  shopping: {
-    'Electronics': ['s-headphones', 's-tv'],
-    'Kitchen': ['s-coffee'],
-    'Home': ['s-lamp', 's-tv'],
-    'Fashion': ['s-backpack'],
-    'Gaming': ['s-tv'],
-    'Beauty': ['s-shoes'],
-    'Deals': ['s-headphones', 's-tv'],
-    'Price Drops': ['s-headphones', 's-tv'],
-  },
-  entertainment: {
-    'Movies': ['e-movie'],
-    'Series': ['e-continue', 'e-newrelease'],
-    'Sports': ['e-sport'],
-    'Music': ['e-music'],
-    'Podcasts': ['e-podcast'],
-    'Continue Watching': ['e-continue'],
-  },
-  fashion: {
-    'Weekend Layers': ['f-weekend'],
-    'Office Wear': ['f-office', 'f-smart'],
-    'Rain Ready': ['f-rain'],
-    'Occasion': ['f-occasion'],
-    'Travel Looks': ['f-vacation'],
-    'Accessories': ['f-occasion'],
-    'Seasonal': ['f-weekend', 'f-rain'],
-    'Saved Looks': ['f-weekend', 'f-smart'],
-  },
-  wellness: {
-    'Sleep': ['w-sleep'],
-    'Mindfulness': ['w-breath'],
-    'Movement': ['w-stretch', 'w-yoga'],
-    'Focus': ['w-breath'],
-    'Stress Relief': ['w-breath', 'w-sleep'],
-    'Nutrition': ['w-stretch'],
-  },
-  pets: {
-    'Care': ['p-vet', 'p-grooming'],
-    'Feeding': ['p-food'],
-    'Grooming': ['p-grooming'],
-    'Training': ['p-training'],
-    'Play': ['p-training'],
-    'Products': ['p-food'],
-  },
-  'home-decor': {
-    'Living Room': ['h-lighting', 'h-living'],
-    'Bedroom': ['h-bedroom'],
-    'Kitchen': ['h-kitchen'],
-    'Lighting': ['h-lighting'],
-    'Balcony': ['h-balcony'],
-    'Furniture': ['h-living', 'h-workspace'],
-    'Small Spaces': ['h-living', 'h-workspace'],
-    'Color Ideas': ['h-bedroom', 'h-lighting'],
-  },
-  news: {
-    'Today': ['n-brief'],
-    'World': ['n-monsoon'],
-    'India': ['n-rbi', 'n-cricket'],
-    'Technology': ['n-brief'],
-    'Business': ['n-rbi'],
-    'Explained': ['n-rbi', 'n-monsoon'],
-  },
-  sports: {
-    'Live': ['sp-match'],
-    'Upcoming': ['sp-football', 'sp-ride'],
-    'Highlights': ['sp-highlights'],
-    'Cricket': ['sp-match', 'sp-highlights'],
-    'Football': ['sp-football'],
-    'F1': ['sp-football'],
-  },
-  gallery: {
-    'Recent Generations': ['g-coorg', 'g-wallpaper'],
-    'Wallpapers': ['g-wallpaper', 'g-landscape'],
-    'Portraits': ['g-portrait'],
-    'Landscapes': ['g-landscape', 'g-coorg'],
-    'Collections': ['g-coorg', 'g-portrait', 'g-landscape'],
-    'Continue Editing': ['g-wallpaper'],
-  },
+export type ExploreContext = {
+  /** current L0 card title, e.g. "Om Beach at Sunrise" */
+  title: string;
+  /** the journey / CTA it belongs to, e.g. "Weekend Escape" */
+  journey: string;
+  image?: string;
 };
 
-function cardsForCategory(topic: Topic, categoryLabel: string): ContentCard[] {
-  const map = CATEGORY_CARDS[topic.id];
-  const ids = map?.[categoryLabel];
-  if (!ids || !ids.length) return topic.cards;
-  const byId = new Map(topic.cards.map(c => [c.id, c]));
-  const picked = ids.map(id => byId.get(id)).filter(Boolean) as ContentCard[];
-  return picked.length ? picked : topic.cards;
+// ─── Explore collections — imagery-led, per agent ────────────────────────────
+
+type CenterItem = { id: string; title: string; desc?: string; image?: string };
+
+const COLLECTIONS: Record<string, CenterItem[]> = {
+  travel: [
+    { id: 'weekend-escapes', title: 'Weekend Escapes', desc: 'Close-by getaways',    image: '/images/warm-start/coorg.jpg' },
+    { id: 'road-trips',      title: 'Road Trips',      desc: 'Scenic drives',        image: '/images/feed/feed_29-travel-goa-coastal-road.jpg' },
+    { id: 'hidden-gems',     title: 'Hidden Gems',     desc: 'Off the beaten path',  image: '/images/feed/feed_40-travel-wildlife-dawn-grassland.jpg' },
+    { id: 'beach',           title: 'Beach',           desc: 'Sand & sea',           image: '/images/warm-start/om-beach.webp' },
+    { id: 'mountains',       title: 'Mountains',       desc: 'Higher altitudes',     image: '/images/warm-start/nandi-hills.jpg' },
+    { id: 'international',   title: 'International',   desc: 'Further away',         image: '/images/warm-start/amalfi-coast.jpg' },
+  ],
+  recipes: [
+    { id: 'dinner-tonight', title: 'Dinner Tonight', desc: 'Ready in 30',     image: '/images/feed/feed_04-food-dinner-party-table.jpg' },
+    { id: 'quick-meals',    title: 'Quick Meals',    desc: 'Fast & easy',     image: '/images/feed/feed_42-food-japanese-ramen-counter.jpg' },
+    { id: 'healthy',        title: 'Healthy',        desc: 'Light & fresh',   image: '/images/feed/feed_59-food-healthy-bowl-kitchen.jpg' },
+    { id: 'street-food',    title: 'Street Food',    desc: 'Chai & chaat',    image: '/images/feed/feed_47-food-monsoon-chai-stall.jpg' },
+    { id: 'from-the-garden', title: 'From the Garden', desc: 'Grow & cook',   image: '/images/feed/feed_64-hobbies-kitchen-garden.jpg' },
+    { id: 'morning-table',  title: 'Morning Table',  desc: 'Breakfast ideas', image: '/images/feed/feed_09-home-kitchen-morning.jpg' },
+  ],
+  shopping: [
+    { id: 'price-drops', title: 'Price Drops', desc: 'Tracked for you',   image: '/images/feed/feed_46-fashion-luxury-flatlay.jpg' },
+    { id: 'electronics', title: 'Electronics', desc: 'Smart living',      image: '/images/feed/feed_49-career-creator-desk-night.jpg' },
+    { id: 'fashion',     title: 'Fashion',     desc: 'Wardrobe picks',    image: '/images/feed/feed_31-fashion-streetwear-editorial.jpg' },
+    { id: 'beauty',      title: 'Beauty',      desc: 'Vanity & care',     image: '/images/feed/feed_36-beauty-vanity-glow.jpg' },
+    { id: 'kitchen',     title: 'Kitchen',     desc: 'Cook better',       image: '/images/feed/feed_09-home-kitchen-morning.jpg' },
+    { id: 'audio',       title: 'Audio',       desc: 'Headphones & hifi', image: '/images/feed/feed_60-entertainment-vinyl-music-room.jpg' },
+  ],
+  entertainment: [
+    { id: 'continue-watching', title: 'Continue Watching', desc: 'Pick up the thread', image: '/images/feed/feed_60-entertainment-vinyl-music-room.jpg' },
+    { id: 'live-now',          title: 'Live Now',          desc: 'On right now',       image: '/images/feed/feed_25-sports-cricket-stadium-floodlights.jpg' },
+    { id: 'music-nights',      title: 'Music Nights',      desc: 'Vinyl & sessions',   image: '/images/warm-start/vinyl-ritual.webp' },
+    { id: 'city-nights',       title: 'City Nights',       desc: 'Out after dark',     image: '/images/feed/feed_58-travel-mumbai-marine-drive-night.jpg' },
+    { id: 'classical-arts',    title: 'Classical Arts',    desc: 'Dance & drama',      image: '/images/feed/feed_13-entertainment-classical-dance.jpg' },
+    { id: 'wind-down',         title: 'Wind Down',         desc: 'Calm evenings',      image: '/images/warm-start/sleep-wind-down.jpg' },
+  ],
+  fashion: [
+    { id: 'new-looks',     title: 'New Looks',     desc: 'Fresh this week', image: '/images/feed/feed_31-fashion-streetwear-editorial.jpg' },
+    { id: 'luxury-edit',   title: 'Luxury Edit',   desc: 'Premium picks',   image: '/images/feed/feed_46-fashion-luxury-flatlay.jpg' },
+    { id: 'grooming',      title: 'Grooming',      desc: 'Look sharp',      image: '/images/feed/feed_50-beauty-barbershop-grooming.jpg' },
+    { id: 'occasion-wear', title: 'Occasion Wear', desc: 'Festive fits',    image: '/images/feed/feed_18-beauty-haldi-ritual.jpg' },
+    { id: 'wedding-edit',  title: 'Wedding Edit',  desc: 'Big-day looks',   image: '/images/feed/feed_33-culture-wedding-mandap-decor.jpg' },
+    { id: 'everyday',      title: 'Everyday',      desc: 'Easy staples',    image: '/images/feed/feed_36-beauty-vanity-glow.jpg' },
+  ],
+  'home-decor': [
+    { id: 'cozy-corners',    title: 'Cozy Corners',    desc: 'Warm & layered',    image: '/images/feed/feed_24-home-cozy-monsoon-living-room.jpg' },
+    { id: 'japandi',         title: 'Japandi',         desc: 'Calm minimalism',   image: '/images/feed/feed_28-home-japandi-minimal-living.jpg' },
+    { id: 'balcony-gardens', title: 'Balcony Gardens', desc: 'Green nooks',       image: '/images/feed/feed_44-home-modern-balcony-garden.jpg' },
+    { id: 'kitchen-refresh', title: 'Kitchen Refresh', desc: 'Heart of the home', image: '/images/feed/feed_09-home-kitchen-morning.jpg' },
+    { id: 'warm-lighting',   title: 'Warm Lighting',   desc: 'Set the mood',      image: '/images/feed/eatly-dawn.jpg' },
+    { id: 'everyday-luxury', title: 'Everyday Luxury', desc: 'Spa-like touches',  image: '/images/feed/feed_16-luxury-spa-ritual.jpg' },
+  ],
+};
+
+// ─── Your Space destinations ────────────────────────────────────────────────
+
+const YOUR_SPACE_ROWS = [
+  { id: 'ai-gallery', label: 'AI Gallery', icon: 'gallery',  tint: '#B9A6F0' },
+  { id: 'wishlist',   label: 'Wishlist',   icon: 'wishlist', tint: '#F79BC3' },
+  { id: 'recent',     label: 'Recent',     icon: 'recent',   tint: '#9AA3B2' },
+];
+
+/** AI Gallery — the actual creations upfront, newest first. No category buckets. */
+const GALLERY_ITEMS: CenterItem[] = [
+  { id: 'forest-cabin',   title: 'Forest Cabin',   desc: 'Generated 10 min ago', image: '/images/feed/feed_34-travel-nordic-winter-cabin.jpg' },
+  { id: 'holi-burst',     title: 'Holi Burst',     desc: 'Yesterday',            image: '/images/feed/feed_63-culture-holi-color-abstract.jpg' },
+  { id: 'neon-alley',     title: 'Neon Alley',     desc: '2 days ago',           image: '/images/feed/feed_31-fashion-streetwear-editorial.jpg' },
+  { id: 'amalfi-dream',   title: 'Amalfi Dream',   desc: 'Last week',            image: '/images/warm-start/amalfi-coast.jpg' },
+  { id: 'quiet-living',   title: 'Quiet Living',   desc: 'Last week',            image: '/images/feed/feed_28-home-japandi-minimal-living.jpg' },
+  { id: 'marine-drive',   title: 'Marine Drive',   desc: '2 weeks ago',          image: '/images/feed/feed_58-travel-mumbai-marine-drive-night.jpg' },
+];
+
+/** Wishlist — the actual saved items upfront. No category buckets. */
+const WISHLIST_ITEMS: CenterItem[] = [
+  { id: 'sony-xm5',       title: 'Sony WH-1000XM5', desc: '↓ ₹2,000 today',       image: '/images/feed/feed_46-fashion-luxury-flatlay.jpg' },
+  { id: 'coorg-homestay', title: 'Coorg Homestay',  desc: 'Saved from Travel',    image: '/images/warm-start/coorg.jpg' },
+  { id: 'naan-pizza',     title: 'Naan Pizza',      desc: 'Saved recipe',         image: '/images/feed/feed_04-food-dinner-party-table.jpg' },
+  { id: 'denim-layers',   title: 'Denim Layers',    desc: 'Saved look',           image: '/images/feed/feed_31-fashion-streetwear-editorial.jpg' },
+  { id: 'warm-floor-lamp', title: 'Warm Floor Lamp', desc: 'Saved from Home Decor', image: '/images/feed/feed_24-home-cozy-monsoon-living-room.jpg' },
+];
+
+const RECENT_THREADS = [
+  { id: 'thread-coorg',      title: '“Can you plan a 3-day Coorg trip?”',      sub: 'Travel · yesterday',   icon: 'travel',   tint: '#4DD0C4' },
+  { id: 'thread-jacket',     title: '“What jacket goes with this dress?”',      sub: 'Fashion · 2 days ago', icon: 'fashion',  tint: '#F79BC3' },
+  { id: 'thread-headphones', title: '“Find me headphones under ₹25,000”',       sub: 'Shopping · last week', icon: 'shopping', tint: '#6BD98A' },
+];
+
+const SETTINGS_ROWS = [
+  { id: 'profile',       title: 'Profile',            sub: 'Aswanth · Bengaluru' },
+  { id: 'services',      title: 'Connected Services', sub: '3 linked' },
+  { id: 'notifications', title: 'Notifications',      sub: 'Smart summaries on' },
+  { id: 'privacy',       title: 'Privacy',            sub: 'Data & permissions' },
+  { id: 'preferences',   title: 'Preferences',        sub: 'Interests & tuning' },
+];
+
+// Center content is fully owned by the current left-nav selection.
+type CenterContent =
+  | { kind: 'visual'; label: string; tone: string; items: CenterItem[]; footer?: string }
+  | { kind: 'rows'; label: string; items: { id: string; title: string; sub?: string; icon?: string; tint?: string }[]; footer: string };
+
+function contentFor(selectedNav: string): CenterContent {
+  const agent = PRIMARY.find(a => a.id === selectedNav);
+  if (agent) return { kind: 'visual', label: `Explore · ${agent.label}`, tone: agent.tone, items: COLLECTIONS[agent.id] ?? [] };
+  switch (selectedNav) {
+    case 'ai-gallery': return { kind: 'visual', label: 'AI Gallery', tone: '#B9A6F0', items: GALLERY_ITEMS, footer: 'View Gallery →' };
+    case 'wishlist':   return { kind: 'visual', label: 'Wishlist',   tone: '#F79BC3', items: WISHLIST_ITEMS, footer: 'View Wishlist →' };
+    case 'recent':     return { kind: 'rows', label: 'Recent', items: RECENT_THREADS, footer: 'Continue →' };
+    case 'settings':   return { kind: 'rows', label: 'Settings', items: SETTINGS_ROWS, footer: 'Open Settings →' };
+    default:           return { kind: 'visual', label: 'Explore', tone: '#4DD0C4', items: COLLECTIONS.travel };
+  }
 }
 
-// ─── Column-2 rows: categories then "Your Activity" ────────────────────────────
-type C2Row =
-  | { kind: 'cat'; label: string; cue: string; image: string }
-  | { kind: 'activity'; label: string };
+const agentIdForCategory = (category?: string): string => {
+  const map: Record<string, string> = {
+    travel: 'travel', food: 'recipes', shopping: 'shopping',
+    entertainment: 'entertainment', sports: 'entertainment', music: 'entertainment',
+    fashion: 'fashion', beauty: 'fashion', home: 'home-decor',
+  };
+  return map[category ?? ''] ?? 'travel';
+};
 
-function buildC2Rows(topic: Topic): C2Row[] {
-  const cats: C2Row[] = topic.explore.map(e => ({ kind: 'cat', label: e.label, cue: e.cue, image: e.image }));
-  // Your Activity = the recent thread titles, promoted here as quick entries.
-  const activity: C2Row[] = topic.recent.map(r => ({ kind: 'activity', label: r.kind === 'Conversation' ? `“${r.title}”` : r.title }));
-  return [...cats, ...activity];
-}
+// Geometry — the nav anchors at the same spot as the collapsed rail (left 20,
+// vertically centered); the dock anchors to the screen's right edge.
+const NAV_X = 20;
+const NAV_W = 276;
+const PANEL_W = 1080;
+const CONTENT_X = NAV_X + NAV_W + 30;
+const CARD_H = 100;
+const PIN_SQ = 112;
 
-type Column = 'c1' | 'c2' | 'c3';
-
-// ─── Rail (Column 1 — identical to Option 3) ───────────────────────────────────
-type RailEntry =
-  | { kind: 'topic'; topicIdx: number; label: string; icon: string; tint: string; agent: boolean; groupBefore?: string; sepBefore?: boolean }
-  | { kind: 'global'; globalId: string; label: string; icon: string; sepBefore?: boolean };
-const ICON = { search: '⌕', gallery: '✦', wishlist: '♡', recent: '⟲', settings: '⚙' };
-function buildRail(topics: Topic[]): RailEntry[] {
-  const agents = topics.filter(t => t.id !== GALLERY_TOPIC_ID);
-  const gallery = topics.find(t => t.id === GALLERY_TOPIC_ID)!;
-  const r: RailEntry[] = [];
-  r.push({ kind: 'global', globalId: 'search', label: 'Search', icon: ICON.search });
-  agents.forEach((t, i) => r.push({ kind: 'topic', topicIdx: topics.indexOf(t), label: t.label, icon: t.icon, tint: t.tint, agent: true, groupBefore: i === 0 ? 'Agents' : undefined, sepBefore: i === 0 }));
-  r.push({ kind: 'topic', topicIdx: topics.indexOf(gallery), label: gallery.label, icon: ICON.gallery, tint: gallery.tint, agent: false, sepBefore: true });
-  r.push({ kind: 'global', globalId: 'wishlist', label: 'Wishlist', icon: ICON.wishlist });
-  r.push({ kind: 'global', globalId: 'recent', label: 'Recent', icon: ICON.recent });
-  r.push({ kind: 'global', globalId: 'settings', label: 'Settings', icon: ICON.settings, sepBefore: true });
-  return r;
-}
-
-// ─── Component ─────────────────────────────────────────────────────────────────
+// Navigation zones (integer slots):
+const CTX = -2;            // CONTINUE — the current L0 context entry
+const ASK = -1;            // Ask Glance (mic)
+const A_BASE = 0;          // 0..5   agents
+const S_BASE = 10;         // 10..12 AI Gallery · Wishlist · Recent
+const SETTINGS_SLOT = 15;  // settings — bottom, isolated
+const G_BASE = 20;         // 20..∞  center content (incl. trailing footer row)
+const P_BASE = 60;         // 60..63 pinned dock
 
 export type ExploreFirstPanelProps = {
-  onBack: () => void; onToast?: (msg: string) => void;
-  currentCategory?: string; currentSubs?: string[]; currentTitle?: string;
+  onBack: () => void;
+  onToast?: (msg: string) => void;
+  /** category of the current L0 card — used to preselect the matching agent */
+  currentCategory?: string;
+  /** the current L0 card, shown as the CONTINUE entry on top of the nav */
+  context?: ExploreContext;
+  /** where focus lands on entry: the nav (←) or the pinned dock (→) */
+  initialFocus?: 'nav' | 'pins';
+  pinnedIds: string[];
+  onTogglePin: (id: string) => void;
 };
 
-export default function ExploreFirstPanel({ onBack, onToast, currentCategory, currentSubs, currentTitle }: ExploreFirstPanelProps) {
-  const amb = useMemo(() => readAmbient(), []);
-  const globals = useMemo(() => buildGlobals(amb.city, cap(amb.weather)), [amb]);
-  const rail = useMemo(() => buildRail(TOPICS), []);
-  const ctxTopicIdx = useMemo(() => resolveTopicIdx(currentCategory, currentSubs), [currentCategory, currentSubs]);
-  const ctxRailIdx = useMemo(() => {
-    const i = rail.findIndex(e => e.kind === 'topic' && e.topicIdx === ctxTopicIdx);
-    return i >= 0 ? i : 1;
-  }, [rail, ctxTopicIdx]);
+export default function ExploreFirstPanel({ onBack, onToast, currentCategory, context, initialFocus = 'nav', pinnedIds, onTogglePin }: ExploreFirstPanelProps) {
+  const initialAgent = agentIdForCategory(currentCategory);
+  const [selectedNav, setSelectedNav] = useState(initialAgent);
+  // ← lands on the CONTINUE entry (the reason the user pressed ←);
+  // → lands on the pinned dock.
+  const [slot, setSlot] = useState(
+    initialFocus === 'pins' && pinnedIds.length > 0 ? P_BASE : (context ? CTX : ASK)
+  );
+  const pinCount = pinnedIds.length;
+  const holdRef = useRef<{ t: ReturnType<typeof setTimeout> | null; fired: boolean }>({ t: null, fired: false });
+  const pendingReplace = useRef<{ id: string; t: ReturnType<typeof setTimeout> } | null>(null);
 
-  const [column, setColumn] = useState<Column>('c2');
-  const [railIdx, setRailIdx] = useState(ctxRailIdx);
-  const [c2Idx, setC2Idx] = useState(0);      // category focus
-  const [c3Idx, setC3Idx] = useState(0);      // content focus
-  const [globalIdx, setGlobalIdx] = useState(0);
-  const [convo, setConvo] = useState(false);  // progressive AI open
-  const [convoIdx, setConvoIdx] = useState(0);
-  const [thinking, setThinking] = useState(false);
+  const content = contentFor(selectedNav);
+  const cols = content.kind === 'visual' ? 3 : 1;
+  const itemCount = content.items.length;
+  const footerSlot = content.footer ? G_BASE + itemCount : -99;
 
-  const entry = rail[railIdx];
-  const isTopic = entry.kind === 'topic';
-  const topic = isTopic ? TOPICS[entry.topicIdx] : null;
-  const global = !isTopic ? globals.find(g => g.id === entry.globalId)! : null;
-
-  const c2Rows = useMemo(() => (topic ? buildC2Rows(topic) : []), [topic]);
-  const c2Sel = c2Rows[c2Idx];
-  const catCount = topic ? topic.explore.length : 0;
-
-  // Content shown in C3 = cards for the selected category (only when a cat is focused)
-  const contentCards = useMemo(() => {
-    if (!topic || !c2Sel || c2Sel.kind !== 'cat') return [];
-    return cardsForCategory(topic, c2Sel.label);
-  }, [topic, c2Sel]);
-  const selectedCard = contentCards[c3Idx];
-
-  useEffect(() => { setC2Idx(0); setC3Idx(0); setConvo(false); }, [railIdx]); // eslint-disable-line
-  useEffect(() => { setC3Idx(0); setConvo(false); }, [c2Idx]);
-  useEffect(() => { setConvo(false); setConvoIdx(0); }, [c3Idx]);
-
-  const mascotMode: AgentMode = thinking ? 'thinking' : convo ? 'looking' : 'idle';
-
-  // On mount, land focus on the current-L0 item's category if we can map it.
+  // Browse-as-you-move: focusing a destination row makes it own the center
+  // panel. CTX and ASK are actions — they never change the selection, so the
+  // matching agent stays visibly selected while they're focused.
   useEffect(() => {
-    if (!topic || !currentTitle) return;
-    const catMap = CATEGORY_CARDS[topic.id];
-    if (!catMap) return;
-    const curCard = topic.cards.find(c =>
-      c.title.toLowerCase().includes(currentTitle.toLowerCase().split(' ')[0]) ||
-      currentTitle.toLowerCase().includes(c.title.toLowerCase().split(' ')[0]));
-    if (!curCard) return;
-    const catIdx = topic.explore.findIndex(e => (catMap[e.label] || []).includes(curCard.id));
-    if (catIdx >= 0) setC2Idx(catIdx);
-  }, [topic, currentTitle]);
+    if (slot >= A_BASE && slot < A_BASE + PRIMARY.length) setSelectedNav(PRIMARY[slot - A_BASE].id);
+    else if (slot >= S_BASE && slot < S_BASE + YOUR_SPACE_ROWS.length) setSelectedNav(YOUR_SPACE_ROWS[slot - S_BASE].id);
+    else if (slot === SETTINGS_SLOT) setSelectedNav('settings');
+  }, [slot]);
+
+  // Clamp center focus when the selection (and item count) changes.
+  useEffect(() => {
+    const max = content.footer ? itemCount : itemCount - 1;
+    if (slot >= G_BASE && slot < P_BASE && slot - G_BASE > max) setSlot(G_BASE + max);
+  }, [itemCount, content.footer, slot]);
+
+  // Clamp dock focus if pins shrink.
+  useEffect(() => {
+    if (slot >= P_BASE && slot - P_BASE >= pinCount) {
+      setSlot(pinCount > 0 ? P_BASE + pinCount - 1 : G_BASE);
+    }
+  }, [pinCount, slot]);
+
+  const navSlotForSelected = () => {
+    const a = PRIMARY.findIndex(x => x.id === selectedNav);
+    if (a >= 0) return A_BASE + a;
+    if (selectedNav === 'settings') return SETTINGS_SLOT;
+    const s = YOUR_SPACE_ROWS.findIndex(x => x.id === selectedNav);
+    return s >= 0 ? S_BASE + s : A_BASE;
+  };
+
+  const itemPinMeta = (it: CenterItem): PinMeta => ({
+    id: `col-${selectedNav}-${it.id}`,
+    label: it.title,
+    status: 'SAVED',
+    tone: content.kind === 'visual' ? content.tone : '#9AA3B2',
+    hero: it.title,
+    context: it.desc,
+    image: it.image,
+  });
+
+  const pinWithConfirm = (meta: PinMeta) => {
+    registerPinnable(meta);
+    if (pinnedIds.includes(meta.id)) {
+      onTogglePin(meta.id);
+      onToast?.(`Unpinned ${meta.label}`);
+      return;
+    }
+    if (pinCount < MAX_PINS) {
+      onTogglePin(meta.id);
+      onToast?.(`📌 Pinned ${meta.label}`);
+      return;
+    }
+    if (pendingReplace.current?.id === meta.id) {
+      clearTimeout(pendingReplace.current.t);
+      pendingReplace.current = null;
+      const oldest = pinnedIds[0];
+      onTogglePin(oldest);
+      onTogglePin(meta.id);
+      onToast?.(`↺ Replaced ${pinnableById(oldest)?.label ?? 'oldest pin'} with ${meta.label}`);
+    } else {
+      if (pendingReplace.current) clearTimeout(pendingReplace.current.t);
+      const t = setTimeout(() => { pendingReplace.current = null; }, 4000);
+      pendingReplace.current = { id: meta.id, t };
+      onToast?.('Pins full — hold OK again to replace the oldest');
+    }
+  };
 
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      const key = e.key;
-      if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Enter',' ','Escape','Backspace'].includes(key)) e.preventDefault();
-      if (key === 'Escape' || key === 'Backspace') { if (convo) { setConvo(false); return; } onBack(); return; }
+    const zones = () => ({
+      inCtx: slot === CTX,
+      inAsk: slot === ASK,
+      inAgents: slot >= A_BASE && slot < A_BASE + PRIMARY.length,
+      inSpace: slot >= S_BASE && slot < S_BASE + YOUR_SPACE_ROWS.length,
+      inSettings: slot === SETTINGS_SLOT,
+      inGrid: slot >= G_BASE && slot < P_BASE,
+      inPins: slot >= P_BASE,
+    });
 
-      // ── Progressive AI conversation overlay ──────────────────
-      if (convo && selectedCard) {
-        const len = selectedCard.prompts.length + 1;
-        if (key === 'ArrowUp')   { setConvoIdx(i => Math.max(0, i - 1)); return; }
-        if (key === 'ArrowDown') { setConvoIdx(i => Math.min(len - 1, i + 1)); return; }
-        if (key === 'ArrowLeft') { setConvo(false); return; }
-        if (key === 'Enter' || key === ' ') {
-          const isAsk = convoIdx === selectedCard.prompts.length;
-          onToast?.(isAsk ? `${topic!.agentName} · open conversation` : `${topic!.agentName} · ${selectedCard.prompts[convoIdx].label}`);
-          setThinking(true); setTimeout(() => setThinking(false), 1400);
+    const down = (e: KeyboardEvent) => {
+      const k = e.key;
+      if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Enter',' ','Escape','Backspace'].includes(k)) e.preventDefault();
+      if (k === 'Escape' || k === 'Backspace') { onBack(); return; }
+
+      const { inCtx, inAsk, inAgents, inSpace, inSettings, inGrid, inPins } = zones();
+      const inNav = inCtx || inAsk || inAgents || inSpace || inSettings;
+      const gIdx = inGrid ? slot - G_BASE : 0;
+      const onFooter = inGrid && slot === footerSlot;
+      const gRow = Math.floor(gIdx / cols);
+      const gCol = gIdx % cols;
+      const lastRow = Math.floor((itemCount - 1) / cols);
+
+      if (k === 'Enter' || k === ' ') {
+        if (e.repeat) return;
+        holdRef.current.fired = false;
+        holdRef.current.t = setTimeout(() => {
+          holdRef.current.fired = true;
+          holdRef.current.t = null;
+          if (inGrid && !onFooter && content.kind === 'visual') { pinWithConfirm(itemPinMeta(content.items[gIdx])); return; }
+          if (inAgents) { pinWithConfirm(PRIMARY[slot - A_BASE] as PinMeta); return; }
+          if (inPins) {
+            const id = pinnedIds[slot - P_BASE];
+            onTogglePin(id);
+            onToast?.(`Unpinned ${pinnableById(id)?.label ?? 'item'}`);
+            return;
+          }
+          onToast?.("This can't be pinned");
+        }, HOLD_MS);
+        return;
+      }
+
+      if (k === 'ArrowLeft') {
+        if (inNav) { onBack(); return; }
+        if (inGrid) {
+          if (!onFooter && gCol > 0) setSlot(s => s - 1);
+          else setSlot(navSlotForSelected());
+          return;
+        }
+        if (inPins) { setSlot(G_BASE); return; }
+        return;
+      }
+      if (k === 'ArrowRight') {
+        if (inNav) { setSlot(G_BASE); return; }
+        if (inGrid) {
+          if (!onFooter && gCol < cols - 1 && gIdx + 1 < itemCount) setSlot(s => s + 1);
+          else if (pinCount > 0) setSlot(P_BASE + Math.min(onFooter ? pinCount - 1 : gRow, pinCount - 1));
           return;
         }
         return;
       }
-
-      if (column === 'c1') {
-        if (key === 'ArrowUp')   { setRailIdx(i => Math.max(0, i - 1)); return; }
-        if (key === 'ArrowDown') { setRailIdx(i => Math.min(rail.length - 1, i + 1)); return; }
-        if (key === 'ArrowLeft') { onBack(); return; }
-        if (key === 'ArrowRight' || key === 'Enter' || key === ' ') { setColumn('c2'); setGlobalIdx(0); return; }
-        return;
-      }
-
-      if (column === 'c2' && !isTopic) {
-        const len = global!.items.length;
-        if (key === 'ArrowUp')   { setGlobalIdx(i => Math.max(0, i - 1)); return; }
-        if (key === 'ArrowDown') { setGlobalIdx(i => Math.min(len - 1, i + 1)); return; }
-        if (key === 'ArrowLeft') { setColumn('c1'); return; }
-        if (key === 'ArrowRight') { onBack(); return; }
-        if (key === 'Enter' || key === ' ') { onToast?.(`${global!.label} · ${global!.items[globalIdx].title}`); return; }
-        return;
-      }
-
-      if (column === 'c2' && isTopic) {
-        if (key === 'ArrowUp')   { setC2Idx(i => Math.max(0, i - 1)); return; }
-        if (key === 'ArrowDown') { setC2Idx(i => Math.min(c2Rows.length - 1, i + 1)); return; }
-        if (key === 'ArrowLeft') { setColumn('c1'); return; }
-        if (key === 'ArrowRight' || key === 'Enter' || key === ' ') {
-          if (c2Sel.kind === 'cat') { setColumn('c3'); setC3Idx(0); }
-          else onToast?.(`${topic!.label} · ${c2Sel.label}`);
+      if (k === 'ArrowDown') {
+        if (inCtx) { setSlot(ASK); return; }
+        if (inAsk) { setSlot(A_BASE); return; }
+        if (inAgents) { slot < A_BASE + PRIMARY.length - 1 ? setSlot(s => s + 1) : setSlot(S_BASE); return; }
+        if (inSpace) { slot < S_BASE + YOUR_SPACE_ROWS.length - 1 ? setSlot(s => s + 1) : setSlot(SETTINGS_SLOT); return; }
+        if (inGrid) {
+          if (onFooter) return;
+          if (gIdx + cols < itemCount) setSlot(s => s + cols);
+          else if (gRow < lastRow) setSlot(G_BASE + itemCount - 1);
+          else if (content.footer) setSlot(footerSlot);
           return;
         }
+        if (inPins) { if (slot - P_BASE < pinCount - 1) setSlot(s => s + 1); return; }
         return;
       }
-
-      if (column === 'c3') {
-        if (key === 'ArrowUp')   { setC3Idx(i => Math.max(0, i - 1)); return; }
-        if (key === 'ArrowDown') { setC3Idx(i => Math.min(contentCards.length - 1, i + 1)); return; }
-        if (key === 'ArrowLeft') { setColumn('c2'); return; }
-        if (key === 'ArrowRight') { if (selectedCard) { setConvo(true); setConvoIdx(0); } return; }  // progressive AI
-        if (key === 'Enter' || key === ' ') { if (selectedCard) { setConvo(true); setConvoIdx(0); } return; }
+      if (k === 'ArrowUp') {
+        if (inAsk) { if (context) setSlot(CTX); return; }
+        if (inAgents) { slot > A_BASE ? setSlot(s => s - 1) : setSlot(ASK); return; }
+        if (inSpace) { slot > S_BASE ? setSlot(s => s - 1) : setSlot(A_BASE + PRIMARY.length - 1); return; }
+        if (inSettings) { setSlot(S_BASE + YOUR_SPACE_ROWS.length - 1); return; }
+        if (inGrid) {
+          if (onFooter) setSlot(G_BASE + itemCount - 1);
+          else if (gRow > 0) setSlot(s => s - cols);
+          return;
+        }
+        if (inPins) { if (slot > P_BASE) setSlot(s => s - 1); return; }
         return;
       }
     };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
-  }, [column, railIdx, isTopic, global, globalIdx, topic, c2Rows, c2Idx, c2Sel, contentCards, c3Idx, selectedCard, convo, convoIdx, rail.length, onBack, onToast]);
+
+    const up = (e: KeyboardEvent) => {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      if (holdRef.current.t) { clearTimeout(holdRef.current.t); holdRef.current.t = null; }
+      if (holdRef.current.fired) { holdRef.current.fired = false; return; }
+      const { inCtx, inAsk, inAgents, inSpace, inSettings, inGrid, inPins } = zones();
+      if (inCtx) { onToast?.(`Continuing ${context?.journey ?? 'your journey'}…`); return; }
+      if (inAsk) { onToast?.('Opening Ask Glance…'); return; }
+      if (inAgents || inSpace || inSettings) { setSlot(G_BASE); return; } // enter the context panel
+      if (inGrid) {
+        if (slot === footerSlot && content.footer) { onToast?.(`${content.footer.replace(' →', '')}…`); return; }
+        onToast?.(`Opening ${content.items[slot - G_BASE].title}…`);
+        return;
+      }
+      if (inPins) { onToast?.(`Opening ${pinnableById(pinnedIds[slot - P_BASE])?.label}…`); return; }
+    };
+
+    window.addEventListener('keydown', down);
+    window.addEventListener('keyup', up);
+    return () => {
+      window.removeEventListener('keydown', down);
+      window.removeEventListener('keyup', up);
+      if (holdRef.current.t) clearTimeout(holdRef.current.t);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slot, selectedNav, content, cols, itemCount, footerSlot, pinCount, pinnedIds, context, onBack, onToast]);
 
   return (
-    <div style={{
-      position: 'absolute', top: 0, left: 0, bottom: 0, width: '86vw',
-      background: [
-        'radial-gradient(1300px 1400px at -8% 50%, rgba(11,9,20,0.98), rgba(7,6,14,0.84) 55%, transparent 88%)',
-        'linear-gradient(100deg, rgba(5,4,12,0.98) 0%, rgba(5,4,12,0.88) 74%, rgba(5,4,12,0) 100%)',
-      ].join(', '),
-      animation: 'e4-panel-in 0.36s cubic-bezier(0.22,0.61,0.36,1) forwards',
-      display: 'flex', alignItems: 'stretch',
-      WebkitMaskImage: 'linear-gradient(to right, black 94%, transparent 100%)',
-      maskImage: 'linear-gradient(to right, black 94%, transparent 100%)',
-    }}>
-      {/* ── Column 1 ─────────────────────────────────────────── */}
+    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'auto', animation: 'hh-in 0.25s ease forwards' }}>
+      {/* Left gradient — lighter than before: L0 stays recognizable behind */}
       <div style={{
-        width: 288, flexShrink: 0, padding: '40px 14px 26px 46px',
-        display: 'flex', flexDirection: 'column', gap: 2,
-        opacity: column === 'c1' ? 1 : 0.9, transition: 'opacity 0.3s ease', overflowY: 'auto',
-      }}>
-        <div style={{ marginBottom: 18 }}><img src="/glance-logo.png" alt="Glance" style={{ height: 24, opacity: 0.9 }} /></div>
-        {rail.map((e, i) => (
-          <div key={i}>
-            {e.sepBefore && <RailSep label={e.kind === 'topic' ? e.groupBefore : undefined} />}
-            <RailRow icon={e.icon} label={e.label} tint={e.kind === 'topic' ? e.tint : undefined}
-              agent={e.kind === 'topic' && e.agent}
-              focused={column === 'c1' && railIdx === i} selected={railIdx === i}
-              onClick={() => { setRailIdx(i); setColumn('c2'); setGlobalIdx(0); }} />
-          </div>
-        ))}
-        <div style={{ marginTop: 'auto', paddingTop: 14, fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif', fontSize: 10, color: 'rgba(255,255,255,0.24)' }}>← or Back returns to Home</div>
-      </div>
+        position: 'absolute', left: 0, top: 0, bottom: 0, width: PANEL_W + 320,
+        background: 'linear-gradient(to right, rgba(5,5,12,0.94) 0%, rgba(5,5,12,0.88) 55%, rgba(5,5,12,0.5) 80%, transparent 100%)',
+        pointerEvents: 'none',
+      }} />
 
-      {/* ── Column 2: EXPLORE (promoted) ─────────────────────── */}
-      <div style={{
-        width: 420, flexShrink: 0, padding: '40px 22px 26px 30px',
-        opacity: column === 'c2' ? 1 : 0.82, transition: 'opacity 0.3s ease', overflowY: 'auto',
-      }}>
-        {isTopic
-          ? <C2Explore topic={topic!} rows={c2Rows} idx={c2Idx} catCount={catCount} focused={column === 'c2'} />
-          : <C2Global dest={global!} idx={globalIdx} focused={column === 'c2'} />}
-      </div>
+      {/* The navigation — the collapsed L0 rail, expanded in place */}
+      <ExploreNav
+        state="expanded"
+        context={context}
+        slot={slot}
+        setSlot={setSlot}
+        selectedNav={selectedNav}
+        pinnedIds={pinnedIds}
+      />
 
-      {/* ── Column 3: content browser + progressive AI ────────── */}
+      {/* Center content + logo + hints */}
       <div style={{
-        flex: 1, minWidth: 0, padding: '40px 44px 26px 30px',
-        opacity: column === 'c3' || convo ? 1 : 0.72, transition: 'opacity 0.3s ease', overflowY: 'auto',
+        position: 'absolute', left: 0, top: 0, bottom: 0, width: PANEL_W,
+        boxSizing: 'border-box', display: 'flex', flexDirection: 'column',
+        padding: `36px 44px 28px ${CONTENT_X}px`,
+        animation: 'hh-in 0.35s 0.1s both',
       }}>
-        {isTopic && c2Sel?.kind === 'cat' && (
-          <C3Content
-            topic={topic!} category={c2Sel.label} cards={contentCards} idx={c3Idx}
-            focused={column === 'c3'} convo={convo} convoIdx={convoIdx} mascotMode={mascotMode}
-          />
-        )}
-        {isTopic && c2Sel?.kind === 'activity' && (
-          <ActivityHint topic={topic!} />
-        )}
-      </div>
-
-      {/* Hint strip */}
-      <div style={{
-        position: 'absolute', left: 46, bottom: 16, display: 'flex', alignItems: 'center', gap: 16, zIndex: 40,
-        fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif', fontSize: 12, color: 'rgba(255,255,255,0.32)',
-      }}>
-        {hintFor(column, convo).map(([k, l]) => (
-          <span key={k} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <kbd style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.14)', borderRadius: 5, padding: '2px 8px', fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.5)' }}>{k}</kbd>
-            <span>{l}</span>
+        <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
+          <img src="/glance-logo.png" alt="Glance" style={{ height: 22, opacity: 0.88 }} />
+          <span style={{ fontFamily: FONT, fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)' }}>
+            Explore
           </span>
-        ))}
-      </div>
+        </div>
 
-      <style>{E4_KF}</style>
-    </div>
-  );
-}
-
-function hintFor(col: Column, convo: boolean): [string, string][] {
-  if (convo) return [['↑↓', 'Prompts'], ['Enter', 'Send'], ['←', 'Close']];
-  if (col === 'c1') return [['↑↓', 'Navigate'], ['→', 'Explore'], ['←', 'Back to feed']];
-  if (col === 'c2') return [['↑↓', 'Categories'], ['→', 'Browse'], ['←', 'Nav']];
-  return [['↑↓', 'Content'], ['Enter', 'Ask AI'], ['←', 'Categories']];
-}
-
-// ─── Column 1 pieces ───────────────────────────────────────────────────────────
-
-function RailSep({ label }: { label?: string }) {
-  if (label) return <div style={{ fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif', fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.14em', margin: '16px 0 8px 8px' }}>{label}</div>;
-  return <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', margin: '12px 8px' }} />;
-}
-function RailRow({ icon, label, tint, agent, focused, selected, onClick }: {
-  icon: string; label: string; tint?: string; agent?: boolean; focused: boolean; selected: boolean; onClick: () => void;
-}) {
-  const accent = tint || '#C7B6F5'; const rgb = hexRgb(accent); const strong = selected && agent;
-  return (
-    <div onClick={onClick} style={{
-      position: 'relative', display: 'flex', alignItems: 'center', gap: 12,
-      padding: strong ? '11px 14px' : '9px 12px', borderRadius: 13, cursor: 'pointer',
-      background: focused ? 'rgba(255,255,255,0.14)' : strong ? `linear-gradient(100deg, rgba(${rgb},0.15), rgba(255,255,255,0.04))` : selected ? 'rgba(255,255,255,0.06)' : 'transparent',
-      border: focused ? '1.5px solid rgba(255,255,255,0.45)' : strong ? `1.5px solid rgba(${rgb},0.42)` : selected ? '1.5px solid rgba(255,255,255,0.12)' : '1.5px solid transparent',
-      boxShadow: focused ? '0 8px 26px rgba(0,0,0,0.45)' : strong ? `0 6px 22px rgba(${rgb},0.16)` : 'none',
-      transform: focused || strong ? 'translateX(5px)' : 'none', transition: 'all 0.22s cubic-bezier(0.22,0.61,0.36,1)',
-    }}>
-      {strong && <div style={{ position: 'absolute', left: -4, top: '20%', bottom: '20%', width: 3, borderRadius: 3, background: accent, boxShadow: `0 0 9px ${accent}` }} />}
-      <div style={{ width: strong ? 38 : 30, height: strong ? 38 : 30, borderRadius: 10, flexShrink: 0, background: strong ? `rgba(${rgb},0.18)` : 'rgba(255,255,255,0.06)', border: `1px solid ${strong ? `rgba(${rgb},0.4)` : 'rgba(255,255,255,0.12)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: strong ? 19 : 15, transition: 'all 0.22s cubic-bezier(0.22,0.61,0.36,1)' }}>{icon}</div>
-      <span style={{ fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif', fontWeight: focused || strong ? 700 : 600, fontSize: strong ? 17 : 14, color: focused || strong ? '#FFFFFF' : selected ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.55)', letterSpacing: '-0.01em', transition: 'all 0.2s' }}>{label}</span>
-    </div>
-  );
-}
-
-function MiniLabel({ text }: { text: string }) {
-  return <div style={{ fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.38)', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 12 }}>{text}</div>;
-}
-
-// ─── Column 2: Explore categories + Your Activity ──────────────────────────────
-
-function C2Explore({ topic, rows, idx, catCount, focused }: {
-  topic: Topic; rows: C2Row[]; idx: number; catCount: number; focused: boolean;
-}) {
-  const rgb = hexRgb(topic.tint);
-  return (
-    <div key={topic.id} style={{ animation: 'e4-ws-in 0.34s ease' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-        <div style={{ width: 40, height: 40, borderRadius: 12, background: `rgba(${rgb},0.16)`, border: `1px solid rgba(${rgb},0.4)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>{topic.icon}</div>
-        <div style={{ fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif', fontWeight: 800, fontSize: 24, color: '#FFFFFF', letterSpacing: '-0.02em' }}>Explore {topic.label}</div>
-      </div>
-
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        {rows.map((row, i) => {
-          const on = focused && idx === i;
-          if (row.kind === 'cat') {
-            return (
-              <div key={row.label} style={{
-                position: 'relative', height: on ? 96 : 76, borderRadius: 15, overflow: 'hidden', cursor: 'pointer',
-                border: on ? `2px solid rgba(${rgb},0.65)` : '1px solid rgba(255,255,255,0.09)',
-                boxShadow: on ? `0 14px 34px rgba(${rgb},0.22)` : 'none',
-                transition: 'all 0.26s cubic-bezier(0.22,0.61,0.36,1)', background: '#111',
-              }}>
-                <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${row.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
-                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(4,3,10,0.9) 0%, rgba(4,3,10,0.45) 55%, rgba(4,3,10,0.15) 100%)' }} />
-                <div style={{ position: 'absolute', left: 16, top: 0, bottom: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                  <div style={{ fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif', fontWeight: 700, fontSize: on ? 19 : 17, color: '#FFFFFF', letterSpacing: '-0.01em', transition: 'font-size 0.2s' }}>{row.label}</div>
-                  <div style={{ fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif', fontSize: 12.5, color: 'rgba(255,255,255,0.65)', marginTop: 3 }}>{row.cue}</div>
-                </div>
-                {on && <span style={{ position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%)', fontSize: 16, color: '#FFFFFF' }}>›</span>}
+        <div style={{ flex: 1, minHeight: 0, display: 'flex', alignItems: 'center' }}>
+          {/* Contextual — keyed by selection so content crossfades, never lingers */}
+          <div key={selectedNav} style={{ width: '100%', animation: 'hh-in 0.3s ease both' }}>
+            <SectionLabel text={content.label} />
+            {content.kind === 'visual' ? (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+                {content.items.map((c, i) => (
+                  <CollectionCard
+                    key={c.id}
+                    item={c}
+                    tone={content.tone}
+                    focused={slot === G_BASE + i}
+                    pinned={pinnedIds.includes(`col-${selectedNav}-${c.id}`)}
+                    animDelay={i * 0.02 + 0.12}
+                    onClick={() => setSlot(G_BASE + i)}
+                  />
+                ))}
               </div>
-            );
-          }
-          // activity row (index >= catCount)
-          const isFirstActivity = i === catCount;
-          return (
-            <div key={`a-${i}`}>
-              {isFirstActivity && <div style={{ margin: '14px 0 8px' }}><MiniLabel text="Your Activity" /></div>}
-              <div style={{
-                display: 'flex', alignItems: 'center', gap: 11, padding: '12px 15px', borderRadius: 13, cursor: 'pointer',
-                background: on ? `rgba(${rgb},0.16)` : 'rgba(255,255,255,0.04)',
-                border: on ? `1.5px solid rgba(${rgb},0.5)` : '1px solid rgba(255,255,255,0.08)',
-                transform: on ? 'translateX(5px)' : 'none', transition: 'all 0.2s cubic-bezier(0.22,0.61,0.36,1)',
-              }}>
-                <span style={{ fontSize: 14, color: `rgba(${rgb},0.85)` }}>↺</span>
-                <span style={{ fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif', fontWeight: 600, fontSize: 14.5, color: on ? '#FFFFFF' : 'rgba(255,255,255,0.75)', letterSpacing: '-0.01em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{row.label}</span>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {content.items.map((r, i) => (
+                  <ThreadRow
+                    key={r.id}
+                    title={r.title} sub={r.sub} icon={r.icon} tint={r.tint}
+                    focused={slot === G_BASE + i}
+                    animDelay={i * 0.03 + 0.12}
+                    onClick={() => setSlot(G_BASE + i)}
+                  />
+                ))}
               </div>
-            </div>
-          );
-        })}
+            )}
+            {content.footer && (
+              <FooterLink
+                text={content.footer}
+                focused={slot === footerSlot}
+                onClick={() => setSlot(footerSlot)}
+              />
+            )}
+          </div>
+        </div>
+
+        <div style={{ flexShrink: 0, display: 'flex', gap: 12, paddingTop: 12 }}>
+          {[['↑↓←→','Navigate'],['OK','Open'],['Hold OK','Pin / Unpin'],['←','Back to L0']].map(([k,l]) => (
+            <span key={k} style={{ display: 'flex', alignItems: 'center', gap: 5, fontFamily: FONT, fontSize: 10, color: 'rgba(255,255,255,0.2)' }}>
+              <kbd style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 4, padding: '1px 6px', fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.28)', fontFamily: FONT }}>{k}</kbd>
+              {l}
+            </span>
+          ))}
+        </div>
       </div>
+
+      {/* Pinned dock — fixed to the screen's right edge, identical to L0 */}
+      <PinnedDockRight
+        pinnedIds={pinnedIds}
+        focusedIdx={slot >= P_BASE ? slot - P_BASE : null}
+        showLabel
+        onSelect={i => setSlot(P_BASE + i)}
+      />
+
+      <style>{KEYFRAMES + EF_KF}</style>
     </div>
   );
 }
 
-// ─── Column 2 (global destination) ─────────────────────────────────────────────
+// ─── ExploreNav — ONE navigation system, two states ─────────────────────────
+// collapsed: the three-icon rail on L0 (context · mic · settings)
+// expanded:  the same icons, same anchor, grown into the labeled nav.
 
-function C2Global({ dest, idx, focused }: { dest: Global; idx: number; focused: boolean }) {
-  return (
-    <div key={dest.id} style={{ animation: 'e4-ws-in 0.3s ease' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 13, marginBottom: 4 }}>
-        <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.16)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>{dest.icon}</div>
-        <div style={{ fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif', fontWeight: 800, fontSize: 25, color: '#FFFFFF', letterSpacing: '-0.02em' }}>{dest.label}</div>
-      </div>
-      <div style={{ fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '16px 0 12px' }}>{dest.heading}</div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        {dest.items.map((it, i) => {
-          const on = focused && idx === i;
-          return (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: it.image ? '8px' : '15px 17px', borderRadius: 14, cursor: 'pointer', background: on ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.04)', border: on ? '1.5px solid rgba(255,255,255,0.42)' : '1px solid rgba(255,255,255,0.08)', transform: on ? 'translateX(5px)' : 'none', transition: 'all 0.2s cubic-bezier(0.22,0.61,0.36,1)' }}>
-              {it.image && <div style={{ width: 84, height: 56, borderRadius: 10, flexShrink: 0, overflow: 'hidden', backgroundImage: `url(${it.image})`, backgroundSize: 'cover', backgroundPosition: 'center', border: '1px solid rgba(255,255,255,0.12)' }} />}
-              <div style={{ minWidth: 0, flex: 1 }}>
-                <div style={{ fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif', fontWeight: 700, fontSize: 16, color: on ? '#FFFFFF' : 'rgba(255,255,255,0.8)', letterSpacing: '-0.01em' }}>{it.title}</div>
-                <div style={{ fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif', fontSize: 12.5, color: 'rgba(255,255,255,0.5)', marginTop: 2 }}>{it.sub}</div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-// ─── Column 3: content browser (single-card expansion) + progressive AI ─────────
-
-function C3Content({ topic, category, cards, idx, focused, convo, convoIdx, mascotMode }: {
-  topic: Topic; category: string; cards: ContentCard[]; idx: number; focused: boolean;
-  convo: boolean; convoIdx: number; mascotMode: AgentMode;
+export function ExploreNav(props: {
+  state: 'collapsed' | 'expanded';
+  onOpen?: () => void;
+  context?: ExploreContext;
+  slot?: number;
+  setSlot?: (n: number) => void;
+  selectedNav?: string;
+  pinnedIds?: string[];
 }) {
-  const rgb = hexRgb(topic.tint);
-  const selected = cards[idx];
+  const { state, onOpen, context, slot = -99, setSlot, selectedNav, pinnedIds = [] } = props;
 
-  // Full conversation overlay (progressive AI)
-  if (convo && selected) {
-    const askIdx = selected.prompts.length;
+  if (state === 'collapsed') {
+    // The rail: compass = current context / Explore (highlighted: it's what ←
+    // continues into), mic = Ask Glance, gear = Settings. Same order expanded.
+    const items = ['explore', 'mic', 'settings'];
     return (
-      <div key={'convo' + selected.id} style={{ animation: 'e4-ws-in 0.3s ease', maxWidth: 560, width: '100%' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16 }}>
-          <div style={{ width: 84, height: 84, borderRadius: 22, flexShrink: 0, background: `radial-gradient(circle at 50% 40%, rgba(${rgb},0.26), rgba(255,255,255,0.04))`, border: `1px solid rgba(${rgb},0.35)`, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 10px 34px rgba(${rgb},0.22)`, animation: 'e4-float 4s ease-in-out infinite' }}>
-            <AgentMascot agentMode={mascotMode} size={68} />
+      <div
+        onClick={onOpen}
+        style={{
+          position: 'absolute', left: NAV_X, top: '50%', transform: 'translateY(-50%)',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18,
+          padding: '16px 12px', borderRadius: 999, zIndex: 56, cursor: 'pointer',
+          background: 'rgba(16,16,24,0.55)',
+          backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
+          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1), inset 0 0 0 1px rgba(255,255,255,0.07), 0 8px 24px rgba(0,0,0,0.35)',
+          animation: 'hh-in 0.4s ease both',
+        }}
+      >
+        {items.map((name, i) => (
+          <div key={name} style={{
+            width: 38, height: 38, borderRadius: '50%',
+            display: 'grid', placeItems: 'center',
+            background: i === 0 ? 'rgba(255,255,255,0.14)' : 'transparent',
+            boxShadow: i === 0 ? 'inset 0 0 0 1.5px rgba(255,255,255,0.75)' : 'none',
+          }}>
+            <Icon name={name} tint={i === 0 ? '#fff' : 'rgba(255,255,255,0.55)'} size={19} />
           </div>
-          <div>
-            <div style={{ fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif', fontWeight: 700, fontSize: 21, color: '#FFFFFF', letterSpacing: '-0.01em' }}>{topic.agentName}</div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4, fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif', fontSize: 12, color: `rgba(${rgb},0.9)` }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: topic.tint, boxShadow: `0 0 7px ${topic.tint}` }} />{selected.note}
-            </div>
-          </div>
-        </div>
-        <div style={{ fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif', fontSize: 17, color: 'rgba(255,255,255,0.92)', lineHeight: 1.45, marginBottom: 20, padding: '13px 16px', borderRadius: 14, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>“{selected.message}”</div>
-        <MiniLabel text="Suggested questions" />
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {selected.prompts.map((p, i) => {
-            const on = convoIdx === i;
-            return (
-              <div key={i} style={{ padding: '12px 15px', borderRadius: 13, cursor: 'pointer', background: on ? `linear-gradient(110deg, rgba(${rgb},0.2), rgba(255,255,255,0.05))` : 'rgba(255,255,255,0.05)', border: on ? `1.5px solid rgba(${rgb},0.55)` : '1px solid rgba(255,255,255,0.1)', transform: on ? 'translateX(5px)' : 'none', transition: 'all 0.2s cubic-bezier(0.22,0.61,0.36,1)' }}>
-                <div style={{ fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif', fontWeight: 600, fontSize: 15.5, color: on ? '#FFFFFF' : 'rgba(255,255,255,0.9)', letterSpacing: '-0.01em', lineHeight: 1.35 }}>{p.label}</div>
-              </div>
-            );
-          })}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 15px', borderRadius: 13, cursor: 'pointer', marginTop: 2, background: convoIdx === askIdx ? 'rgba(255,255,255,0.12)' : 'transparent', border: convoIdx === askIdx ? '1.5px solid rgba(255,255,255,0.4)' : '1px dashed rgba(255,255,255,0.2)', transform: convoIdx === askIdx ? 'translateX(5px)' : 'none', transition: 'all 0.2s cubic-bezier(0.22,0.61,0.36,1)' }}>
-            <span style={{ fontSize: 15 }}>💬</span>
-            <span style={{ fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif', fontWeight: 600, fontSize: 15, fontStyle: 'italic', color: convoIdx === askIdx ? '#FFFFFF' : 'rgba(255,255,255,0.55)' }}>Ask {topic.agentName}…</span>
-          </div>
-        </div>
+        ))}
+        <style>{KEYFRAMES}</style>
       </div>
     );
   }
 
-  // Content browser (single-card expansion + compact AI preview on focused card)
+  // Expanded — grows from the rail's anchor. The container widens from the
+  // capsule; labels and extra rows fade in around the persistent icons.
   return (
-    <div key={topic.id + category} style={{ animation: 'e4-ws-in 0.32s ease' }}>
-      <MiniLabel text={category} />
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {cards.map((c, i) => {
-          const on = focused && idx === i;
-          if (on) {
-            return (
-              <div key={c.id}>
-                {/* full-image hero */}
-                <div style={{ position: 'relative', borderRadius: 18, overflow: 'hidden', cursor: 'pointer', height: 210, border: `2px solid rgba(${rgb},0.7)`, boxShadow: `0 20px 50px rgba(${rgb},0.28)`, background: '#111', animation: 'e4-hero-in 0.3s cubic-bezier(0.22,0.61,0.36,1)' }}>
-                  <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${c.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
-                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(4,3,10,0.95) 0%, rgba(4,3,10,0.4) 50%, transparent 82%)' }} />
-                  {c.isCurrentL0 && (
-                    <div style={{ position: 'absolute', top: 14, left: 14, display: 'flex', alignItems: 'center', gap: 7, padding: '5px 12px', borderRadius: 999, background: 'rgba(0,0,0,0.5)', border: `1px solid rgba(${rgb},0.6)`, backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif', fontSize: 11, fontWeight: 700, color: topic.tint, textTransform: 'uppercase', letterSpacing: '0.07em' }}>
-                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: topic.tint, boxShadow: `0 0 8px ${topic.tint}` }} />{topic.currentLabel}
-                    </div>
-                  )}
-                  <div style={{ position: 'absolute', left: 20, right: 20, bottom: 16 }}>
-                    <div style={{ fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif', fontWeight: 800, fontSize: 25, color: '#FFFFFF', letterSpacing: '-0.02em', lineHeight: 1.12 }}>{c.title}</div>
-                    <div style={{ fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif', fontSize: 14, color: 'rgba(255,255,255,0.78)', marginTop: 5 }}>{c.sub}</div>
-                  </div>
-                </div>
-                {/* compact AI preview attached to the focused card */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 10, padding: '11px 14px', borderRadius: 14, background: `linear-gradient(110deg, rgba(${rgb},0.14), rgba(255,255,255,0.04))`, border: `1px solid rgba(${rgb},0.32)` }}>
-                  <div style={{ width: 40, height: 40, borderRadius: 11, flexShrink: 0, background: `rgba(${rgb},0.16)`, border: `1px solid rgba(${rgb},0.35)`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <AgentMascot agentMode={mascotMode} size={32} />
-                  </div>
-                  <div style={{ minWidth: 0, flex: 1 }}>
-                    <div style={{ fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif', fontWeight: 700, fontSize: 13.5, color: '#FFFFFF', letterSpacing: '-0.01em' }}>{topic.agentName}</div>
-                    <div style={{ fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif', fontSize: 12.5, color: 'rgba(255,255,255,0.6)', marginTop: 1 }}>“{selected?.message}”</div>
-                  </div>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
-                    <kbd style={{ background: 'rgba(255,255,255,0.92)', color: '#0A0812', borderRadius: 5, padding: '2px 7px', fontSize: 9.5, fontWeight: 800, fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif' }}>Enter</kbd>
-                    <span style={{ fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif', fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.75)' }}>to ask</span>
-                  </span>
-                </div>
-              </div>
-            );
-          }
-          // compact card
-          return (
-            <div key={c.id} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '8px', borderRadius: 16, cursor: 'pointer', background: 'rgba(255,255,255,0.035)', border: '1px solid rgba(255,255,255,0.07)', transition: 'all 0.28s cubic-bezier(0.22,0.61,0.36,1)' }}>
-              <div style={{ width: 118, height: 72, borderRadius: 12, flexShrink: 0, overflow: 'hidden', backgroundImage: `url(${c.image})`, backgroundSize: 'cover', backgroundPosition: 'center', border: '1px solid rgba(255,255,255,0.12)' }} />
-              <div style={{ minWidth: 0, flex: 1 }}>
-                {c.isCurrentL0 && <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, marginBottom: 4, padding: '1px 8px', borderRadius: 999, background: `rgba(${rgb},0.14)`, border: `1px solid rgba(${rgb},0.35)`, fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif', fontSize: 8.5, fontWeight: 700, color: topic.tint, textTransform: 'uppercase', letterSpacing: '0.06em' }}><span style={{ width: 4, height: 4, borderRadius: '50%', background: topic.tint }} />On L0</div>}
-                <div style={{ fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif', fontWeight: 700, fontSize: 16.5, color: 'rgba(255,255,255,0.82)', letterSpacing: '-0.01em', lineHeight: 1.18 }}>{c.title}</div>
-                <div style={{ fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif', fontSize: 13, color: 'rgba(255,255,255,0.55)', marginTop: 2 }}>{c.sub}</div>
-              </div>
-            </div>
-          );
-        })}
+    <div style={{
+      position: 'absolute', left: NAV_X, top: '50%', transform: 'translateY(-50%)',
+      width: NAV_W, boxSizing: 'border-box', zIndex: 56,
+      padding: '16px 14px', borderRadius: 28, overflow: 'hidden',
+      background: 'rgba(14,14,22,0.72)',
+      backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)',
+      boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1), inset 0 0 0 1px rgba(255,255,255,0.07), 0 12px 36px rgba(0,0,0,0.4)',
+      animation: 'ef-nav-grow 0.42s cubic-bezier(0.25, 0.8, 0.25, 1) both',
+    }}>
+      {/* 1 · CONTINUE — the current L0 context, the reason ← was pressed */}
+      {context && (
+        <>
+          <ContinueEntry context={context} focused={slot === CTX} onClick={() => setSlot?.(CTX)} />
+          <div style={{ height: 14 }} />
+        </>
+      )}
+
+      {/* 2 · Ask Glance — the same mic as the collapsed rail */}
+      <NavRow
+        icon="mic" tint="#C9A6F5" label="Ask Glance" sub="Start a conversation"
+        focused={slot === ASK}
+        onClick={() => setSlot?.(ASK)}
+      />
+
+      <div style={{ height: 14 }} />
+
+      {/* 3 · Agents */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        {PRIMARY.map((a, i) => (
+          <NavRow
+            key={a.id}
+            icon={a.icon} tint={a.tone} label={a.label}
+            focused={slot === A_BASE + i}
+            selected={selectedNav === a.id}
+            pinned={pinnedIds.includes(a.id)}
+            animDelay={0.12 + i * 0.02}
+            onClick={() => setSlot?.(A_BASE + i)}
+          />
+        ))}
+      </div>
+
+      <div style={{ height: 14 }} />
+
+      {/* 4 · Your Space */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        {YOUR_SPACE_ROWS.map((r, i) => (
+          <NavRow
+            key={r.id}
+            icon={r.icon} tint={r.tint} label={r.label}
+            focused={slot === S_BASE + i}
+            selected={selectedNav === r.id}
+            animDelay={0.24 + i * 0.02}
+            onClick={() => setSlot?.(S_BASE + i)}
+          />
+        ))}
+      </div>
+
+      <div style={{ height: 16 }} />
+
+      {/* 5 · Settings — the same gear as the collapsed rail, still last */}
+      <NavRow
+        icon="settings" tint="#9AA3B2" label="Settings"
+        focused={slot === SETTINGS_SLOT}
+        selected={selectedNav === 'settings'}
+        quiet
+        animDelay={0.3}
+        onClick={() => setSlot?.(SETTINGS_SLOT)}
+      />
+      <style>{KEYFRAMES + EF_KF}</style>
+    </div>
+  );
+}
+
+/** Back-compat alias — the L0 rail is the collapsed state of ExploreNav. */
+export function ExploreMiniMenu({ onOpen }: { onOpen: () => void }) {
+  return <ExploreNav state="collapsed" onOpen={onOpen} />;
+}
+
+// ─── PinnedDockRight — the persistent adaptive dock (L0 + overlay) ───────────
+
+export function PinnedDockRight({ pinnedIds, focusedIdx = null, showLabel = false, onSelect }: {
+  pinnedIds: string[];
+  focusedIdx?: number | null;
+  showLabel?: boolean;
+  onSelect?: (idx: number) => void;
+}) {
+  return (
+    <div style={{
+      position: 'absolute', right: 20, top: '50%', transform: 'translateY(-50%)',
+      display: 'flex', flexDirection: 'column', gap: 16, zIndex: 57,
+      animation: 'hh-in 0.4s ease both',
+    }}>
+      <div style={{
+        position: 'absolute', top: -40, bottom: -40, left: -60, right: -20,
+        background: 'linear-gradient(to left, rgba(5,5,12,0.72), rgba(5,5,12,0.4) 60%, transparent)',
+        pointerEvents: 'none',
+      }} />
+      {showLabel && (
+        <div style={{
+          position: 'absolute', bottom: '100%', left: 2, marginBottom: 10,
+          fontFamily: FONT, fontSize: 9.5, fontWeight: 800, letterSpacing: '0.16em',
+          textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', whiteSpace: 'nowrap',
+        }}>
+          Pinned
+        </div>
+      )}
+      {pinnedIds.slice(0, MAX_PINS).map((id, i) => {
+        const m = pinnableById(id);
+        if (!m) return null;
+        return (
+          <div key={id} style={{ position: 'relative' }}>
+            <PinSquare meta={m} focused={focusedIdx === i} onClick={() => onSelect?.(i)} />
+          </div>
+        );
+      })}
+      <style>{KEYFRAMES}</style>
+    </div>
+  );
+}
+
+// ─── Pieces ───────────────────────────────────────────────────────────────────
+
+/** The CONTINUE entry — a continuation, deliberately not styled as an agent. */
+function ContinueEntry({ context, focused, onClick }: {
+  context: ExploreContext; focused: boolean; onClick: () => void;
+}) {
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        display: 'flex', alignItems: 'center', gap: 12, boxSizing: 'border-box',
+        padding: '11px 12px', borderRadius: 18, cursor: 'pointer',
+        background: focused
+          ? 'linear-gradient(180deg, rgba(255,255,255,0.11) 0%, rgba(255,255,255,0.05) 100%)'
+          : 'rgba(255,255,255,0.04)',
+        animation: 'ef-label-in 0.3s 0.08s both',
+        ...chrome(focused, 'inset 0 1px 0 rgba(255,255,255,0.08), inset 0 0 0 1px rgba(255,255,255,0.05)', 1.02),
+      }}
+    >
+      {context.image && (
+        <img src={context.image} alt="" style={{
+          width: 46, height: 46, borderRadius: 12, objectFit: 'cover', flexShrink: 0,
+          filter: focused ? 'brightness(0.95)' : 'brightness(0.78)',
+          transition: 'filter 0.25s ease',
+          boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.12), 0 2px 8px rgba(0,0,0,0.4)',
+        }} />
+      )}
+      <div style={{ minWidth: 0, flex: 1 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 3 }}>
+          <span style={{ width: 4.5, height: 4.5, borderRadius: '50%', background: '#8FD6FF', animation: 'hh-status-pulse 3.2s ease-in-out infinite' }} />
+          <span style={{ fontFamily: FONT, fontSize: 8.5, fontWeight: 800, letterSpacing: '0.09em', color: '#8FD6FF' }}>CONTINUE</span>
+        </div>
+        <div style={{ fontFamily: FONT, fontSize: 13, fontWeight: 800, color: focused ? '#fff' : 'rgba(255,255,255,0.92)', letterSpacing: '-0.01em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', transition: 'color 0.2s ease' }}>
+          {context.title}
+        </div>
+        <div style={{ fontFamily: FONT, fontSize: 10.5, fontWeight: 500, color: 'rgba(255,255,255,0.55)', marginTop: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          {context.journey}
+        </div>
       </div>
     </div>
   );
 }
 
-function ActivityHint({ topic }: { topic: Topic }) {
-  const rgb = hexRgb(topic.tint);
+/** Nav row — quiet icon+text; focused = glass pill (Figma L1 nav language). */
+function NavRow({ icon, tint, label, sub, focused, selected, pinned, quiet, animDelay = 0.1, onClick }: {
+  icon: string; tint: string; label: string; sub?: string;
+  focused: boolean; selected?: boolean; pinned?: boolean; quiet?: boolean;
+  animDelay?: number;
+  onClick: () => void;
+}) {
+  const lit = focused || selected;
   return (
-    <div style={{ animation: 'e4-ws-in 0.3s ease', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 14, textAlign: 'center' }}>
-      <div style={{ width: 60, height: 60, borderRadius: 18, background: `rgba(${rgb},0.14)`, border: `1px solid rgba(${rgb},0.3)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26 }}>↺</div>
-      <div style={{ fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif', fontWeight: 700, fontSize: 18, color: 'rgba(255,255,255,0.7)', letterSpacing: '-0.01em' }}>Continue where you left off</div>
-      <div style={{ fontFamily: '"Plus Jakarta Sans",system-ui,sans-serif', fontSize: 14, color: 'rgba(255,255,255,0.4)', maxWidth: 320, lineHeight: 1.5 }}>Press Enter to reopen this {topic.label.toLowerCase()} thread and pick up the conversation.</div>
+    <div
+      onClick={onClick}
+      style={{
+        display: 'flex', alignItems: 'center', gap: 12, boxSizing: 'border-box',
+        padding: sub ? '9px 13px' : '9px 13px', borderRadius: 999, cursor: 'pointer', position: 'relative',
+        background: focused
+          ? 'linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)'
+          : selected ? 'rgba(255,255,255,0.035)' : 'transparent',
+        ...chrome(focused, 'none', 1.02),
+      }}
+    >
+      <Icon name={icon} tint={lit && !quiet ? tint : 'rgba(255,255,255,0.45)'} size={19} />
+      <div style={{ minWidth: 0, flex: 1, animation: `ef-label-in 0.3s ${animDelay.toFixed(2)}s both` }}>
+        <div style={{
+          fontFamily: FONT, fontSize: 14, fontWeight: lit ? 700 : 500,
+          color: quiet
+            ? (lit ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.42)')
+            : (lit ? '#fff' : 'rgba(255,255,255,0.58)'),
+          transition: 'color 0.2s ease', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+        }}>
+          {label}
+        </div>
+        {sub && (
+          <div style={{ fontFamily: FONT, fontSize: 9.5, fontWeight: 500, color: 'rgba(255,255,255,0.4)', marginTop: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {sub}
+          </div>
+        )}
+      </div>
+      {pinned && (
+        <span style={{
+          width: 7, height: 7, borderRadius: '50%', background: '#fff', flexShrink: 0,
+          boxShadow: '0 0 0 2.5px rgba(255,255,255,0.16)',
+        }} />
+      )}
     </div>
   );
 }
 
-// ─── Utility ───────────────────────────────────────────────────────────────────
+function CollectionCard({ item, tone, focused, pinned, animDelay, onClick }: {
+  item: CenterItem; tone: string;
+  focused: boolean; pinned: boolean; animDelay: number;
+  onClick: () => void;
+}) {
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        position: 'relative', height: CARD_H, boxSizing: 'border-box',
+        borderRadius: RADIUS.card, overflow: 'hidden', cursor: 'pointer',
+        background: '#0b0b12',
+        animation: `hh-item-in 0.36s ${animDelay.toFixed(2)}s both`,
+        zIndex: focused ? 1 : 0,
+        boxShadow: focused
+          ? '0 0 0 1.5px rgba(255,255,255,0.75), 0 0 36px rgba(255,255,255,0.12), inset 0 1px 0 rgba(255,255,255,0.16), 0 26px 60px rgba(0,0,0,0.62)'
+          : 'inset 0 1px 0 rgba(255,255,255,0.06), inset 0 0 0 1px rgba(255,255,255,0.03), 0 6px 18px rgba(0,0,0,0.28)',
+        transform: `scale(${focused ? 1.05 : 1})`,
+        transition: 'transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s ease',
+      }}
+    >
+      {item.image && (
+        <img src={item.image} alt="" style={{
+          position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover',
+          opacity: focused ? 0.92 : 0.6,
+          filter: 'brightness(0.62) saturate(0.92)',
+          transform: `scale(${focused ? 1.07 : 1})`,
+          transition: 'opacity 0.35s ease, transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1)',
+        }} />
+      )}
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: `radial-gradient(120% 90% at 18% 0%, ${tone}10, transparent 55%),
+          linear-gradient(180deg, rgba(9,9,15,0.24) 0%, rgba(9,9,15,0.85) 100%)`,
+      }} />
 
-function hexRgb(hex: string): string {
-  const c = hex.replace('#', '');
-  const n = parseInt(c, 16);
-  return `${(n >> 16) & 255},${(n >> 8) & 255},${n & 255}`;
+      {pinned && (
+        <div style={{
+          position: 'absolute', top: 10, right: 10, width: 8, height: 8, borderRadius: '50%',
+          background: '#fff', boxShadow: '0 0 0 3px rgba(255,255,255,0.16), 0 2px 6px rgba(0,0,0,0.4)',
+        }} />
+      )}
+
+      <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: '11px 13px', boxSizing: 'border-box' }}>
+        <div style={{
+          fontFamily: FONT, fontSize: 13.5, fontWeight: 800, letterSpacing: '-0.015em',
+          color: focused ? '#fff' : 'rgba(255,255,255,0.94)', transition: 'color 0.25s ease',
+          textShadow: '0 1px 5px rgba(0,0,0,0.55)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+        }}>
+          {item.title}
+        </div>
+        {item.desc && (
+          <div style={{ fontFamily: FONT, fontSize: 10.5, fontWeight: 500, color: focused ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.5)', transition: 'color 0.25s ease', marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', textShadow: '0 1px 4px rgba(0,0,0,0.5)' }}>
+            {item.desc}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
 
-const E4_KF = `
-@keyframes e4-panel-in { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
-@keyframes e4-ws-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes e4-hero-in { from { opacity: 0.4; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
-@keyframes e4-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+function ThreadRow({ title, sub, icon, tint, focused, animDelay, onClick }: {
+  title: string; sub?: string; icon?: string; tint?: string;
+  focused: boolean; animDelay: number;
+  onClick: () => void;
+}) {
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        display: 'flex', alignItems: 'center', gap: 13, boxSizing: 'border-box',
+        padding: '14px 17px', borderRadius: RADIUS.card, cursor: 'pointer',
+        background: focused
+          ? 'linear-gradient(180deg, rgba(255,255,255,0.085) 0%, rgba(255,255,255,0.045) 100%)'
+          : 'linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.018) 100%)',
+        animation: `hh-item-in 0.36s ${animDelay.toFixed(2)}s both`,
+        ...chrome(focused, 'inset 0 1px 0 rgba(255,255,255,0.06), inset 0 0 0 1px rgba(255,255,255,0.03)', 1.015),
+      }}
+    >
+      {icon && <Icon name={icon} tint={focused ? (tint ?? '#fff') : 'rgba(255,255,255,0.4)'} size={18} />}
+      <div style={{ minWidth: 0, flex: 1 }}>
+        <div style={{ fontFamily: FONT, fontSize: 13.5, fontWeight: 700, color: focused ? '#fff' : 'rgba(255,255,255,0.85)', transition: 'color 0.2s ease', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          {title}
+        </div>
+        {sub && (
+          <div style={{ fontFamily: FONT, fontSize: 10.5, fontWeight: 500, color: 'rgba(255,255,255,0.45)', marginTop: 2 }}>
+            {sub}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function FooterLink({ text, focused, onClick }: { text: string; focused: boolean; onClick: () => void }) {
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        marginTop: 14, display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: '11px 18px', borderRadius: 999, cursor: 'pointer', width: 'fit-content',
+        background: focused ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.04)',
+        animation: 'hh-item-in 0.36s 0.2s both',
+        ...chrome(focused, 'inset 0 0 0 1px rgba(255,255,255,0.06)', 1.03),
+      }}
+    >
+      <span style={{ fontFamily: FONT, fontSize: 12.5, fontWeight: 700, color: focused ? '#fff' : 'rgba(255,255,255,0.65)', transition: 'color 0.2s ease' }}>
+        {text}
+      </span>
+    </div>
+  );
+}
+
+// ─── Local keyframes — the unfold ────────────────────────────────────────────
+
+const EF_KF = `
+@keyframes ef-nav-grow {
+  from { width: 62px; max-height: 240px; opacity: 0.85; }
+  to   { width: ${NAV_W}px; max-height: 940px; opacity: 1; }
+}
+@keyframes ef-label-in {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
 `;

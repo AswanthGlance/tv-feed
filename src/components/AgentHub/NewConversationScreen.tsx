@@ -87,21 +87,23 @@ function navigate(
   const { zone, idx } = focus;
 
   if (zone === 'left-nav') {
-    if (dir === 'right') return { zone: 'search-mic', idx: 0 };
+    if (dir === 'right') return { zone: 'search-field', idx: 0 };
     if (dir === 'up' && idx > 0) return { zone, idx: idx - 1 };
     if (dir === 'down' && idx < NAV_ITEMS.length - 1) return { zone, idx: idx + 1 };
     return focus;
   }
 
-  if (zone === 'search-mic') {
+  // search-field = keyboard mode (LEFT element)
+  if (zone === 'search-field') {
     if (dir === 'left') return { zone: 'left-nav', idx: 0 };
-    if (dir === 'right') return { zone: 'search-field', idx: 0 };
+    if (dir === 'right') return { zone: 'search-mic', idx: 0 };
     if (dir === 'down') return { zone: 'capabilities', idx: 0 };
     return focus;
   }
 
-  if (zone === 'search-field') {
-    if (dir === 'left') return { zone: 'search-mic', idx: 0 };
+  // search-mic = mic mode (RIGHT element)
+  if (zone === 'search-mic') {
+    if (dir === 'left') return { zone: 'search-field', idx: 0 };
     if (dir === 'down') return { zone: 'capabilities', idx: 0 };
     return focus;
   }

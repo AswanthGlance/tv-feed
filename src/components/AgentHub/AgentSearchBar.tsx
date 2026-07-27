@@ -1,122 +1,210 @@
 /**
- * AgentSearchBar — the mic + search field row shared by NewConversationScreen
- * and ReturningUserScreen. Extracted because it was byte-identical in both
- * (a third piece of duplicated markup after icons and capabilities), and the
- * two homepages are meant to stay pixel-consistent by construction.
+ * AgentSearchBar — two-mode input switcher
  *
- * Sizing is the original compact scale (a Figma pass at literal size, node
- * 5229:29113, read too large on screen). What carried over from that pass:
- * the search field's rounded-pill corners always traced by a crisp, constant
- * white border — previously the border only appeared once focused, so the
- * field's rounded shape barely read against the dark background at rest.
+ * Layout is always: [ Keyboard (LEFT) ] [ Mic (RIGHT) ]
  *
- * Mic is a tall pill/capsule (not a circle) — taller than the search field,
- * vertically centered against it. When focused it fills solid white and
- * surfaces a "Press to Activate" tooltip below it; the mic icon inverts to
- * dark so it stays legible against the white fill.
+ * micFocused (default):  keyboard is a small collapsed pill (104px wide);
+ *                        mic is the wide active area (1008px wide, white fill when focused)
+ * fieldFocused:          keyboard is the wide active area with text input;
+ *                        mic is a small collapsed pill (104px wide)
+ *
+ * Navigation: LEFT from mic → keyboard; RIGHT from keyboard → mic.
+ * Transitions: 260ms width + border-radius.
  */
 
 import { ICON_DIR } from './agentHubIcons';
 
-const MIC_W = 72;
-const MIC_H = 104;
-const FIELD_H = MIC_H; // field matches the mic's height exactly
-const FIELD_RADIUS = 21; // fixed — half the original full-pill radius (was FIELD_H/2 at FIELD_H=84)
-const ICON_SIZE = 26;
-const GAP = 16;
-// Total row width is pinned to CONTENT_WIDTH (1124) so the row still lines up
-// with the capability grid and other CONTENT_WIDTH-anchored sections below it.
-const FIELD_W = 1124 - MIC_W - GAP;
+const ROW_W     = 1124;
+const H         = 104;
+const PILL_W    = 72;         // collapsed side width
+const AREA_R    = 21;         // radius — same for all states
+const GAP       = 12;
+const EXPANDED_W = ROW_W - PILL_W - GAP;   // 1040px
+const ICON_SM   = 26;
+const ICON_LG   = 32;
+
+const EASE = '0.26s cubic-bezier(0.22,0.61,0.36,1)';
 
 export type AgentSearchBarProps = {
-  micFocused: boolean;
-  fieldFocused: boolean;
-  placeholder: string;
-  onMicClick?: () => void;
-  onFieldClick?: () => void;
+  micFocused:      boolean;
+  fieldFocused:    boolean;
+  activeInputMode?: 'mic' | 'keyboard';
+  placeholder:     string;
+  onMicClick?:     () => void;
+  onFieldClick?:   () => void;
 };
+
+// ── Inline keyboard SVG — no asset dependency ──────────────────────────────
+function KeyboardIcon({ size, color }: { size: number; color: string }) {
+  return (
+    <svg
+      width={size} height={size}
+      viewBox="0 0 24 24" fill="none"
+      stroke={color} strokeWidth="1.6"
+      strokeLinecap="round" strokeLinejoin="round"
+      style={{ flexShrink: 0, transition: 'stroke 0.2s ease' }}
+    >
+      <rect x="2" y="5" width="20" height="14" rx="2" />
+      {/* top-row keys */}
+      <line x1="6"  y1="9"  x2="6"  y2="9.01"  strokeWidth="2.2" />
+      <line x1="10" y1="9"  x2="10" y2="9.01"  strokeWidth="2.2" />
+      <line x1="14" y1="9"  x2="14" y2="9.01"  strokeWidth="2.2" />
+      <line x1="18" y1="9"  x2="18" y2="9.01"  strokeWidth="2.2" />
+      {/* middle-row keys */}
+      <line x1="8"  y1="12" x2="8"  y2="12.01" strokeWidth="2.2" />
+      <line x1="12" y1="12" x2="12" y2="12.01" strokeWidth="2.2" />
+      <line x1="16" y1="12" x2="16" y2="12.01" strokeWidth="2.2" />
+      {/* space bar */}
+      <line x1="8" y1="15.5" x2="16" y2="15.5" strokeWidth="2" />
+    </svg>
+  );
+}
 
 export default function AgentSearchBar({
   micFocused,
   fieldFocused,
+  activeInputMode,
   placeholder,
   onMicClick,
   onFieldClick,
 }: AgentSearchBarProps) {
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', width: MIC_W + GAP + FIELD_W, gap: GAP }}>
-      {/* Mic — tall capsule, solid white + tooltip when focused */}
-      <div style={{ position: 'relative', flexShrink: 0 }}>
-        <button
-          style={{
-            padding: 0, width: MIC_W, height: MIC_H, borderRadius: MIC_W / 2,
-            background: micFocused ? '#FFFFFF' : 'rgba(255,255,255,0.06)',
-            border: micFocused ? '2px solid #FFFFFF' : '1px solid rgba(255,255,255,0.15)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            cursor: 'pointer',
-            transition: 'all 0.2s cubic-bezier(0.22,0.61,0.36,1)',
-          }}
-          onClick={onMicClick}
-        >
-          <img
-            src={`${ICON_DIR}/search-mic-icon.svg`} alt=""
-            style={{
-              width: ICON_SIZE, height: ICON_SIZE,
-              filter: micFocused ? 'invert(1)' : 'none',
-              opacity: micFocused ? 1 : 0.5,
-              transition: 'filter 0.2s ease, opacity 0.2s ease',
-            }}
-          />
-        </button>
+  // keyboard is LEFT; mic is RIGHT
+  // Expansion is driven by activeInputMode (persists through focus changes).
+  // Active (white fill) state is driven by whether the element currently has focus.
+  const kbdActive = fieldFocused;
+  const micActive = micFocused;
 
-        {micFocused && (
-          <div style={{
-            position: 'absolute', top: '100%', left: '50%', transform: 'translateX(-50%)',
-            marginTop: 10, whiteSpace: 'nowrap', pointerEvents: 'none',
-            background: 'rgba(10,8,20,0.92)', border: '1px solid rgba(255,255,255,0.10)',
-            borderRadius: 20, padding: '8px 16px',
-            fontSize: 13, fontWeight: 500, color: '#F5F3F7', letterSpacing: '-0.005em',
-          }}>
-            Press to Activate
-          </div>
+  const kbdExpanded = activeInputMode === 'keyboard';
+  const kbdW = kbdExpanded ? EXPANDED_W : PILL_W;
+  const micW = kbdExpanded ? PILL_W : EXPANDED_W;
+
+  // Keyboard colors — white fill only when actively focused (has DOM focus)
+  const kbdBg = kbdActive
+    ? 'rgba(255,255,255,0.92)'
+    : 'rgba(255,255,255,0.07)';
+  const kbdBorder = kbdActive
+    ? '2px solid rgba(255,255,255,0.88)'
+    : '1px solid rgba(255,255,255,0.12)';
+
+  // Mic colors — white when actively focused, dim translucent otherwise
+  const micBg = micActive
+    ? 'rgba(255,255,255,0.92)'
+    : 'rgba(255,255,255,0.08)';
+  const micBorder = micActive
+    ? '2px solid rgba(255,255,255,0.88)'
+    : '1px solid rgba(255,255,255,0.12)';
+
+  return (
+    <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      width: ROW_W,
+      gap: GAP,
+    }}>
+
+      {/* ── Keyboard — LEFT ───────────────────────────────────────────────────── */}
+      <div
+        onClick={onFieldClick}
+        style={{
+          width: kbdW,
+          height: H,
+          borderRadius: AREA_R,
+          flexShrink: 0,
+          background: kbdBg,
+          border: kbdBorder,
+          boxShadow: kbdActive
+            ? 'inset 0 2px 12px rgba(255,255,255,0.45)'
+            : 'none',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: kbdExpanded ? 'space-between' : 'center',
+          padding: kbdExpanded ? '0 28px' : 0,
+          cursor: 'pointer',
+          overflow: 'hidden',
+          transition: [
+            `width ${EASE}`,
+            'background 0.2s ease',
+            'box-shadow 0.2s ease',
+            'border 0.2s ease',
+            'padding 0.26s ease',
+          ].join(', '),
+        }}
+      >
+        {kbdExpanded ? (
+          <>
+            <span style={{
+              flex: '1 0 0',
+              fontSize: 20,
+              fontWeight: 500,
+              color: kbdActive ? 'rgba(0,0,0,0.42)' : 'rgba(255,255,255,0.28)',
+              overflow: 'hidden',
+              whiteSpace: 'nowrap',
+              textOverflow: 'ellipsis',
+              marginRight: 16,
+              transition: 'color 0.2s ease',
+            }}>
+              Type your request…
+            </span>
+            <KeyboardIcon size={ICON_SM} color={kbdActive ? 'rgba(0,0,0,0.32)' : 'rgba(255,255,255,0.28)'} />
+          </>
+        ) : (
+          <KeyboardIcon size={ICON_SM} color="rgba(255,255,255,0.52)" />
         )}
       </div>
 
-      {/* Search field — same height as the mic, rounded rect at FIELD_RADIUS
-          (half the original full-pill radius) */}
+      {/* ── Mic — RIGHT ───────────────────────────────────────────────────────── */}
       <div
+        onClick={onMicClick}
         style={{
-          width: FIELD_W, height: FIELD_H, borderRadius: FIELD_RADIUS,
-          background: fieldFocused ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.15)',
-          border: fieldFocused ? '2px solid #FFFFFF' : '1px solid rgba(255,255,255,0.15)',
-          boxShadow: fieldFocused
-            ? 'inset 0px 6px 16px 0px rgba(255,255,255,0.9), inset 0px 0px 16px 0px rgba(255,255,255,0.9)'
+          width: micW,
+          height: H,
+          borderRadius: AREA_R,
+          flexShrink: 0,
+          background: micBg,
+          border: micBorder,
+          boxShadow: micActive
+            ? 'inset 0 2px 12px rgba(255,255,255,0.45)'
             : 'none',
-          display: 'flex', alignItems: 'center', gap: 8,
-          padding: '0 28px 0 32px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 12,
           cursor: 'pointer',
-          transition: 'background 0.2s ease, box-shadow 0.2s ease',
+          overflow: 'hidden',
+          transition: [
+            `width ${EASE}`,
+            'background 0.2s ease',
+            'box-shadow 0.2s ease',
+            'border 0.2s ease',
+          ].join(', '),
         }}
-        onClick={onFieldClick}
       >
-        <span style={{
-          flex: '1 0 0', fontSize: 20, fontWeight: 500,
-          color: fieldFocused ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.4)',
-          overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
-          transition: 'color 0.2s ease',
-        }}>
-          {placeholder}
-        </span>
         <img
-          src={`${ICON_DIR}/search-magnifying-glass.svg`} alt=""
+          src={`${ICON_DIR}/search-mic-icon.svg`}
+          alt=""
           style={{
-            width: ICON_SIZE, height: ICON_SIZE, flexShrink: 0,
-            filter: fieldFocused ? 'none' : 'invert(1) brightness(1.3)',
-            opacity: fieldFocused ? 1 : 0.55,
+            width: !kbdExpanded ? ICON_LG : ICON_SM,
+            height: !kbdExpanded ? ICON_LG : ICON_SM,
+            flexShrink: 0,
+            filter: micActive ? 'invert(1)' : 'none',
+            opacity: micActive ? 1 : 0.45,
             transition: 'filter 0.2s ease, opacity 0.2s ease',
           }}
+          onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
         />
+        {!kbdExpanded && (
+          <span style={{
+            fontSize: 16,
+            fontWeight: 500,
+            color: micActive ? 'rgba(0,0,0,0.52)' : 'rgba(255,255,255,0.28)',
+            whiteSpace: 'nowrap',
+            transition: 'color 0.2s ease',
+          }}>
+            {placeholder}
+          </span>
+        )}
       </div>
+
     </div>
   );
 }

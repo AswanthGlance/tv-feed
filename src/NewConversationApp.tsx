@@ -1,9 +1,10 @@
 /**
  * NewConversationApp — standalone route wrapper for /new-conversation.
  *
- * Hosts two homepage variants for design exploration:
+ * Hosts three homepage variants for design exploration:
  *   Variant 1 — First-time user (FTOX): Search → Categories → Prompts
  *   Variant 2 — Returning user:         Search → Continue → Categories → History
+ *   Variant 3 — Final Option:           Editorial left-column hero, ambient BG, visual capability cards
  *
  * A mouse-only debug switcher in the top-right corner toggles between them.
  * It does not participate in TV D-pad navigation.
@@ -13,8 +14,9 @@ import { useState, useEffect } from 'react';
 import NewConversationScreen from './components/AgentHub/NewConversationScreen';
 import ReturningUserScreen from './components/AgentHub/ReturningUserScreen';
 import ConversationLibraryScreen from './components/AgentHub/ConversationLibraryScreen';
+import FinalOptionScreen from './components/AgentHub/FinalOptionScreen';
 
-type Variant = 'ftox' | 'returning';
+type Variant = 'ftox' | 'returning' | 'final-option';
 type ReturningScreen = 'home' | 'library';
 
 export default function NewConversationApp() {
@@ -45,6 +47,8 @@ export default function NewConversationApp() {
             onStartConversation={handleStartConversation}
             onBack={handleBack}
           />
+        ) : variant === 'final-option' ? (
+          <FinalOptionScreen onBack={handleBack} />
         ) : returningScreen === 'home' ? (
           <ReturningUserScreen
             onStartConversation={handleStartConversation}
@@ -87,15 +91,16 @@ export default function NewConversationApp() {
           </div>
           {(
             [
-              { key: 'ftox',      label: 'First-Time User (FTOX)' },
-              { key: 'returning', label: 'Returning User' },
+              { key: 'ftox',         label: 'FTUX' },
+              { key: 'returning',    label: 'Returning User' },
+              { key: 'final-option', label: 'Final Option' },
             ] as const
           ).map(({ key, label }) => (
             <label
               key={key}
               style={{
                 display: 'flex', alignItems: 'center', gap: 9,
-                marginBottom: key === 'ftox' ? 8 : 0,
+                marginBottom: key !== 'final-option' ? 8 : 0,
                 cursor: 'pointer',
               }}
             >

@@ -1,5 +1,5 @@
 /**
- * FloatingWidgetsPanel — Option 2.5: living AI widgets floating over frozen L0.
+ * FloatingWidgetsPanel — an earlier Hybrid Hub exploration (unused; superseded by HybridHubPanel, now Option 4): living AI widgets floating over frozen L0.
  *
  * Same interaction model as Option 2 (one vertical rail, search on top,
  * settings at the bottom, ↑/↓/Enter/←) — but visually it is NOT a sidebar:

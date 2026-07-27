@@ -28,7 +28,7 @@ import AgentHubPanel from './components/AgentHub/AgentHubPanel';
 import CurvedNavPanel from './components/AgentHub/CurvedNavPanel';
 import HybridHubPanel, { PinnedWidgetsRail, DEFAULT_PINNED } from './components/AgentHub/HybridHubPanel';
 import TwoLevelNavPanel from './components/AgentHub/TwoLevelNavPanel';
-import ExploreFirstPanel from './components/AgentHub/ExploreFirstPanel';
+import ExploreFirstPanel, { ExploreMiniMenu, PinnedDockRight } from './components/AgentHub/ExploreFirstPanel';
 
 declare global { interface Window { GLANCE_CTX: Record<string, string>; GLANCE_STATE: string; } }
 window.GLANCE_CTX = { city: 'Bangalore', weather: 'rainy', day: 'Saturday', timeOfDay: 'morning', upcomingContext: 'weekend' };
@@ -77,6 +77,40 @@ const TRAVEL_BOOKING_QUESTION: QuestionConfig = {
 
 const WARM_START_PREFERENCE_QUESTIONS = [TRAVEL_BOOKING_QUESTION];
 const IDLE_CEILING_MS = 60_000;
+
+// ── Nav-option persistence ────────────────────────────────────────────────────
+// Options are stored by implementation identity, not numeric label, because the
+// numbering has changed over time (Hybrid Hub was "2.5", Explore First was "4").
+const NAV_STORAGE_KEY = 'glance-agent-hub-nav-option';
+
+const OPTION_IDS: Record<1 | 2 | 3 | 4 | 5, string> = {
+  1: 'agent-hub',
+  2: 'nav-rail',
+  3: 'workspace',
+  4: 'hybrid-hub',
+  5: 'explore-first',
+};
+
+/**
+ * Legacy → current mapping. Migrates by implementation identity: anything that
+ * meant Hybrid Hub (old "2.5") becomes Option 4; anything that meant Explore
+ * First (old "4") becomes Option 5. A bare legacy "4" therefore maps to 5.
+ */
+const NAV_ALIASES: Record<string, 1 | 2 | 3 | 4 | 5> = {
+  'agent-hub': 1,     '1': 1, 'option-1': 1,
+  'nav-rail': 2,      '2': 2, 'option-2': 2,
+  'workspace': 3,     '3': 3, 'option-3': 3,
+  'hybrid-hub': 4,    '2.5': 4, 'option-2-5': 4, 'option2.5': 4,
+  'explore-first': 5, '4': 5, 'option-4': 5, '5': 5, 'option-5': 5,
+};
+
+function loadNavOption(): 1 | 2 | 3 | 4 | 5 {
+  try {
+    const stored = localStorage.getItem(NAV_STORAGE_KEY);
+    if (stored && stored in NAV_ALIASES) return NAV_ALIASES[stored];
+  } catch { /* private mode */ }
+  return 4; // default: Hybrid Hub
+}
 
 function buildInitialFeed(): { feed: FeedItem[]; unifiedFeed: UnifiedFeedItem[] } {
   const feed = WARM_START_FEED_ITEMS;
@@ -250,14 +284,21 @@ export default function WarmProfile1CrisperApp() {
   }, [cancelHold, toast]);
 
   // ── Navigation-concept exploration selector (dev, L0-only) ──────────────────
-  // 1 = full-screen Agent Hub · 2 = curved vertical nav · 2.5 = hybrid hub (pinned widgets → overlay) · 3 = AI Workspace · 4 = Explore-first
-  type NavOption = 1 | 2 | 2.5 | 3 | 4;
-  const [navOption, setNavOption] = useState<NavOption>(3);
+  // 1 = full-screen Agent Hub · 2 = curved vertical nav · 3 = AI Workspace ·
+  // 4 = Hybrid Hub (previously "Option 2.5") · 5 = Explore-first (previously "Option 4")
+  type NavOption = 1 | 2 | 3 | 4 | 5;
+  const [navOption, setNavOption] = useState<NavOption>(loadNavOption);
   const [navOpenConcept, setNavOpenConcept] = useState<NavOption | null>(null);
   const navOpen = navOpenConcept !== null;
 
-  // Option 2.5: which agent the hub focuses on entry — set by the pinned
-  // widget the user clicked, defaults to the first pinned agent.
+  // Persist the selected option (stored by implementation identity, not number,
+  // so future renumbering can't corrupt saved selections).
+  useEffect(() => {
+    try { localStorage.setItem(NAV_STORAGE_KEY, OPTION_IDS[navOption]); } catch { /* private mode */ }
+  }, [navOption]);
+
+  // Option 4 (Hybrid Hub): which agent the hub focuses on entry — set by the
+  // pinned widget the user clicked, defaults to the first pinned agent.
   const hybridEntryAgent = useRef<string | undefined>(undefined);
   // User-pinned agents (max 3) — shown on L0 and as the hub's 4th column.
   const [pinnedIds, setPinnedIds] = useState<string[]>(DEFAULT_PINNED);
@@ -265,30 +306,42 @@ export default function WarmProfile1CrisperApp() {
     setPinnedIds(ids => ids.includes(agentId) ? ids.filter(id => id !== agentId) : [...ids, agentId]);
   }, []);
 
-  // While L0 is focused (nav closed), keys 1/2/3/4 switch the concept the ← opens.
+  // While L0 is focused (nav closed), keys 1-5 switch the concept the ← opens.
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (navOpen) return;
-      // Option 1 and 4 are hidden for now — Options 2, 2.5 and 3 are active.
       if (e.key === '1') { setNavOption(1); toast('← opens Option 1 · Agent Hub'); }
       if (e.key === '2') { setNavOption(2); toast('← opens Option 2 · Nav Rail'); }
-      if (e.key === '5') { setNavOption(2.5); toast('← opens Option 2.5 · Hybrid Hub'); }
       if (e.key === '3') { setNavOption(3); toast('← opens Option 3 · AI Workspace'); }
+      if (e.key === '4') { setNavOption(4); toast('← opens Option 4 · Hybrid Hub'); }
+      if (e.key === '5') { setNavOption(5); toast('← opens Option 5 · Explore First'); }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, [navOpen, toast]);
 
   const openNav = useCallback(() => {
-    if (navOption === 2.5) hybridEntryAgent.current = pinnedIds[0];
+    if (navOption === 4) hybridEntryAgent.current = pinnedIds[0];
     setNavOpenConcept(navOption);
   }, [navOption, pinnedIds]);
   const closeNav = useCallback(() => setNavOpenConcept(null), []);
 
   const openHybridHub = useCallback((agentId: string) => {
     hybridEntryAgent.current = agentId;
-    setNavOpenConcept(2.5);
+    setNavOpenConcept(4);
   }, []);
+
+  // Option 5: → on L0 opens Explore with focus already on the pinned dock
+  // (the left nav appears too); ← opens it focused on the nav as usual.
+  const exploreEntryFocus = useRef<'nav' | 'pins'>('nav');
+  const openExploreOnPins = useCallback(() => {
+    exploreEntryFocus.current = 'pins';
+    setNavOpenConcept(5);
+  }, []);
+  const openNavDefault = useCallback(() => {
+    exploreEntryFocus.current = 'nav';
+    openNav();
+  }, [openNav]);
 
   // Per-concept L0 treatment while the nav is open.
   // Option 1 (full-screen hub): dim heavily. Option 2/3 (left panels): keep L0
@@ -299,11 +352,15 @@ export default function WarmProfile1CrisperApp() {
       : navOpenConcept === 2
       // Option 2 nav rail: L0 shifts right, mild dim, stays clearly recognisable
       ? { filter: 'brightness(0.68) saturate(0.75)', opacity: 0.88, transform: 'translateX(110px) scale(0.91)' }
-      : navOpenConcept === 2.5
-      // Option 2.5 hybrid hub: L0 frozen, slightly shrunk and shifted right —
+      : navOpenConcept === 4
+      // Option 4 Hybrid Hub: L0 frozen, slightly shrunk and shifted right —
       // still clearly alive; the 30% overlay floats to its left.
-      ? { filter: 'brightness(0.9) saturate(0.85)', opacity: 1, transform: 'translateX(130px) scale(0.94)' }
-      : navOpenConcept === 3 || navOpenConcept === 4
+      ? { filter: 'brightness(0.9) saturate(0.85)', opacity: 1, transform: 'translateX(190px) scale(0.94)' }
+      : navOpenConcept === 5
+      // Option 5 Explore: L0 unfolds, it doesn't leave — freeze it, reduce
+      // contrast slightly, keep it recognizable. No blur, no heavy dim.
+      ? { filter: 'brightness(0.78) saturate(0.9)', opacity: 1, transform: 'translateX(60px) scale(0.97)' }
+      : navOpenConcept === 3
       ? { filter: 'brightness(0.6) saturate(0.7) blur(3px)', opacity: 0.9, transform: 'translateX(90px) scale(0.9)' }
       : navOpen
       ? { filter: 'brightness(0.82) blur(2px)', opacity: 0.92, transform: 'translateX(64px) scale(0.94)' }
@@ -318,6 +375,17 @@ export default function WarmProfile1CrisperApp() {
   const currentCategory = currentItem?.category;
   const currentSubs = currentItem?.subCategories;
   const currentTitle = currentItem?.title;
+
+  // Option 5: the current L0 card becomes the CONTINUE entry in Explore —
+  // pressing ← retains the context instead of teleporting to a generic menu.
+  const pretty = (s?: string) => (s ?? '').replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  const exploreContext = currentItem
+    ? {
+        title: currentItem.title,
+        journey: currentItem.contextualTopic ?? pretty(currentItem.subCategories?.[0] ?? currentItem.category),
+        image: currentItem.image,
+      }
+    : undefined;
 
   return (
     <>
@@ -362,7 +430,8 @@ export default function WarmProfile1CrisperApp() {
                   />
                 )}
                 idleMs={IDLE_CEILING_MS}
-                onAgentHub={openNav}
+                onAgentHub={openNavDefault}
+                onPinnedDock={navOption === 5 ? openExploreOnPins : undefined}
                 hubOpen={navOpen}
               />
             </div>
@@ -373,10 +442,18 @@ export default function WarmProfile1CrisperApp() {
             )}
 
             {/* Subtle left-edge affordance — hints "press ← to explore".
-                Option 2.5 replaces it with the always-visible pinned widgets. */}
-            {!navOpen && navOption !== 2.5 && <LeftEdgeAffordance onOpen={openNav} />}
-            {!navOpen && navOption === 2.5 && (
+                Option 4 (Hybrid Hub) replaces it with the always-visible pinned
+                widgets; Option 5 (Explore First) with a minimal 3-item menu. */}
+            {!navOpen && navOption !== 4 && navOption !== 5 && <LeftEdgeAffordance onOpen={openNav} />}
+            {!navOpen && navOption === 4 && (
               <PinnedWidgetsRail pinnedIds={pinnedIds} onOpen={openHybridHub} />
+            )}
+            {!navOpen && navOption === 5 && (
+              <>
+                <ExploreMiniMenu onOpen={openNav} />
+                {/* Persistent adaptive dock — same far-right position as inside Explore */}
+                <PinnedDockRight pinnedIds={pinnedIds} />
+              </>
             )}
 
             {/* Selected navigation concept — slides in from the left */}
@@ -386,7 +463,7 @@ export default function WarmProfile1CrisperApp() {
             {navOpenConcept === 2 && (
               <CurvedNavPanel onBack={closeNav} onToast={toast} />
             )}
-            {navOpenConcept === 2.5 && (
+            {navOpenConcept === 4 && (
               <HybridHubPanel
                 onBack={closeNav}
                 onToast={toast}
@@ -404,13 +481,15 @@ export default function WarmProfile1CrisperApp() {
                 currentTitle={currentTitle}
               />
             )}
-            {navOpenConcept === 4 && (
+            {navOpenConcept === 5 && (
               <ExploreFirstPanel
                 onBack={closeNav}
                 onToast={toast}
                 currentCategory={currentCategory}
-                currentSubs={currentSubs}
-                currentTitle={currentTitle}
+                context={exploreContext}
+                initialFocus={exploreEntryFocus.current}
+                pinnedIds={pinnedIds}
+                onTogglePin={togglePin}
               />
             )}
           </TVStage>
@@ -484,16 +563,17 @@ function LeftEdgeAffordance({ onOpen }: { onOpen: () => void }) {
 }
 
 // ─── L0 exploration selector (dev only) ─────────────────────────────────────────
-// Chooses which navigation concept ← opens. Keys 1/2/3 also switch it.
+// Chooses which navigation concept ← opens. Keys 1-5 also switch it.
 
 function NavOptionSelector({ active, onSelect }: {
-  active: 1 | 2 | 2.5 | 3 | 4; onSelect: (o: 1 | 2 | 2.5 | 3 | 4) => void;
+  active: 1 | 2 | 3 | 4 | 5; onSelect: (o: 1 | 2 | 3 | 4 | 5) => void;
 }) {
-  const options: { n: 1 | 2 | 2.5 | 3 | 4; label: string }[] = [
+  const options: { n: 1 | 2 | 3 | 4 | 5; label: string }[] = [
     { n: 1, label: 'Agent Hub' },
     { n: 2, label: 'Nav Rail' },
-    { n: 2.5, label: 'Hybrid Hub' },
     { n: 3, label: 'Workspace' },
+    { n: 4, label: 'Hybrid Hub' },
+    { n: 5, label: 'Explore First' },
   ];
   return (
     <div style={{

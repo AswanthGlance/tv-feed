@@ -88,6 +88,8 @@ type FeedScreenProps = {
   idleMs?: number;
   /** If provided, pressing ← navigates to Agent Hub instead of opening the nav rail. */
   onAgentHub?: () => void;
+  /** If provided, pressing → focuses the pinned dock instead of opening card actions. */
+  onPinnedDock?: () => void;
   /** When true, the Agent Hub overlay is open — FeedScreen keyboard handler is muted. */
   hubOpen?: boolean;
 };
@@ -131,6 +133,7 @@ export default function FeedScreen({
   renderL0,
   idleMs = 12000,
   onAgentHub,
+  onPinnedDock,
   hubOpen = false,
 }: FeedScreenProps) {
   /* Resolve the current unified feed item if available */
@@ -518,7 +521,9 @@ export default function FeedScreen({
       if (key === 'ArrowLeft' && !isPreferenceCard) {
         if (onAgentHub) { onAgentHub(); } else { setNavOpen(true); setNavFocusIdx(0); }
       }
-      if (key === 'ArrowRight') { setActionsVisible(true); setPollFocusIdx(0); }
+      if (key === 'ArrowRight') {
+        if (onPinnedDock) { onPinnedDock(); } else { setActionsVisible(true); setPollFocusIdx(0); }
+      }
       if (key === ' ') {
         // Space = pause / resume the current L0 animation
         setFeedPaused(p => {
@@ -577,6 +582,7 @@ export default function FeedScreen({
     showPayoffChip,
     resetIdleTimer,
     onAgentHub,
+    onPinnedDock,
     hubOpen,
   ]);
 
