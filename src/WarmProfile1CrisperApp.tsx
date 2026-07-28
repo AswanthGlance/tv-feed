@@ -357,9 +357,10 @@ export default function WarmProfile1CrisperApp() {
       // still clearly alive; the 30% overlay floats to its left.
       ? { filter: 'brightness(0.9) saturate(0.85)', opacity: 1, transform: 'translateX(190px) scale(0.94)' }
       : navOpenConcept === 5
-      // Option 5 Explore: L0 unfolds, it doesn't leave — freeze it, reduce
-      // contrast slightly, keep it recognizable. No blur, no heavy dim.
-      ? { filter: 'brightness(0.78) saturate(0.9)', opacity: 1, transform: 'translateX(60px) scale(0.97)' }
+      // Option 5 Explore: L0 unfolds, it doesn't leave — freeze it, blur and
+      // dim it enough that the Explore layer clearly owns attention while
+      // silhouettes, lighting and composition stay readable as background.
+      ? { filter: 'brightness(0.72) saturate(0.82) blur(8px)', opacity: 1, transform: 'translateX(60px) scale(0.97)' }
       : navOpenConcept === 3
       ? { filter: 'brightness(0.6) saturate(0.7) blur(3px)', opacity: 0.9, transform: 'translateX(90px) scale(0.9)' }
       : navOpen

@@ -32,6 +32,8 @@ import L1TextTablePrototype from './components/L1/L1TextTablePrototype'
 import CTAExplorationIndex from './CTAExplorationIndex'
 import L1ShoppingTemplate from './components/L1/L1ShoppingTemplate'
 import FoodL1Scenarios from './components/L1/FoodL1Scenarios'
+import FoodL1TextPage from './components/L1/FoodL1TextPage'
+import FoodL1PatternPage from './components/L1/FoodL1PatternPage'
 import TravelL1 from './components/L1/TravelL1'
 import L1Scenarios from './components/L1/L1Scenarios'
 import PrototypeIndex from './PrototypeIndex'
@@ -98,6 +100,10 @@ const isNewConversation = window.location.pathname === '/new-conversation'
                        || window.location.pathname === '/new_conversation';
 const isFoodL1         = window.location.pathname === '/food-l1'
                       || window.location.pathname === '/food_l1';
+const isFoodL1Text     = window.location.pathname === '/food-l1-text'
+                      || window.location.pathname === '/food_l1_text';
+const isFoodL1Pattern  = window.location.pathname === '/food-l1-pattern'
+                      || window.location.pathname === '/food_l1_pattern';
 const isTravelL1       = window.location.pathname === '/travel-l1'
                       || window.location.pathname === '/travel_l1';
 const isL1Scenarios    = window.location.pathname === '/l1-scenarios'
@@ -136,6 +142,8 @@ createRoot(document.getElementById('root')!).render(
      isAgentHub         ? <AgentHubApp onBack={() => window.history.back()} /> :
      isNewConversation  ? <NewConversationApp /> :
      isFoodL1           ? <FoodL1Scenarios /> :
+     isFoodL1Text       ? <FoodL1TextPage /> :
+     isFoodL1Pattern    ? <FoodL1PatternPage /> :
      isTravelL1         ? <TravelL1 /> :
      isL1Scenarios      ? <L1Scenarios /> :
      isCapabilityL1     ? <CapabilityL1App /> :

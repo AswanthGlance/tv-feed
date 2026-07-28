@@ -137,8 +137,8 @@ export function buildL0Timeline(refs: L0Refs, opts: L0TimelineOpts): gsap.core.T
   tl.to(tagEl, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, 'metaIn');
   /* Word-mask reveal: words print up through clip at small metadata size */
   revealTitle(titleEl, tl, 'metaIn+=0.15', {
-    staggerEach:   0.07,
-    duration:      0.55,
+    staggerEach:   0.05,
+    duration:      0.42,
     ease:          'power3.out',
     containerBlur: false,
     staggerFrom:   'start',

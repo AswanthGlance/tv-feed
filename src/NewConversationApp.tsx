@@ -1,10 +1,11 @@
 /**
  * NewConversationApp — standalone route wrapper for /new-conversation.
  *
- * Hosts three homepage variants for design exploration:
- *   Variant 1 — First-time user (FTOX): Search → Categories → Prompts
+ * Hosts four homepage variants for design exploration:
+ *   Variant 1 — First-time user (FTUX): Search → Categories → Prompts
  *   Variant 2 — Returning user:         Search → Continue → Categories → History
- *   Variant 3 — Final Option:           Editorial left-column hero, ambient BG, visual capability cards
+ *   Variant 3 — Final Option:           Editorial hero, ambient BG, visual capability cards
+ *   Variant 4 — Conversational:         Goal-first entry points ("Plan a Trip" vs "Travel")
  *
  * A mouse-only debug switcher in the top-right corner toggles between them.
  * It does not participate in TV D-pad navigation.
@@ -15,12 +16,13 @@ import NewConversationScreen from './components/AgentHub/NewConversationScreen';
 import ReturningUserScreen from './components/AgentHub/ReturningUserScreen';
 import ConversationLibraryScreen from './components/AgentHub/ConversationLibraryScreen';
 import FinalOptionScreen from './components/AgentHub/FinalOptionScreen';
+import ConversationalScreen from './components/AgentHub/ConversationalScreen';
 
-type Variant = 'ftox' | 'returning' | 'final-option';
+type Variant = 'ftox' | 'returning' | 'final-option' | 'conversational';
 type ReturningScreen = 'home' | 'library';
 
 export default function NewConversationApp() {
-  const [variant, setVariant] = useState<Variant>('ftox');
+  const [variant, setVariant] = useState<Variant>('conversational');
   const [returningScreen, setReturningScreen] = useState<ReturningScreen>('home');
 
   // Leaving the "returning user" variant should always land back on its
@@ -49,6 +51,8 @@ export default function NewConversationApp() {
           />
         ) : variant === 'final-option' ? (
           <FinalOptionScreen onBack={handleBack} />
+        ) : variant === 'conversational' ? (
+          <ConversationalScreen onBack={handleBack} />
         ) : returningScreen === 'home' ? (
           <ReturningUserScreen
             onStartConversation={handleStartConversation}
@@ -91,16 +95,17 @@ export default function NewConversationApp() {
           </div>
           {(
             [
-              { key: 'ftox',         label: 'FTUX' },
-              { key: 'returning',    label: 'Returning User' },
-              { key: 'final-option', label: 'Final Option' },
+              { key: 'ftox',           label: 'FTUX' },
+              { key: 'returning',      label: 'Returning User' },
+              { key: 'final-option',   label: 'Final Option' },
+              { key: 'conversational', label: 'Conversational' },
             ] as const
           ).map(({ key, label }) => (
             <label
               key={key}
               style={{
                 display: 'flex', alignItems: 'center', gap: 9,
-                marginBottom: key !== 'final-option' ? 8 : 0,
+                marginBottom: key !== 'conversational' ? 8 : 0,
                 cursor: 'pointer',
               }}
             >
