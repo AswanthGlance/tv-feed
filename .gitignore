@@ -4,6 +4,8 @@
 .idea/
 node_modules/
 dist/
+.env
+.env.local
 *.mov
 *.mp4
 .vercel

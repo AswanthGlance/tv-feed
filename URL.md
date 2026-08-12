@@ -13,6 +13,7 @@ All routes run on `http://localhost:5175` (dev server).
 | `http://localhost:5175/t3` | T3 app | `/?t3` or `/#t3` |
 | `http://localhost:5175/L1_templates` | L1 template gallery | `/L1_templates/*` (any sub-path) |
 | `http://localhost:5175/l0_experiment` | L0 animation lab | `/?l0_experiment` |
+| `http://localhost:5175/agent_thinking_trace` | Agent Thinking State — real Phoenix trace replay (aitv-mewtwo-harness) | `/agent-thinking-trace` |
 
 ## Special / Preview Routes
 

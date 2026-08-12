@@ -41,6 +41,7 @@ import MascotIntroApp from './MascotIntroApp'
 import AgentHubApp from './AgentHubApp'
 import NewConversationApp from './NewConversationApp'
 import CapabilityL1App from './CapabilityL1App'
+import AgentThinkingTraceApp from './AgentThinkingTraceApp'
 
 declare global { interface Window { __L0_PREVIEW__?: string; __BEAM_POC__?: boolean; __INTERSTITIAL_PREVIEW__?: boolean; __L0_EXPORT__?: boolean } }
 
@@ -110,6 +111,8 @@ const isL1Scenarios    = window.location.pathname === '/l1-scenarios'
                       || window.location.pathname === '/l1_scenarios';
 const isCapabilityL1   = window.location.pathname.startsWith('/l1-category')
                       || window.location.pathname.startsWith('/l1_category');
+const isAgentThinkingTrace = window.location.pathname === '/agent_thinking_trace'
+                      || window.location.pathname === '/agent-thinking-trace';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -147,6 +150,7 @@ createRoot(document.getElementById('root')!).render(
      isTravelL1         ? <TravelL1 /> :
      isL1Scenarios      ? <L1Scenarios /> :
      isCapabilityL1     ? <CapabilityL1App /> :
+     isAgentThinkingTrace ? <AgentThinkingTraceApp /> :
                           <App />}
   </StrictMode>,
 )
