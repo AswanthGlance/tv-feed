@@ -22,6 +22,9 @@ export type ThinkingEvidenceType =
   | 'image'
   | 'text'
   | 'result'
+  | 'web_result'
+  | 'summary'
+  | 'preference'
   | 'unknown';
 
 export interface ThinkingEvidence {
@@ -34,6 +37,10 @@ export interface ThinkingEvidence {
   subtitle?: string;
   badge?: string;
   image?: string;
+  /** Site/publisher name for web_result evidence (extracted from the
+   *  normalized payload, not guessed from the URL alone unless no explicit
+   *  source field exists — see resultNormalizer.extractSource). */
+  source?: string;
   rating?: number;
   reviewCount?: number;
   distance?: string;

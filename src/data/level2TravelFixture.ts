@@ -124,10 +124,10 @@ const PASSES: ExperiencePassDef[] = [
         mutation: {
           type: 'ENRICH_ITEMS',
           patches: [
-            { id: 'chikmagalur', data: { rating: 4.8 } },
-            { id: 'sakleshpur', data: { rating: 4.6 } },
-            { id: 'coorg', data: { rating: 4.7 } },
-            { id: 'kabini', data: { rating: 4.7 } },
+            { id: 'chikmagalur', data: { rating: 4.8, priceLevel: '₹4,500–₹7,000/night', availability: 'Rooms open this weekend' } },
+            { id: 'sakleshpur', data: { rating: 4.6, priceLevel: '₹3,200–₹5,500/night' } },
+            { id: 'coorg', data: { rating: 4.7, priceLevel: '₹5,000–₹9,000/night' } },
+            { id: 'kabini', data: { rating: 4.7, priceLevel: '₹6,500–₹12,000/night' } },
           ],
         },
       },

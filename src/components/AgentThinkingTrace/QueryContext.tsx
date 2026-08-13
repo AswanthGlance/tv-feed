@@ -6,7 +6,11 @@ export default function QueryContext({ query }: { query?: string }) {
   return (
     <div className="att-query-context">
       <span className="att-query-context-prefix">You asked</span>
-      <div className="att-query-context-pill">{query}</div>
+      {/* Clamp lives on the inner span: -webkit-line-clamp on the padded pill
+          itself lets a clipped third line peek through the bottom padding. */}
+      <div className="att-query-context-pill">
+        <span className="att-query-context-text">{query}</span>
+      </div>
     </div>
   );
 }

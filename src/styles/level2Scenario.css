@@ -1,0 +1,1394 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   LEVEL 2 — Scenario system visual layer.
+
+   This file replaces the original "engineering baseline" wholesale (the seam
+   that file's header promised). It owns the TV-first visual design for the
+   scenario system: the thinking evidence language, the final response
+   presentation, and the thinking → consolidating → resolving → final motion
+   choreography. It touches ZERO extraction/classification/runtime code — the
+   renderer registry and the pass/final models are consumed exactly as-is.
+
+   DESIGN PRINCIPLES (from the Level 2 UI brief):
+
+     THINKING is lighter than FINAL. Thinking values are editorial signals —
+     big type, no card chrome unless the payload is genuinely entity-shaped,
+     staggered line reveals, one idea per pass, vertically centered in the
+     canvas so a single signal never reads as "stranded content in an empty
+     page."
+
+     FINAL is calmer and richer. Top-aligned, denser, stable — every
+     animation here is one-shot; nothing loops once the answer is on screen.
+
+     The handover is explicit: consolidating gathers/quiets the thinking
+     value, resolving brings the final in from a blur — the user should feel
+     "it has finished understanding, this is the answer."
+
+   Type scale (1920×1080, 8–10ft viewing): the agent narration is the hero
+   line at 34px/700 — every evidence renderer below it is deliberately
+   quieter (18–30px), never larger, never bolder. Metadata 16–18px,
+   micro-labels 13–14px caps. Nothing consumer-facing below 14px.
+
+   Color: one accent family per meaning, shared with the existing Level 2
+   card language rather than invented here —
+     lavender  #cda5ff  the agent working (thinking emphasis, markers)
+     green     #4ad4a0  positive/leading signals (savings, open, leader)
+     gold      #f0c987  the verdict (winner, judgment) — matches "Top Pick"
+
+   Namespaces:
+     .att-l2v-*            thinking value renderers
+     .att-l2t-*            ThinkingEntityTile (the one entity treatment)
+     .att-l2f-layer        transition wrapper around the mounted final L1
+                           template — final UI itself lives in L1Scenarios.css
+     .att-l2-scenario-*    the scenario type selector (dev chrome)
+   ───────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  --l2s-text: rgba(255, 255, 255, 0.94);
+  --l2s-muted: rgba(255, 255, 255, 0.58);
+  --l2s-faint: rgba(255, 255, 255, 0.36);
+  --l2s-line: rgba(255, 255, 255, 0.12);
+  --l2s-surface: rgba(255, 255, 255, 0.045);
+  --l2s-think: #cda5ff;
+  --l2s-positive: #4ad4a0;
+  --l2s-verdict: #f0c987;
+  --l2s-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SHELL — narration line + canvas phase behavior
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* The narration is the hero of the thinking phase — it must read as the
+   single largest, most confident line on screen, with every evidence
+   renderer below pitched quieter than it (see .att-l2v-text-line,
+   .att-l2v-count-line, etc.). */
+.att-l2-narration {
+  font-size: 34px;
+  font-weight: 700;
+  color: var(--l2s-text);
+  letter-spacing: -0.01em;
+  max-width: 1300px;
+}
+.att-l2-narration--loading { color: var(--l2s-muted); }
+/* The final phase clears the narration text (the final headline takes over —
+   see Level2ScenarioExperience.tsx). Collapse the empty line so the mascot
+   reads as a quiet author mark, not a label missing its text. */
+.att-l2-narration--resolving,
+.att-l2-narration--final { min-height: 0; }
+
+/* THINKING: the single in-flight value is vertically centered — one signal,
+   optically held mid-canvas, never a lone fragment pinned to the top of an
+   empty page. FINAL stays top-aligned (it's a full, structured answer). */
+.att-l2-canvas--thinking,
+.att-l2-canvas--consolidating {
+  justify-content: center;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   THINKING PASS — container + per-pass motion
+   One pass = one idea: enter (rise, blur→sharp) → HOLD (still) → exit (quiet).
+   Line-level stagger comes from --i set by the renderers.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.att-l2v-pass {
+  width: 100%;
+  max-width: 1500px;
+  animation: att-l2v-in 0.55s var(--l2s-ease) both;
+}
+@keyframes att-l2v-in {
+  from { opacity: 0; transform: translateY(18px); filter: blur(6px); }
+  to   { opacity: 1; transform: none; filter: blur(0); }
+}
+/* Exit beat inside the pass's own timeline: settle back, don't vanish —
+   the next pass's entrance is the change signal, not this one's exit. */
+.att-l2v-pass--exit { opacity: 0.7; transition: opacity 0.45s ease; }
+
+/* CONSOLIDATION — passes are done; the working view gathers itself. The
+   thinking value visibly recedes (dim, soften, contract) so the final
+   response's entrance a beat later reads as the resolution of this motion,
+   not an unrelated swap. */
+.att-l2-canvas--consolidating .att-l2v-pass {
+  opacity: 0.32;
+  transform: translateY(-8px) scale(0.985);
+  filter: blur(3px);
+  transition: opacity 0.65s var(--l2s-ease), transform 0.65s var(--l2s-ease), filter 0.65s var(--l2s-ease);
+}
+
+/* Shared stagger for line-level reveals inside a pass (see the renderers —
+   each line/chip/row carries --i). Kept subtle: content is readable ~120ms
+   per step, and the whole reveal stays inside the pass's enter budget. */
+.att-l2v-stagger {
+  animation: att-l2v-line-in 0.5s var(--l2s-ease) both;
+  animation-delay: calc(var(--i, 0) * 130ms + 120ms);
+}
+@keyframes att-l2v-line-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* STATUS pass — narration is the whole content, but the screen must not read
+   as dead ("thinking ≠ empty waiting"). Three soft breathing dots ride in
+   the status row beside the narration, typing-indicator style: honest
+   ambient presence, no fabricated content. */
+.att-l2v-ambient {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-left: 10px;
+  animation: att-l2v-line-in 0.4s ease both;
+}
+.att-l2v-ambient span {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--l2s-think);
+  opacity: 0.25;
+  animation: att-l2v-ambient-pulse 1.5s ease-in-out infinite;
+}
+.att-l2v-ambient span:nth-child(2) { animation-delay: 0.2s; }
+.att-l2v-ambient span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes att-l2v-ambient-pulse {
+  0%, 100% { opacity: 0.18; transform: none; }
+  50%      { opacity: 0.75; transform: translateY(-3px); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   THINKING VALUES — the evidence language
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── count — one quiet line of context, not a statistic. The count is a
+   fact the agent mentions in passing, never the headline of the pass. ───── */
+.att-l2v-count { display: flex; flex-direction: column; gap: 8px; }
+.att-l2v-count-line {
+  font-size: 26px;
+  font-weight: 500;
+  color: var(--l2s-muted);
+  letter-spacing: -0.01em;
+  max-width: 900px;
+}
+.att-l2v-count-value {
+  font-weight: 700;
+  color: var(--l2s-text);
+  font-variant-numeric: tabular-nums;
+}
+.att-l2v-count-qualifier { font-size: 18px; color: var(--l2s-faint); }
+
+/* ── text — emerging editorial signals, NOT cards, NOT bullets. Each line
+   gets a short lavender tick: the "signal" mark, the only chrome. ───────── */
+.att-l2v-text { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 24px; max-width: 1180px; }
+.att-l2v-text-line {
+  position: relative;
+  padding-left: 30px;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  color: var(--l2s-muted);
+}
+.att-l2v-text-line::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 18px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--l2s-think);
+  opacity: 0.75;
+}
+
+/* ── candidate canvas + thinking tile ────────────────────────────────────
+   The tile vocabulary for the candidate-ranking archetype (see
+   ThinkingEntityTile.tsx / CandidateCanvasThinking.tsx).
+
+   FOUR states, each meaning exactly one thing, with motion that says it:
+     neutral      in play                    scale 1.00
+     considering  being weighed right now    scale 1.03 + border lift
+     strong       pulling ahead              scale 1.10 + border + soft glow
+     receding     outweighed, still visible  scale 0.90 + opacity down
+
+   No hero state exists on purpose: thinking searches, learns, compares and
+   narrows — the final L1 response owns the answer's hierarchy. A card that
+   took over the screen here would both claim a decision thinking has not made
+   and leave the real result with nowhere to go.
+
+   Width is a REAL box property solved per state mix by the canvas, so a tile
+   that grows reflows its neighbours instead of painting over them; `scale` is
+   only the small finishing transform on top. `transform-origin: bottom` keeps
+   every tile on a shared baseline as sizes change. ─────────────────────── */
+.att-l2v-entities,
+.att-l2t-grid {
+  display: flex;
+  gap: var(--l2t-gap, 28px);
+  flex-wrap: nowrap;
+  /* STRETCH, not flex-end. Every card takes the row's height, so the facts
+     pushed to each card's bottom (see .att-l2t-plane) land on one shared line
+     no matter how many lines each title takes. That is what replaced the fixed
+     title/plane reservations, which showed as empty space on any card that did
+     not need them. */
+  align-items: stretch;
+  justify-content: center;
+  width: 100%;
+}
+
+/* HEADROOM for the strongest state, on the candidate canvas only. Tiles are
+   bottom-aligned and scale from `transform-origin: 50% 100%`, so a 1.10 tile
+   paints ~32px ABOVE the row's layout box — and the canvas clips its
+   overflow, which cropped the top of every shortlisted card's photo. Layout
+   height does not change with a transform, so the room has to be reserved. */
+.att-l2t-grid { padding-top: 40px; }
+
+/* The plain entity set (list / hybrid) does not solve widths or hand back the
+   scale overhang the way the candidate canvas does, so its emphasised tile
+   gets the same compensation as a flat rule — 5% of the default 220px tile
+   per side — and its neighbours keep a real gap. */
+.att-l2v-entities .att-l2t--strong { margin-inline: 11px; }
+
+.att-l2t {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
+  width: 220px;
+  padding: 14px 16px 16px;
+  border-radius: 18px;
+  background: var(--l2s-surface);
+  /* Height comes from the row (align-items: stretch), so the body can push its
+     fact plane to the bottom edge. */
+  height: auto;
+  transform-origin: 50% 100%;
+  transform: scale(1);
+  opacity: 1;
+  /* Arrival: fade + blur + rise, staggered per tile. Matches the brief's
+     100–140ms cadence and stays inside the pass's enter budget. */
+  /* `backwards`, NOT `both`. With `both` the arrival animation's final
+     keyframe (`transform: none`) stays applied for the rest of the tile's
+     life and silently outranks every state rule below — which is why the
+     shortlist's 1.10 / 0.90 scale hierarchy did not show up at all, while the
+     opacity and saturation parts of the same states did. `backwards` still
+     holds the hidden `from` state through the stagger delay, then hands the
+     transform back to the element's own styles. */
+  animation: att-l2t-arrive 0.62s var(--l2s-ease) backwards;
+  animation-delay: calc(var(--i, 0) * 120ms + 180ms);
+  transition:
+    width 0.55s var(--l2s-ease),
+    margin 0.55s var(--l2s-ease),
+    transform 0.55s var(--l2s-ease),
+    opacity 0.5s var(--l2s-ease),
+    filter 0.5s var(--l2s-ease);
+}
+@keyframes att-l2t-arrive {
+  from { opacity: 0; transform: translateY(16px) scale(0.97); filter: blur(6px); }
+  to   { opacity: 1; transform: none; filter: blur(0); }
+}
+
+/* Border as its own layer so the ARRIVAL sweep can run once and then sit
+   inert — nothing glows permanently, which is what turns a state signal into
+   decoration. The sweep travels the border once as the tile lands, then
+   settles to the neutral hairline. */
+.att-l2t-border {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1.5px solid var(--l2s-line);
+  pointer-events: none;
+  transition: border-color 0.45s ease, box-shadow 0.45s ease;
+}
+.att-l2t-border::after {
+  content: '';
+  position: absolute;
+  inset: -1.5px;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(from var(--sweep, 0deg), transparent 0deg, rgba(205, 165, 255, 0.85) 26deg, transparent 60deg);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  animation: att-l2t-sweep 1.15s var(--l2s-ease) both;
+  animation-delay: calc(var(--i, 0) * 120ms + 240ms);
+}
+@keyframes att-l2t-sweep {
+  0%   { opacity: 0; --sweep: 0deg; }
+  15%  { opacity: 1; }
+  85%  { opacity: 1; }
+  100% { opacity: 0; --sweep: 360deg; }
+}
+@property --sweep {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+.att-l2t--considering { transform: scale(1.03); }
+.att-l2t--considering .att-l2t-border { border-color: rgba(255, 255, 255, 0.3); }
+
+.att-l2t--strong { transform: scale(1.1); }
+.att-l2t--strong .att-l2t-border {
+  border-color: rgba(205, 165, 255, 0.6);
+  box-shadow: 0 0 0 1px rgba(205, 165, 255, 0.12), 0 10px 40px rgba(205, 165, 255, 0.14);
+}
+/* The shortlist beat re-runs the sweep brighter and slower on the survivors —
+   the same primitive saying "these are the ones", not a new animation. */
+.att-l2t--strong .att-l2t-border::after {
+  background: conic-gradient(from var(--sweep, 0deg), transparent 0deg, rgba(220, 190, 255, 1) 34deg, transparent 74deg);
+  animation-duration: 1.35s;
+}
+/* A receding candidate is not being evaluated any more, so it gets no sweep. */
+.att-l2t--receding .att-l2t-border::after { animation: none; opacity: 0; }
+
+.att-l2t--receding {
+  transform: scale(0.9);
+  opacity: 0.42;
+  filter: saturate(0.65);
+}
+
+/* Media only ever exists when a real image does — no reserved hole, no
+   placeholder. The fixed ratio means the CROP NEVER SHIFTS as a tile changes
+   state: only the frame's size changes, so a growing candidate does not
+   re-crop its own photo mid-transition. */
+.att-l2t-media {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: 11px;
+  overflow: hidden;
+  margin-bottom: 12px;
+  background: rgba(255, 255, 255, 0.04);
+}
+.att-l2t-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.att-l2t-body { display: flex; flex-direction: column; gap: 7px; flex: 1; min-height: 0; }
+.att-l2t-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--l2s-text);
+  line-height: 1.28;
+  letter-spacing: -0.005em;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.att-l2t-meta { display: flex; flex-wrap: wrap; gap: 4px 10px; }
+.att-l2t-fact {
+  font-size: 13.5px;
+  color: var(--l2s-faint);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+/* Metadata LEARNED at the enrichment pass animates in; the fact the tile was
+   born with does not — so "arriving" and "learning something new" are
+   visually different events rather than one undifferentiated fade. */
+.att-l2t-fact--new {
+  color: var(--l2s-muted);
+  animation: att-l2t-fact-in 0.5s var(--l2s-ease) both;
+  animation-delay: calc(var(--fi, 0) * 90ms + 140ms);
+}
+@keyframes att-l2t-fact-in {
+  from { opacity: 0; transform: translateY(6px); filter: blur(4px); }
+  to   { opacity: 1; transform: none; filter: blur(0); }
+}
+
+/* ── COMPARISON MODE ─────────────────────────────────────────────────────
+   "Comparing prices" has to look different from "checking prices", or the
+   viewer has no way to tell weighing from gathering. A border animation alone
+   cannot carry that — it is the same signal the evaluating passes already use.
+
+   So comparison changes what the cards SHOW, while changing nothing about
+   where they are:
+
+     the media frame recedes but never moves, resizes or reloads — image
+     identity is the only thing keeping five cards distinguishable once their
+     metadata has been replaced by a single field
+
+     the title holds at full strength, clamped to one line so that every
+     card's VALUE lands on the same baseline and the row scans horizontally
+
+     the fact plane — and only the fact plane — turns over
+
+   THE TURN is ~10°, not 180°. A full flip is a reveal ("look what was hidden
+   here"); a shallow turn is an inspection ("this surface is being turned over
+   to show you a different field"). The second is what is actually happening.
+
+   Both faces are permanently mounted and stacked in ONE grid cell, so the
+   plane is as tall as the taller face and the card's geometry is identical in
+   both modes. The crossfade is a transition with its delay set to the turn's
+   midpoint, so content changes while the plane is edge-on. Replaying the turn
+   on each new dimension without remounting anything is what the two identical
+   --turn-a / --turn-b keyframe names are for: swapping animation-name is the
+   only way to restart an animation on an element that must persist. ─────── */
+.att-l2t-plane {
+  position: relative;
+  /* Sits at the BOTTOM of the card. Cards in a row are stretched to a shared
+     height (see .att-l2t-grid), so pushing the facts down is what lines every
+     card's meta row up with every other card's — the alignment a fixed
+     min-height used to buy, without booking space that may never be used.
+
+     An earlier version reserved 68px here for the taller comparison face so
+     the card could not resize when the mode changed. On a scenario whose
+     cards carry one short fact, that reservation was simply a hole under
+     every card. Sizing to the active face instead means the only cards that
+     get tall are the ones with something tall to show. */
+  margin-top: auto;
+  transform-style: preserve-3d;
+  transform-origin: 50% 50%;
+  perspective: 620px;
+}
+/* The INACTIVE face is taken out of flow so it contributes no height — the
+   plane is exactly as tall as what is currently on screen. Both faces stay
+   MOUNTED either way (that is what keeps the crossfade and the turn working
+   without a remount); only their participation in layout changes. */
+.att-l2t-face {
+  min-width: 0;
+  opacity: 1;
+  transition: opacity 190ms linear;
+  transition-delay: calc(var(--i, 0) * 95ms + 175ms);
+}
+.att-l2t-face--comparison {
+  position: absolute;
+  inset: auto 0 0 0;
+  opacity: 0;
+  pointer-events: none;
+}
+.att-l2t--comparing .att-l2t-face--identity { position: absolute; inset: auto 0 0 0; }
+.att-l2t--comparing .att-l2t-face--comparison { position: relative; inset: auto; }
+
+.att-l2t--comparing .att-l2t-face--identity { opacity: 0; pointer-events: none; }
+.att-l2t--comparing .att-l2t-face--comparison { opacity: 1; pointer-events: auto; }
+
+.att-l2t-plane--turn-a { animation: att-l2t-turn-a 470ms var(--l2s-ease) both; }
+.att-l2t-plane--turn-b { animation: att-l2t-turn-b 470ms var(--l2s-ease) both; }
+.att-l2t-plane--turn-a,
+.att-l2t-plane--turn-b {
+  /* Analytical, not playful: ~95ms apart reads as the agent working down the
+     row, where a simultaneous flip reads as a transition effect. */
+  animation-delay: calc(var(--i, 0) * 95ms);
+}
+/* Two names, one shape. See the header — this is the replay mechanism. */
+@keyframes att-l2t-turn-a {
+  0%   { transform: rotateY(0deg) translateZ(0); }
+  45%  { transform: rotateY(-10deg) translateZ(-10px); }
+  100% { transform: rotateY(0deg) translateZ(0); }
+}
+@keyframes att-l2t-turn-b {
+  0%   { transform: rotateY(0deg) translateZ(0); }
+  45%  { transform: rotateY(-10deg) translateZ(-10px); }
+  100% { transform: rotateY(0deg) translateZ(0); }
+}
+
+/* The image recedes rather than disappearing. Opacity and saturation only —
+   no size change, no re-crop, no unmount — so the photo still identifies the
+   card while the value becomes the thing being read. */
+.att-l2t--comparing .att-l2t-media {
+  opacity: 0.34;
+  filter: saturate(0.4);
+  transition: opacity 420ms var(--l2s-ease), filter 420ms var(--l2s-ease);
+  transition-delay: calc(var(--i, 0) * 95ms);
+}
+.att-l2t-media {
+  transition: opacity 420ms var(--l2s-ease), filter 420ms var(--l2s-ease);
+}
+
+/* The title steps back so the value can lead — but it keeps its size, its
+   position and its two reserved lines. Clamping it to one line while comparing
+   was tempting (it looks tidier) and wrong: it changed the card's height by a
+   line, which moved the whole row every time the mode changed. Identity has to
+   be the one thing that never moves. */
+.att-l2t--comparing .att-l2t-title { color: rgba(255, 255, 255, 0.72); }
+.att-l2t-title { transition: color 380ms ease; }
+
+/* The comparison face itself. Label above value, both left-aligned to the
+   card's text column so the eye runs down a single edge across the row. */
+.att-l2c { display: flex; flex-direction: column; gap: 4px; }
+.att-l2c-head { display: flex; align-items: center; gap: 7px; min-height: 15px; }
+.att-l2c-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--l2s-faint);
+  white-space: nowrap;
+}
+.att-l2c-value {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  color: var(--l2s-text);
+  /* Tabular figures are what actually make a column of prices comparable —
+     proportional digits put every value on a different visual width. */
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* Free text ('Open till 12am', 'Dec–Mar') is not a figure and does not get a
+   figure's size — at 24px it reads as a wall rather than as a value. It keeps
+   the NUMERIC line box though (see .att-l2c-value's min-height): a smaller
+   font would otherwise make the whole row 7px shorter on the availability
+   beat than on the price beat, nudging every card between dimensions. */
+.att-l2c--text .att-l2c-value { font-size: 18px; font-weight: 500; }
+
+/* The qualifier from the same source string: 'per person', 'for two'. Usually
+   identical on every card, so it is stated once per card, quietly, under the
+   figure — never at the figure's size, where four repetitions of 'per person'
+   would bury the four numbers actually being compared. */
+.att-l2c-note {
+  margin-top: 1px;
+  min-height: 15px; /* reserved even when empty — see ComparisonFace */
+  font-size: 12px;
+  line-height: 15px;
+  color: var(--l2s-faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* An absent value is stated, not hidden. Quieter than a real one so the eye
+   skips it while scanning, but the candidate stays in the comparison. */
+.att-l2c--missing .att-l2c-value { color: var(--l2s-faint); }
+
+/* The leader signal is deliberately tiny. It reports a fact the data supports
+   ('Lowest', 'Highest rated') and never the word "best" — and it only renders
+   at all when every candidate was comparable and exactly one won. */
+.att-l2c-leader {
+  padding: 1.5px 6px;
+  border-radius: 5px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--l2s-think);
+  background: rgba(205, 165, 255, 0.12);
+  white-space: nowrap;
+}
+/* A hairline on the leader — the same accent the shortlist uses, one step
+   quieter, so "leads on this field" never gets confused with "made the cut". */
+.att-l2t--comparing.att-l2t--leader .att-l2t-border {
+  border-color: rgba(205, 165, 255, 0.42);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .att-l2t-plane--turn-a,
+  .att-l2t-plane--turn-b { animation: none; }
+}
+
+/* ── source evidence — "reading up on this from a few angles" ────────────
+   Deliberately SECONDARY to the narration: small chips and a quiet count, no
+   giant statistic. The message is "the agent is checking several
+   perspectives", not "here are websites to read", so these are never cards
+   and never raw URLs. ──────────────────────────────────────────────────── */
+.att-l2v-sources { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+.att-l2v-source-strip { display: flex; flex-wrap: wrap; gap: 12px 20px; justify-content: center; align-items: center; }
+
+/* A source reads as "somewhere the agent looked", NOT as a button: no border,
+   no fill, no affordance. The circular favicon carries the identity and the
+   label just names it. */
+.att-l2v-source {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 17px;
+  color: var(--l2s-muted);
+  white-space: nowrap;
+}
+.att-l2v-source-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex: 0 0 auto;
+  background: rgba(255, 255, 255, 0.07);
+  /* The ring is the only chrome — it holds the circle together while a
+     favicon is still loading and after a fallback glyph takes over. */
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.11);
+  color: var(--l2s-faint);
+}
+.att-l2v-source-icon img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  display: block;
+}
+/* Maps is the provider the candidates themselves came from — a shade more
+   present than a web result, without becoming a highlight. */
+.att-l2v-source--maps { color: var(--l2s-text); }
+.att-l2v-source--maps .att-l2v-source-icon { color: var(--l2s-text); background: rgba(255, 255, 255, 0.12); }
+.att-l2v-source--more {
+  color: var(--l2s-faint);
+  font-variant-numeric: tabular-nums;
+  padding-left: 2px;
+}
+.att-l2v-source-count {
+  font-size: 16px;
+  color: var(--l2s-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Sources are RESEARCH CONTEXT, not findings — once candidates arrive they
+   have done their job and must not compete with the evidence underneath. The
+   pass swap already unmounts them; this makes the exit read as compressing
+   inward rather than blinking out. */
+.att-l2v-pass--exit .att-l2v-sources {
+  opacity: 0;
+  transform: scale(0.94);
+  transition: opacity 320ms ease, transform 380ms var(--l2s-ease);
+}
+
+/* ── memory / personal-context — small pill chips, RECALLED not searched.
+   No icons, no border-as-affordance: this reads as "the agent already knows
+   this", not a clickable filter. Reuses .att-l2v-stagger for the blur->sharp
+   entrance every other evidence chip already uses, so recall doesn't need a
+   bespoke animation to feel distinct — the pill shape and lack of an icon
+   already separate it from a source/result chip. ──────────────────────── */
+.att-l2v-memory { display: flex; flex-wrap: wrap; gap: 10px 12px; justify-content: center; align-items: center; max-width: 900px; }
+.att-l2v-memory-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 17px;
+  color: var(--l2s-text);
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.11);
+  white-space: nowrap;
+}
+/* Compresses inward before search/discovery begins — the same "this evidence
+   did its job, moving on" language as the sources exit above, so the two
+   research-adjacent passes read as one family. */
+.att-l2v-pass--exit .att-l2v-memory {
+  opacity: 0;
+  transform: scale(0.92);
+  transition: opacity 300ms ease, transform 360ms var(--l2s-ease);
+}
+
+/* ── comparison signal — one dimension at a time, light rows. The final
+   comparison template is denser; this is its sketch. ────────────────────── */
+.att-l2v-compare { display: flex; flex-direction: column; width: 100%; max-width: 1240px; }
+.att-l2v-compare-row { display: flex; align-items: baseline; border-bottom: 1px solid var(--l2s-line); }
+.att-l2v-compare-row--head { border-bottom-color: rgba(255, 255, 255, 0.2); }
+.att-l2v-compare-row--head .att-l2v-compare-cell {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--l2s-text);
+  padding-top: 8px;
+  padding-bottom: 14px;
+}
+.att-l2v-compare-dim {
+  flex: 0 0 250px;
+  padding: 20px 14px 20px 0;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--l2s-faint);
+}
+.att-l2v-compare-cell {
+  flex: 1;
+  padding: 20px 14px;
+  font-size: 22px;
+  color: var(--l2s-muted);
+}
+.att-l2v-compare-cell--leader { color: var(--l2s-positive); font-weight: 600; }
+/* Uniform row (row-level `__all` answer): one cell across the full row. */
+.att-l2v-compare-cell--span { max-width: 920px; }
+
+/* ── route — a real route line: dots + connecting rule, no map imagery
+   (the trace carries none, by contract). ────────────────────────────────── */
+.att-l2v-route { max-width: 1000px; }
+.att-l2v-route-headline {
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--l2s-text);
+}
+.att-l2v-route-savings { color: var(--l2s-positive); }
+.att-l2v-route-ends { font-size: 23px; color: var(--l2s-muted); margin-top: 12px; }
+.att-l2v-route-arrow { color: var(--l2s-faint); margin: 0 10px; }
+.att-l2v-route-stops { list-style: none; margin: 30px 0 0; padding: 0; }
+.att-l2v-route-stop {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  gap: 20px;
+  padding: 13px 0 13px 36px;
+  font-size: 24px;
+  color: var(--l2s-text);
+}
+/* the route line… */
+.att-l2v-route-stop::before {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: rgba(205, 165, 255, 0.28);
+}
+.att-l2v-route-stop:first-child::before { top: 50%; }
+.att-l2v-route-stop:last-child::before { bottom: 50%; }
+/* …and its nodes */
+.att-l2v-route-stop::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: calc(50% - 7px);
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2.5px solid var(--l2s-think);
+  background: rgba(20, 12, 40, 0.9);
+}
+.att-l2v-route-stop-label { font-weight: 500; }
+.att-l2v-route-stop-eta { font-size: 19px; color: var(--l2s-faint); font-variant-numeric: tabular-nums; }
+
+/* ── availability — chips whose state is readable at a glance ───────────── */
+.att-l2v-avail { max-width: 1240px; }
+.att-l2v-avail-summary { font-size: 28px; font-weight: 700; letter-spacing: -0.015em; color: var(--l2s-text); margin-bottom: 22px; }
+.att-l2v-avail-slots { display: flex; gap: 14px; flex-wrap: wrap; }
+.att-l2v-slot {
+  padding: 14px 24px;
+  border-radius: 999px;
+  border: 1.5px solid var(--l2s-line);
+  font-size: 19px;
+  color: var(--l2s-text);
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+}
+.att-l2v-slot-detail { font-size: 16px; color: var(--l2s-faint); }
+.att-l2v-slot--open { border-color: rgba(74, 212, 160, 0.55); }
+.att-l2v-slot--open .att-l2v-slot-label { color: var(--l2s-positive); }
+.att-l2v-slot--limited { border-color: rgba(240, 190, 90, 0.5); }
+.att-l2v-slot--full { opacity: 0.4; }
+
+/* ── timeline ───────────────────────────────────────────────────────────── */
+.att-l2v-timeline { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 20px; max-width: 1100px; }
+.att-l2v-timeline-item { display: flex; align-items: baseline; gap: 22px; font-size: 24px; color: var(--l2s-text); }
+.att-l2v-timeline-time {
+  color: var(--l2s-think);
+  min-width: 140px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.att-l2v-timeline-label { font-weight: 500; }
+.att-l2v-timeline-detail { color: var(--l2s-faint); font-size: 19px; }
+
+/* ── clusters — themes emerging, count + label pairs ────────────────────── */
+.att-l2v-clusters { display: flex; gap: 64px; flex-wrap: wrap; align-items: baseline; }
+.att-l2v-cluster { display: flex; flex-direction: column; gap: 6px; }
+.att-l2v-cluster-count {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--l2s-text);
+  font-variant-numeric: tabular-nums;
+}
+.att-l2v-cluster-label { font-size: 18px; color: var(--l2s-muted); }
+
+/* ── generic ────────────────────────────────────────────────────────────── */
+.att-l2v-generic-label { font-size: 26px; font-weight: 600; letter-spacing: -0.015em; color: var(--l2s-text); max-width: 1100px; }
+.att-l2v-generic-detail { font-size: 19px; color: var(--l2s-muted); margin-top: 10px; max-width: 900px; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FINAL RESPONSE — calmer, richer, complete. Enters once, then holds still.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Handover: resolving brings the answer in from a blur while the thinking
+   value (already gathered by consolidating) is unmounted underneath. Longer
+   and softer than a pass change — this is the one structural transition of
+   the journey and it should feel like arrival, not another update. */
+/* MUST be a properly sized containing block, not just a wrapper.
+   Its entrance animation carries a `transform`, and a transformed element
+   becomes the containing block for its absolutely-positioned descendants. As
+   a static `width: 100%` div its own height was 0 (its only child is
+   absolute), so the L1 template inside resolved to 1920×0 — its cards then
+   overflowed the stage and read as enormous and cropped. Pinning this to the
+   full canvas gives the template the 1920×1080 box it is authored against. */
+.att-l2f-layer {
+  position: absolute;
+  inset: 0;
+  animation: att-l2f-in 0.7s var(--l2s-ease) both;
+}
+@keyframes att-l2f-in {
+  /* Starts faintly visible, not from pure black: the thinking layer has
+     already unmounted when `resolving` begins, so a from-0 fade left the
+     stage momentarily dead (confirmed by frame capture). */
+  from { opacity: 0.12; transform: translateY(18px); filter: blur(7px); }
+  to   { opacity: 1; transform: none; filter: blur(0); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SCENARIO TYPE SELECTOR — dev/demo chrome, unchanged visual role
+   ═══════════════════════════════════════════════════════════════════════════ */
+.att-l2-scenario-selector {
+  position: absolute;
+  right: 28px;
+  top: 150px;
+  width: 250px;
+  z-index: 40;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid var(--l2s-line);
+  background: rgba(10, 12, 18, 0.82);
+  backdrop-filter: blur(8px);
+}
+.att-l2-scenario-selector-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.att-l2-scenario-selector-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--l2s-muted);
+}
+.att-l2-scenario-refresh {
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--l2s-line);
+  background: transparent;
+  color: var(--l2s-text);
+  cursor: pointer;
+}
+.att-l2-scenario-refresh:disabled { opacity: 0.4; cursor: default; }
+.att-l2-scenario-options { display: flex; flex-direction: column; gap: 2px; }
+.att-l2-scenario-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 8px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--l2s-muted);
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+.att-l2-scenario-option:hover { background: rgba(255, 255, 255, 0.05); }
+.att-l2-scenario-option--active { background: rgba(255, 255, 255, 0.1); color: var(--l2s-text); }
+.att-l2-scenario-option-index { color: var(--l2s-faint); width: 12px; }
+.att-l2-scenario-option-label { flex: 1; }
+.att-l2-scenario-option-count { font-size: 10px; color: var(--l2s-faint); }
+.att-l2-scenario-source {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--l2s-line);
+  font-size: 10px;
+  color: var(--l2s-faint);
+  line-height: 1.4;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CANDIDATE RANKING — centred thinking composition + the agent handoff
+
+   During thinking the agent is the NARRATOR and belongs at the centre of the
+   stage, with its evidence gathered directly beneath it as one connected
+   group. The global chrome keeps its places: Glance top-left, level selector
+   top-centre, user query top-right.
+
+   THE HANDOFF. The mascot is anchored at the L1 template's own mascot
+   coordinates (left 72, top 156, 80×80 — L1Scenarios' AGENT_TOP) and pushed
+   to centre stage by a transform. So "centre → top-left" is just the
+   transform being removed: the browser interpolates a single transform, which
+   is why it is smooth and why it lands exactly on the L1 mascot rather than
+   near it. Numbers are exact because the stage is a fixed 1920×1080:
+
+     centre x = 1920/2 − 80/2 = 920  →  dx = 920 − 72  = 848px
+     centre y = 300                  →  dy = 300 − 156 = 144px
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.att-l2-agent {
+  position: absolute;
+  z-index: 6;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* CENTRED BY GEOMETRY, NOT ARITHMETIC. `left: 50%` with a −half-width
+     margin puts the box's centre on the stage's centre exactly, whatever the
+     mascot renders at and however long the narration is. The previous version
+     hard-coded a translate offset, which is precisely the kind of "works for
+     one sentence" positioning that drifted. */
+  top: 300px;
+  left: 50%;
+  margin-left: -40px;
+  /* 780ms sits in the brief's 650–900ms window. No bounce: this is a handoff,
+     not a flourish. */
+  transition:
+    top 780ms var(--l2s-ease),
+    left 780ms var(--l2s-ease),
+    margin-left 780ms var(--l2s-ease),
+    opacity 320ms ease;
+}
+/* Consolidation is where the move happens, and it waits for the compression
+   beat to finish first — the agent leaves once its evidence has settled, not
+   while it is still moving. The destination is the L1 template's own mascot
+   slot (left 72, top 156 — L1Scenarios' AGENT_TOP), so by the time that
+   template mounts at `resolving` the mascot is already exactly there. */
+.att-l2-agent--consolidating {
+  top: 156px;
+  left: 72px;
+  margin-left: 0;
+  transition-delay: 560ms;
+}
+
+.att-l2-narration-wrap {
+  position: absolute;
+  top: 404px;
+  left: 0;
+  right: 0;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+  transition: opacity 380ms ease, transform 520ms var(--l2s-ease);
+}
+/* The narration leaves before the evidence does, so the last thing the viewer
+   reads is the settled evidence rather than a sentence about it. */
+.att-l2-narration-wrap--consolidating {
+  opacity: 0;
+  transform: translateY(-18px);
+}
+/* The narration is centred in the SAME axis as the agent: the wrap spans the
+   full stage, its children are centre-aligned, and the line caps its own
+   width. Nothing here is offset, so no sentence length can push the group
+   sideways. */
+.att-l2-narration {
+  text-align: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+/* The ambient pulse is part of the centred group, not a trailing element. */
+.att-l2-narration-wrap .att-l2v-ambient {
+  justify-content: center;
+  margin: 0 auto;
+}
+
+/* The evidence stage: directly under the narration, centred, and given the
+   lower half of the canvas. Overrides the generic canvas box for the thinking
+   phases only — the final response still uses the full stage. */
+.att-l2-canvas--thinking,
+.att-l2-canvas--consolidating {
+  top: 512px;
+  bottom: 132px;
+  justify-content: flex-start;
+  align-items: center;
+}
+.att-l2-canvas--thinking .att-l2v-pass,
+.att-l2-canvas--consolidating .att-l2v-pass {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* CONSOLIDATION — "the investigation is wrapping up". Everything contracts
+   toward the centre and quiets down: receding tiles go first, the survivors
+   shrink slightly, metadata and source chips drop away. Nothing expands, and
+   no winner is revealed here — the L1 result owns that reveal. */
+.att-l2-canvas--consolidating .att-l2t--receding {
+  opacity: 0;
+  transform: scale(0.82);
+  transition: opacity 420ms ease, transform 420ms var(--l2s-ease);
+}
+.att-l2-canvas--consolidating .att-l2t--strong,
+.att-l2-canvas--consolidating .att-l2t--considering,
+.att-l2-canvas--consolidating .att-l2t--neutral {
+  transform: scale(0.94);
+}
+.att-l2-canvas--consolidating .att-l2t-meta,
+.att-l2-canvas--consolidating .att-l2v-sources {
+  opacity: 0;
+  transition: opacity 380ms ease;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   STAGE FIT — /agent_thinking_trace renders a FIXED 1920×1080 canvas.
+
+   Every position, font size and card dimension in this route is authored
+   against those exact numbers. Previously the stage just filled the viewport
+   and drew 1920-scale content into it, so on any display under 1920 wide the
+   composition overflowed — type read as oversized, edges were cropped, and
+   centred elements looked off-centre because the visible region was not the
+   centre of the canvas. The L1 final response mounted inside it inherited the
+   same problem.
+
+   The box is centred and scaled about its own centre, so it letterboxes
+   cleanly at any aspect ratio. `--att-scale` is written by useStageScale.
+   ═══════════════════════════════════════════════════════════════════════════ */
+#scaler.att-scaler {
+  background: #04020b;
+  overflow: hidden;
+}
+/* SELECTOR SPECIFICITY IS LOAD-BEARING. tv.css styles `#stage` by ID
+   (width/height 100%, position: relative). A plain class cannot override an
+   ID selector, so an earlier version of this rule only managed to apply its
+   `transform` — the box stayed viewport-sized while its 1920-coordinate
+   contents overflowed and were clipped by `#stage`'s own overflow: hidden.
+   `#stage.att-stage--fit` (one id + one class) outranks `#stage`, which is
+   what actually makes the fixed canvas take effect. */
+#stage.att-stage--fit {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1920px;
+  height: 1080px;
+  /* The canvas is scaled about its own centre, so it letterboxes cleanly at
+     any aspect ratio instead of anchoring to a corner. */
+  transform: translate(-50%, -50%) scale(var(--att-scale, 1));
+  transform-origin: center center;
+  /* Nothing may leak outside the canvas, but the canvas itself is now the
+     right size, so this clips only true overflow rather than the layout. */
+  overflow: hidden;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MAP THINKING STAGE — the spatial mode (.att-l2m-*)
+
+   A contained, CENTRED spatial canvas the agent opens temporarily. Explicitly
+   NOT a navigation app: the agent and its narration stay above it and stay
+   primary, the user's query stays visible, and the map never fills the TV.
+
+   The reference language asked for a dark, very quiet surface with a luminous
+   route as the brightest object, minimal markers, sparse labels and large
+   areas of visual quietness — translated here into the existing Ambient
+   tokens (--l2s-think purple, a teal accent at the destination end) rather
+   than a new palette.
+
+   Three things carry that:
+     the surface is barely above the background and fades out at its edges,
+       so it reads as a temporary opening rather than another card
+     everything except the route sits under 20% contrast
+     the route is the only saturated, glowing object on screen
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.att-l2m {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  width: 100%;
+}
+
+/* Duration + distance: CENTRED on the map, above it, part of the same centred
+   composition. Never a left-hand detail panel. It is present from the first
+   beat (the figures are already known) but stays quiet until the agent's
+   summary sentence makes it the point. */
+.att-l2m-readout {
+  font-size: 26px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--l2s-muted);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  /* Reserved at the LEAD size. The readout grows when the agent's summary
+     sentence makes it the point, and without this the map slid down by the
+     difference at exactly the moment the viewer was reading it. */
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  transition: color 520ms var(--l2s-ease), font-size 520ms var(--l2s-ease), opacity 520ms var(--l2s-ease);
+}
+.att-l2m-readout--lead {
+  font-size: 38px;
+  font-weight: 600;
+  color: var(--l2s-text);
+}
+
+/* THE STAGE. ~61% of the 1920 canvas and ~44% of its height — substantial,
+   contained, with real quiet around it. No heavy border, no drop shadow, no
+   metadata footer: a faint hairline and an inner glow is the whole chrome. */
+.att-l2m-stage {
+  position: relative;
+  width: 1180px;
+  height: 360px;
+  border-radius: 26px;
+  overflow: hidden;
+  /* The boundary is a suggestion, not a frame. */
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.055), inset 0 0 90px rgba(140, 110, 210, 0.09);
+  animation: att-l2m-surface 900ms var(--l2s-ease) backwards;
+  /* Edge fade — the stage dissolves into the ambient background instead of
+     ending at a hard rectangle, which is what keeps it from reading as a card. */
+  -webkit-mask-image: radial-gradient(120% 130% at 50% 50%, #000 62%, transparent 100%);
+  mask-image: radial-gradient(120% 130% at 50% 50%, #000 62%, transparent 100%);
+}
+@keyframes att-l2m-surface {
+  from { opacity: 0; transform: scale(0.985); filter: blur(9px); }
+  to   { opacity: 1; transform: none; filter: blur(0); }
+}
+
+.att-l2m-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+/* ── THE BASEMAP — real OSM streets, pushed all the way down ────────────
+
+   TUNED AGAINST THE ACTUAL TILE PALETTE, not by eye. CARTO's dark_nolabels
+   tiles are 4-bit paletted and every colour in them sits between luminance 3
+   and 38: land is #030303–#0d0d0d, roads climb to #262626 — and WATER IS ALSO
+   EXACTLY #262626 (a pure-ocean tile is a single flat colour at that value).
+
+   That last fact is why the first attempt looked wrong. Water and roads are
+   the same value in the source, so no global filter can make one dark and the
+   other bright; a brightness lift big enough to reveal the streets turned the
+   Arabian Sea into a glowing slab.
+
+   So the filter drives LAND to black instead: brightness lifts the whole
+   palette, then contrast (pivoting at mid-grey, far above everything here)
+   crushes the bottom of it. Land clips to #000, roads and water settle at
+   about #232323 — faint grey network on true black, which is the reference
+   language, with water reading as one quiet distinct field. The route is then
+   the only saturated thing on the stage. */
+.att-l2m-tiles {
+  position: absolute;
+  inset: 0;
+  background: #0b0714;
+  /* Fades in slightly after the surface so the stage opens, THEN fills. */
+  animation: att-l2m-tiles-in 900ms var(--l2s-ease) 160ms backwards;
+}
+.att-l2m-tile {
+  position: absolute;
+  display: block;
+  /* Nearest-neighbour would alias the hairline streets; the @2x tiles are
+     already at native density for this stage. */
+  image-rendering: auto;
+  opacity: 1;
+  filter: brightness(1.25) saturate(0.4) contrast(1.15);
+}
+@keyframes att-l2m-tiles-in {
+  from { opacity: 0; filter: blur(7px); }
+  to   { opacity: 1; filter: blur(0); }
+}
+/* The crushed basemap is neutral grey, which reads as an embedded third-party
+   widget against this screen's purple field. A faint screen-blended wash puts
+   it back in the Ambient family without touching the streets' legibility. */
+.att-l2m-tiles::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(110% 140% at 50% 45%, rgba(150, 110, 230, 0.16), rgba(90, 60, 160, 0.06) 60%, transparent 100%);
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+/* Scale + attribution: the only chrome, at the quietest contrast on the
+   stage. No zoom buttons, no compass, no layer switcher — this is reasoning,
+   not navigation. */
+.att-l2m-scale {
+  position: absolute;
+  left: 26px;
+  bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+.att-l2m-scale-bar {
+  height: 4px;
+  border-left: 1.5px solid rgba(255, 255, 255, 0.34);
+  border-right: 1.5px solid rgba(255, 255, 255, 0.34);
+  border-bottom: 1.5px solid rgba(255, 255, 255, 0.34);
+}
+.att-l2m-scale-label { font-size: 11.5px; color: rgba(255, 255, 255, 0.42); letter-spacing: 0.03em; white-space: nowrap; }
+.att-l2m-attrib {
+  position: absolute;
+  right: 22px;
+  bottom: 20px;
+  font-size: 10.5px;
+  color: rgba(255, 255, 255, 0.24);
+  letter-spacing: 0.02em;
+  pointer-events: none;
+}
+
+/* ── THE ROUTE — the brightest spatial object, by a wide margin ─────────── */
+.att-l2m-route,
+.att-l2m-route-halo {
+  fill: none;
+  stroke-linecap: round;
+  stroke-width: 4;
+  /* Drawn, never revealed. The dash offset animation is the "agent is
+     constructing the answer" moment the whole mode is built around. */
+  stroke-dasharray: 2400;
+  stroke-dashoffset: 2400;
+  animation: att-l2m-draw 1250ms var(--l2s-ease) 250ms forwards;
+}
+/* An ABSTRACT connector, and it has to look like one. Real GetRoute output
+   carries no polyline, so a solid road-shaped line would claim knowledge of a
+   road the trace never described. The dash pattern is the honesty signal:
+   "these two are connected, this far apart" — not "drive this line". */
+.att-l2m-route--endpoints { stroke-dasharray: 13 11; stroke-dashoffset: 900; animation-name: att-l2m-draw-dashed; }
+.att-l2m-route-halo { stroke: rgba(190, 150, 255, 0.34); stroke-width: 10; }
+
+@keyframes att-l2m-draw { to { stroke-dashoffset: 0; } }
+/* A dashed stroke cannot animate its offset to 0 without the dashes crawling,
+   so the dashed variant travels exactly one full pattern length instead —
+   the line arrives without the pattern appearing to slide. */
+@keyframes att-l2m-draw-dashed { to { stroke-dashoffset: 0; } }
+
+/* ONE pass of light along the journey, then it stops. A looping pulse would
+   read as a loading spinner rather than as the agent tracing the route once. */
+.att-l2m-tracer {
+  fill: #ffffff;
+  opacity: 0;
+  filter: drop-shadow(0 0 9px rgba(205, 165, 255, 0.95));
+  animation: att-l2m-tracer 1500ms linear 1050ms 1 forwards;
+}
+@keyframes att-l2m-tracer {
+  0%   { opacity: 0; }
+  14%  { opacity: 1; }
+  86%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ── MARKERS — minimal, per the references. A dot and a ring, no pin art. ── */
+.att-l2m-dot { fill: rgba(255, 255, 255, 0.92); }
+.att-l2m-ring { fill: none; stroke: rgba(255, 255, 255, 0.4); stroke-width: 1.4; transform-origin: center; }
+
+.att-l2m-marker--origin { animation: att-l2m-pop 620ms var(--l2s-ease) 260ms backwards; }
+.att-l2m-marker--origin .att-l2m-ring {
+  /* One expanding ring, once — "you are here", not a radar sweep. */
+  animation: att-l2m-pulse 2600ms var(--l2s-ease) 700ms 2;
+}
+
+/* The destination carries slightly more hierarchy: it is the thing being
+   reached. Teal against the route's purple so the two ends are instantly
+   distinguishable without a legend. */
+.att-l2m-marker--dest { animation: att-l2m-pop 700ms var(--l2s-ease) 520ms backwards; }
+.att-l2m-dot--dest { fill: #b9f2e4; }
+.att-l2m-halo { fill: rgba(143, 227, 208, 0.3); }
+.att-l2m-ring--dest { stroke: rgba(143, 227, 208, 0.5); animation: att-l2m-pulse 2600ms var(--l2s-ease) 900ms 2; }
+
+@keyframes att-l2m-pop {
+  from { opacity: 0; transform: scale(0.8); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes att-l2m-pulse {
+  0%   { transform: scale(0.55); opacity: 0.85; }
+  70%  { transform: scale(1.5); opacity: 0; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+/* ── LABELS — two, and only two. Sparse is the reference quality. ───────── */
+.att-l2m-label {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  pointer-events: none;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.95);
+  animation: att-l2m-label-in 600ms var(--l2s-ease) backwards;
+}
+/* Offset off the marker itself so neither covers the other. */
+.att-l2m-label--origin { margin-top: 34px; color: var(--l2s-muted); animation-delay: 480ms; }
+.att-l2m-label--dest { margin-top: -40px; color: #d6f6ee; font-weight: 600; animation-delay: 740ms; }
+@keyframes att-l2m-label-in {
+  from { opacity: 0; transform: translate(-50%, -50%) translateY(6px); filter: blur(4px); }
+  to   { opacity: 1; transform: translate(-50%, -50%); filter: blur(0); }
+}
+
+/* ── NO COORDINATES — the figures are still true, so they are stated. ───── */
+.att-l2m-textonly { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.att-l2m-figure { font-size: 38px; font-weight: 600; color: var(--l2s-text); font-variant-numeric: tabular-nums; }
+.att-l2m-ends { font-size: 18px; color: var(--l2s-muted); }
+
+/* ── EXIT — the map is temporary. When spatial reasoning is done it scales
+   down, dims and drops its glow rather than hard-cutting, so the next
+   thinking evidence (or the final response) reads as what the map resolved
+   into. Consolidation is the shell's own signal; this just answers it. ──── */
+.att-l2-canvas--consolidating .att-l2m-stage {
+  transform: scale(0.93);
+  opacity: 0.45;
+  filter: saturate(0.6);
+  transition: transform 620ms var(--l2s-ease), opacity 620ms ease, filter 620ms ease;
+}
+.att-l2-canvas--consolidating .att-l2m-route-halo,
+.att-l2-canvas--consolidating .att-l2m-tracer { opacity: 0; transition: opacity 420ms ease; }
+.att-l2-canvas--consolidating .att-l2m-readout { opacity: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .att-l2m-route,
+  .att-l2m-route-halo { animation: none; stroke-dashoffset: 0; }
+  .att-l2m-tracer { display: none; }
+  .att-l2m-marker--origin .att-l2m-ring,
+  .att-l2m-ring--dest { animation: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LIST WITHOUT WINNER — the accumulating balanced grid
+   (ListCanvasThinking.tsx / listPlan.ts)
+
+   The list archetype's canvas is a SET filling out, not candidates being
+   eliminated: every tile stays neutral and equal, rows are balanced
+   (10 → 5+5, 8 → 4+4, 5 → 3+2) with explicit break elements, and the themed
+   beat regroups the SAME tiles under labels — media compacts via transition
+   (the <img> stays mounted; nothing refetches), position animates via a FLIP
+   pass in the renderer.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.att-l2list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--l2list-gap, 24px);
+  align-items: stretch;
+  justify-content: center;
+  align-content: center;
+  width: 100%;
+}
+
+/* Explicit row break — the grid is balanced by design, never by accidental
+   flex wrapping at whatever width happens to run out. */
+.att-l2list-break {
+  flex-basis: 100%;
+  height: 0;
+}
+
+/* FLIP wrapper. Owns position motion only, so the tile's own arrival stagger
+   and internal animations are untouched. Stretch so tiles in one row share a
+   baseline the way the candidate canvas does. */
+.att-l2list-slot { display: flex; align-items: stretch; }
+.att-l2list-slot .att-l2t { height: auto; }
+
+/* Two-row sets compact so both rows fit the thinking stage (~436px). */
+.att-l2list--tworow .att-l2t { padding: 10px 12px 12px; border-radius: 14px; }
+.att-l2list--tworow .att-l2t-media { aspect-ratio: 16 / 9; }
+.att-l2list--tworow .att-l2t-title { font-size: 17px; line-height: 1.25; }
+.att-l2list--tworow .att-l2t-fact { font-size: 13px; }
+
+/* ── THEMED MODE ─────────────────────────────────────────────────────────
+   Group labels are full-width dividers, so each theme's tiles sit on their
+   own centred row beneath their label. Tiles go text-first: the media frame
+   collapses with a transition — same elements, same image nodes, no reload —
+   which is what lets three labelled rows fit the stage. */
+.att-l2list-theme {
+  flex-basis: 100%;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--l2s-muted);
+  margin-top: 2px;
+  animation: att-l2v-line-in 0.5s var(--l2s-ease) both;
+}
+
+.att-l2list .att-l2t-media { transition: max-height 480ms var(--l2s-ease), opacity 360ms ease, margin 480ms var(--l2s-ease); max-height: 220px; overflow: hidden; }
+.att-l2list--grouped .att-l2t { padding: 10px 14px 12px; border-radius: 12px; }
+.att-l2list--grouped .att-l2t-media {
+  max-height: 0;
+  opacity: 0;
+  margin: 0;
+}
+.att-l2list--grouped .att-l2t-title { font-size: 16px; line-height: 1.25; }
+.att-l2list--grouped .att-l2t-fact { font-size: 12px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .att-l2list .att-l2t-media { transition: none; }
+  .att-l2list-slot { transition: none !important; transform: none !important; }
+}

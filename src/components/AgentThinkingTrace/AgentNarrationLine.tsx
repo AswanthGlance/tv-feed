@@ -24,7 +24,12 @@ export default function AgentNarrationLine({
       <span className={`att-l2-narration-icon${isComplete ? ' att-l2-narration-icon--done' : ''}`}>
         <AgentActionIcon type={narration.type} />
       </span>
-      <span key={narration.text} className="att-l2-narration-text">{narration.text}</span>
+      <span
+        key={narration.text}
+        className={`att-l2-narration-text${isComplete ? ' att-l2-narration-text--resolved' : ''}`}
+      >
+        {narration.text}
+      </span>
     </div>
   );
 }

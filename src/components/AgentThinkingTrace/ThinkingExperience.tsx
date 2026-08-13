@@ -2,7 +2,7 @@ import AgentMascot from '../Shared/AgentMascot';
 import QueryContext from './QueryContext';
 import ThinkingTimeline from './ThinkingTimeline';
 import ActiveWorkConnector from './ActiveWorkConnector';
-import EvidenceCanvas from './EvidenceCanvas';
+import Level1EvidenceCanvas from './Level1EvidenceCanvas';
 import type { ThinkingScenario } from '../../types/thinking';
 import type { TracePlaybackState } from '../../hooks/useTracePlayback';
 
@@ -48,7 +48,11 @@ export default function ThinkingExperience({
         <>
           <ThinkingTimeline steps={steps} statuses={playback.stepStatuses} activeStepIndex={activeIndex} />
           <ActiveWorkConnector activeStepIndex={activeIndex} />
-          <EvidenceCanvas headline={steps[activeIndex]?.activeHeadline} evidence={playback.visibleEvidence} />
+          <Level1EvidenceCanvas
+            scenario={scenario}
+            activeStepIndex={activeIndex}
+            fallbackHeadline={steps[activeIndex]?.activeHeadline}
+          />
         </>
       )}
     </div>

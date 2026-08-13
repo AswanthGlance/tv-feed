@@ -130,6 +130,10 @@
   font-weight: 500;
   line-height: 1.35;
   color: rgba(255, 255, 255, 0.78);
+}
+/* Clamp on the unpadded inner span — clamping the padded pill let a clipped
+   third line show through the bottom padding (confirmed with long prompts). */
+.att-query-context-text {
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -408,6 +412,183 @@
   -webkit-box-orient: vertical;
 }
 .att-evidence-travel-inline { margin-top: auto; font-size: 15px; font-weight: 600; }
+
+/* ── Level 1 step-specific visuals ─────────────────────────────────────── */
+
+/* Step-change transition: fade + blur→sharp + small translate. No zoom,
+   no bounce — see product spec on transition motion. */
+.att-l1v-transition {
+  animation: att-l1v-fade-in 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes att-l1v-fade-in {
+  from { opacity: 0; transform: translateY(10px); filter: blur(6px); }
+  to   { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+.att-search-empty {
+  margin-top: 26px;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.45);
+  font-style: italic;
+}
+
+/* Preference chips ("Recalling your preferences") */
+.att-pref-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 26px;
+  max-width: 760px;
+}
+.att-pref-chip {
+  padding: 12px 20px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1.5px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.88);
+  opacity: 0;
+  transform: translateY(10px);
+  animation: att-card-reveal 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Search-finding cards ("Searching the web") — smaller and lower-emphasis
+   than the standard evidence card, so they read as "still exploring." */
+.att-search-card {
+  position: relative;
+  width: 220px;
+  height: 250px;
+  flex-shrink: 0;
+  border-radius: 16px;
+  overflow: hidden;
+  background: rgba(20, 12, 40, 0.62);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1.5px solid rgba(255, 255, 255, 0.07);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  transform: translateY(14px) scale(0.98);
+  animation: att-card-reveal 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  display: flex;
+  flex-direction: column;
+}
+.att-search-card--highlight {
+  border: 1.5px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.3), 0 0 14px 2px rgba(200, 180, 255, 0.14);
+}
+.att-search-card-image {
+  width: 100%;
+  height: 46%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.att-search-card-icon {
+  width: 100%;
+  height: 46%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.03);
+}
+.att-search-card-body {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  overflow: hidden;
+}
+.att-search-card-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.att-search-card-source {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: #a98cf0;
+  text-transform: uppercase;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.att-search-card-desc {
+  font-size: 12px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.55);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+.att-search-card-skeleton {
+  width: 220px;
+  height: 250px;
+  flex-shrink: 0;
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1.5px solid rgba(255, 255, 255, 0.05);
+}
+.att-search-card-skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.05) 50%, transparent 70%);
+  animation: att-shimmer 2.2s ease-in-out infinite;
+}
+
+/* Selected cards ("Putting it all together") — the standard evidence card
+   size, promoted from search size, plus a numbered "chosen" badge. */
+.att-selected-card {
+  position: relative;
+}
+.att-selected-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 2;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  color: #14122a;
+  font-size: 13px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+}
+
+/* Comparison empty state — ambient pulsing dots, not a repeated grid. */
+.att-compare-dots {
+  display: flex;
+  gap: 10px;
+  margin-top: 30px;
+}
+.att-compare-dots span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(200, 170, 255, 0.55);
+  animation: att-compare-pulse 1.2s ease-in-out infinite;
+}
+.att-compare-dots span:nth-child(2) { animation-delay: 0.15s; }
+.att-compare-dots span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes att-compare-pulse {
+  0%, 100% { opacity: 0.35; transform: scale(0.85); }
+  50%       { opacity: 1; transform: scale(1.15); }
+}
 
 /* ── Thinking -> Result transition ────────────────────────────────────── */
 .att-thinking-layer {
@@ -704,8 +885,18 @@
 }
 
 /* ── Bottom prompt row — keyboard/mic + follow-up pills ───────────────── */
+/* Pinned outside .att-l2-canvas's flex column (same convention as
+   .att-l2-fixture-tag below it) rather than being a flex child with
+   margin-top:auto — a fixed-height rail card sharing one flex budget with
+   this row left near-zero safety margin against overflow:hidden clipping it
+   (confirmed: it happened). Living in its own fixed slot means neither one
+   can ever squeeze the other regardless of card content/height. */
 .att-result-prompt-row {
-  margin-top: auto;
+  position: absolute;
+  left: 72px;
+  right: 72px;
+  bottom: 40px;
+  z-index: 6;
   display: flex;
   align-items: center;
   gap: 16px;
@@ -724,6 +915,14 @@
   justify-content: center;
 }
 .att-result-prompt-icon-btn img { width: 30px; height: 30px; opacity: 0.85; }
+/* Level 2 only: prompts shouldn't compete with the resolve narration/rail
+   settling in at the same instant — a short delay so they read as "now
+   available" rather than "always there, just noticed". */
+.att-l2-prompt-row-in { animation: att-l2-prompt-row-in 0.5s ease 1.1s both; }
+@keyframes att-l2-prompt-row-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
 .att-result-prompt-pill {
   height: 64px;
   padding: 0 26px;
@@ -796,13 +995,18 @@
   animation: att-l2-icon-pulse 1.8s ease-in-out infinite;
 }
 .att-l2-narration-icon--done {
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.55);
-  animation: none;
+  background: rgba(240, 201, 135, 0.16);
+  color: #f0c987;
+  animation: att-l2-check-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 @keyframes att-l2-icon-pulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(205, 165, 255, 0.28); }
   50%       { box-shadow: 0 0 0 7px rgba(205, 165, 255, 0); }
+}
+@keyframes att-l2-check-pop {
+  0%   { transform: scale(0.5); opacity: 0; }
+  60%  { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
 }
 .att-l2-narration-text {
   font-size: 23px;
@@ -817,6 +1021,25 @@
 @keyframes att-l2-headline-in {
   from { opacity: 0; transform: translateY(-3px); }
   to   { opacity: 1; transform: none; }
+}
+
+/* ── The agent's conclusion — deliberately distinct from the routine
+   narration-line-changed animation above (att-l2-headline-in is instant/
+   snappy, 0.4s; this is a held, confident reveal so the user clearly reads
+   "the agent has reached its answer" rather than "another status update").
+   Blur→sharp rather than a typewriter — this is a TV, not a terminal. Holds
+   at full prominence through ~80% of its 2.4s run before settling to a
+   slightly quieter opacity once the result rail has had time to register,
+   so the rail — not the sentence — is the thing being consumed by the end
+   of it (see #31 "reading pass" in the brief this was built against). ─── */
+.att-l2-narration-text--resolved {
+  animation: att-l2-resolve-in 2.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes att-l2-resolve-in {
+  0%   { opacity: 0; filter: blur(7px); transform: translateY(-4px); }
+  32%  { opacity: 1; filter: blur(0); transform: none; }
+  78%  { opacity: 1; }
+  100% { opacity: 0.85; }
 }
 
 /* ── Two-beat shimmer sequence, deliberately staggered so they never cross
@@ -888,19 +1111,68 @@
   left: 72px;
   right: 72px;
   top: 210px;
-  bottom: 96px;
+  /* Was 96px when .att-result-prompt-row lived inside this flex column —
+     a 640px-tall crystallized rail card left only ~26px of slack against
+     the card + gap + prompt-row budget, which real content (or any browser
+     chrome shrinking the viewport below a clean 1080px) could push past,
+     clipping the prompt row via this box's own overflow:hidden. The prompt
+     row now lives outside this box entirely (see .att-result-prompt-row),
+     so this only needs to clear its own real content. */
+  bottom: 120px;
   z-index: 5;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   gap: 44px;
 }
+/* Winner-promotion FLIP ghost layer (see useWinnerPromotionFlip.ts) — fixed
+   and out of flow so it never consumes a slot in .att-l2-canvas's flex
+   column, viewport-positioned to match the getBoundingClientRect() math the
+   hook uses for its ghost. */
+.att-l2-fly-layer { position: fixed; inset: 0; z-index: 55; pointer-events: none; }
+/* ── Analysis grid: sized entirely from --l2-card-w/--l2-card-h/--l2-gap,
+   computed per-render in Level2Experience's getAnalysisLayout() so N
+   candidates always fit one row within the 1776px canvas width — no
+   cropping, no vertical scroll, regardless of pool size (hard requirement).
+   flex-wrap stays as a safety net, never actually needed if the width math
+   is right. Once resolved (--resolved modifier), the SAME container becomes
+   a single-row horizontal rail: nowrap, fixed rail card size (see
+   .att-l2-card--crystallized), sliding via `transform: translateX(...)`
+   driven by the focused index — a real result-consumption rail, not a
+   wrapped grid. ─────────────────────────────────────────────────────────── */
 .att-l2-grid {
   display: flex;
   flex-wrap: wrap;
+  /* Shared bottom baseline: every card's own height is now intrinsic (image
+     aspect-ratio + its own content — see .att-l2-card), so a promoted card
+     with a taller body genuinely extends further UPWARD from the same
+     baseline, reading as "emerging," not just "one of N equal tiles." */
   align-items: flex-end;
-  gap: 22px;
+  /* Centered, not flex-start: cards' real widths differ per state (see
+     level2Tokens.ts's per-state width weights + Level2Experience's
+     getCardWidths) and that total row width is intentionally left slightly
+     short of the full canvas width at most tiers/counts — centering turns
+     that slack into symmetric side margins instead of pinning everything
+     to the left edge. */
+  justify-content: center;
+  gap: var(--l2-gap, 22px);
   flex-shrink: 0;
+  /* Headroom for whichever card currently has the tallest intrinsic height
+     (almost always the promoted one) to extend upward from the shared
+     baseline without its own reveal-animation translate or the promote-pop
+     scale clipping against the canvas's own top edge. */
+  margin-top: 72px;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.att-l2-grid--resolved {
+  flex-wrap: nowrap;
+  align-items: stretch;
+  /* Rail mode scrolls via translateX from a fixed left-aligned start (see
+     Level2Experience's railShiftIndex) — must stay flex-start, not the
+     analysis grid's centering above. Crystallized cards are fixed-size, not
+     `scale`d, so no vertical headroom is needed here either. */
+  justify-content: flex-start;
+  margin-top: 0;
 }
 .att-l2-fixture-tag {
   position: absolute;
@@ -951,15 +1223,36 @@
 }
 
 /* ── Candidate card: one stable node per item across its whole lifecycle.
-   Card positions/sizes stay stable discover→enrich→compare→negate — only
-   SHORTLIST (modestly) and PROMOTE (substantially) change size, matching
-   "only promote introduces a major spatial hierarchy change." Beyond size,
-   each state also carries border/glow/opacity/saturation signals so no
-   single cue (especially not size alone) has to do all the work. ──────── */
+   Base footprint comes from --l2-card-w/--l2-card-h (see .att-l2-grid) —
+   the SAME size for every card regardless of state, so N candidates always
+   fit the row math getAnalysisLayout() computed. State-based emphasis
+   (promote grows, negate/deprioritize recede) is the standalone `scale`
+   property (NOT `transform: scale()`) + border/glow/opacity/saturation on
+   top of that shared footprint instead of a literal width/height change —
+   scaling doesn't steal layout space from neighbors the way growing the box
+   itself would, so the "no cropping" fit guarantee holds even at PROMOTE.
+   Once crystallized (resolved rail), a separate fixed-size rule (see further
+   down) takes over entirely.
+
+   Deliberately `scale`/`translate` (CSS Transforms Level 2 standalone
+   properties), not the `transform` shorthand: the entrance reveal below is a
+   `forwards`-filling CSS *animation*, and a filling animation permanently
+   overrides any stylesheet rule targeting the SAME property, regardless of
+   specificity — so if the reveal animated `transform`, no later
+   `.att-l2-card--promoted { transform: scale(1.28) }` rule could ever win,
+   which is exactly why the state-based grow/shrink previously never
+   rendered visually. Animating `translate` for the reveal and leaving
+   `scale` to the state rules keeps them on separate properties that don't
+   fight. ─────────────────────────────────────────────────────────────── */
 .att-l2-card {
   position: relative;
-  width: 284px;
-  height: 384px;
+  width: var(--l2-card-w, 284px);
+  /* Height is intrinsic (image aspect-ratio box + line-clamped body
+     content), not a forced constant — see .att-l2-card-image-wrap below.
+     A growing/shrinking card genuinely reflects what it renders instead of
+     a single guessed height shared by every tier. */
+  height: auto;
+  max-height: 700px; /* safety backstop only — real content (incl. the crystallized rail's fixed 640px) is budgeted well under this */
   border-radius: 20px;
   overflow: hidden;
   flex-shrink: 0;
@@ -971,52 +1264,131 @@
   border: 1.5px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.42);
   opacity: 0;
-  transform: translateY(12px);
-  animation: att-card-reveal 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  transition: width 0.7s cubic-bezier(0.22, 1, 0.36, 1), height 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-    border-color 0.5s ease, box-shadow 0.5s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
-    filter 0.5s ease, opacity 0.5s ease;
+  translate: 0 12px;
+  scale: 1;
+  transform-origin: center center;
+  animation: att-l2-card-reveal 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  /* WIDTH now carries the primary size hierarchy (see level2Tokens.ts's
+     per-state weights, applied by Level2Experience/Level2CandidateCard as a
+     real `--l2-card-w`, not a `scale` transform) — because it's a real box
+     property, not a paint-only transform, flexbox reflows every neighbor
+     when a card grows/shrinks instead of the card overlapping them. `scale`
+     stays in the transition list for the small polish bounce motion.ts
+     applies on promotion, and `margin` animates the extra gutter (see
+     getCardExtraGutter) growing in lockstep with width. */
+  transition: width 0.55s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.5s ease, box-shadow 0.5s ease,
+    scale 0.4s cubic-bezier(0.22, 1, 0.36, 1), filter 0.5s ease, opacity 0.5s ease, margin 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* Local to Level 2 cards (not the shared att-card-reveal used elsewhere) —
+ * see the big comment above .att-l2-card for why this only touches
+ * opacity/translate, never `transform` or `scale`. */
+@keyframes att-l2-card-reveal {
+  to { opacity: 1; translate: 0 0; }
 }
 .att-l2-card--enriched { border-color: rgba(255, 255, 255, 0.18); }
 
 /* Coorg at SHORTLIST+ — lighter-touch recession than negation: it wasn't
- * ruled out for a reason, it was just outweighed. Same size, quieter. */
-.att-l2-card--deprioritized { opacity: 0.6; filter: saturate(0.85); }
+ * ruled out for a reason, it was just outweighed. `width` already narrows
+ * a little (see level2Tokens.ts's DEPRIORITIZED_WIDTH_WEIGHT) — this is
+ * just the residual dim/desaturate + a small polish scale, not the primary
+ * size signal. */
+/* Deliberately no size/opacity treatment during analysis — every candidate
+ * stays visually equal (same width, same opacity) until the agent actually
+ * picks a strongest option (PROMOTE). Playing with size/prominence any
+ * earlier (shortlist growing, negate shrinking) read as "these are already
+ * different sizes and nobody's been promoted yet," not as meaningful
+ * signal. A border tint is the one cue kept here — hue, not size/opacity. */
+.att-l2-card--deprioritized:not(.att-l2-card--crystallized) { border-color: rgba(255, 255, 255, 0.1); }
 
-.att-l2-card--negated {
-  width: 244px;
-  height: 330px;
-  opacity: 0.62;
-  filter: saturate(0.55) brightness(0.78);
-  border-color: rgba(234, 140, 160, 0.26);
+/* "Show negation before removal" — a quiet border tint only (no
+ * size/opacity change, see above) for the NEGATE pass's hold duration,
+ * before a later REMOVE_ITEMS mutation actually drops it from
+ * analysisOrder (see Level2Experience) a pass later. */
+.att-l2-card--negated:not(.att-l2-card--crystallized) {
+  border-color: rgba(234, 140, 160, 0.3);
   box-shadow: none;
+  z-index: 0;
 }
 
-.att-l2-card--shortlisted {
-  width: 336px;
-  height: 424px;
+/* Shortlisted/promoted no longer grow via `scale` — that was the analysis-
+ * grid collision bug (a paint-only transform bleeds into neighboring cards'
+ * space instead of asking the row for more room). The real size increase
+ * now comes entirely from `width` (see level2Tokens.ts's per-state weights
+ * + Level2Experience's getCardWidths), which flexbox reflows for
+ * automatically. `scale` here stays at a tiny resting value (1, 1.015) —
+ * motion.css's promotion keyframe borrows `scale` transiently for the
+ * arrival "settle" bounce, but nothing holds it above 1 at rest. */
+.att-l2-card--shortlisted:not(.att-l2-card--crystallized) {
   border-color: rgba(255, 255, 255, 0.42);
   box-shadow: 0 16px 44px rgba(0, 0, 0, 0.5);
+  scale: 1;
+  z-index: 1;
 }
 
-.att-l2-card--promoted {
-  width: 640px;
-  height: 500px;
+.att-l2-card--promoted:not(.att-l2-card--crystallized) {
   border: 2px solid rgba(255, 255, 255, 0.88);
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.5), 0 0 24px 6px rgba(255, 255, 255, 0.22), 0 0 56px 14px rgba(200, 180, 255, 0.16);
+  scale: 1;
   z-index: 2;
+  /* Transient arrival "settle" — a brief overshoot-and-settle scale (plays
+   * ONCE: the `promoted` class is only ever applied when the item enters
+   * that state, and CSS animations don't restart on unrelated re-renders)
+   * confirms "you were just promoted" on top of the width/border/glow
+   * change, distinct from the resting scale (1 — width alone carries the
+   * size hierarchy once settled). Sequenced to start once the width reflow
+   * is mostly underway (150ms in) rather than racing it.
+   *
+   * IMPORTANT: `animation` is a single shorthand — this rule's higher
+   * specificity than the base `.att-l2-card` rule means it REPLACES that
+   * rule's `att-l2-card-reveal` (the opacity 0->1 / translate entrance),
+   * not adds to it, if only the pop is listed here. Both animations are
+   * listed together (comma-separated, each touching different properties:
+   * reveal -> opacity/translate, pop -> scale) so a promoted card still
+   * actually fades/slides in instead of staying invisible at opacity: 0
+   * forever — this was reproduced live (the promoted card silently never
+   * appeared) before both were combined into one declaration. */
+  animation: att-l2-card-reveal 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards,
+    att-l2-card-promote-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both;
+}
+@keyframes att-l2-card-promote-pop {
+  0%   { scale: 1; }
+  60%  { scale: 1.035; }
+  100% { scale: 1; }
+}
+/* Badge/title/facts/differentiator fade in AFTER geometry has had a moment
+ * to settle (see the pop above) rather than all at once with the box
+ * resize — sequenced content reveal, not a simultaneous jump-cut. */
+.att-l2-card--promoted:not(.att-l2-card--crystallized) .att-l2-card-promoted-badge {
+  animation: att-l2-badge-in 0.35s ease 0.3s both;
+}
+@keyframes att-l2-badge-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: none; }
 }
 
-.att-l2-card--removed {
-  width: 168px;
-  height: 200px;
-  opacity: 0.26;
+/* Real data discovered but not in the final response (see
+   LEVEL2_INSTRUMENTATION_GAPS.md #5) — removed from analysisOrder shortly
+   after this state is reached (see Level2Experience), so this is only ever
+   on screen very briefly as the outgoing state of the negate→remove beat. */
+.att-l2-card--removed:not(.att-l2-card--crystallized) {
+  opacity: 0;
   filter: grayscale(0.75) brightness(0.65);
   box-shadow: none;
   border-color: transparent;
+  scale: 0.4;
 }
 
-.att-l2-card-image-wrap { position: relative; width: 100%; flex: 1 1 auto; min-height: 0; overflow: hidden; }
+/* Fixed-aspect media frame (see level2Tokens.ts's CARD_MEDIA_ASPECT,
+ * applied inline as `aspect-ratio` by Level2CandidateCard) — the image's
+ * SHAPE never changes between compact -> shortlisted -> promoted ->
+ * resolved, only its absolute size (via the card's own width). This
+ * replaces the old `flex: 1 1 auto` + `min-height: 72px` floor, which let
+ * body-content overflow (title + facts + evidence + judgment stacked on a
+ * promoted card) silently eat the image down toward that floor — a fixed
+ * aspect-ratio box can't be squeezed by its sibling at all, so the image
+ * is reserved and stable before the network image even loads. `flex-shrink:
+ * 0` keeps it that way inside the card's column layout. */
+.att-l2-card-image-wrap { position: relative; width: 100%; flex-shrink: 0; overflow: hidden; background: rgba(255, 255, 255, 0.04); }
 .att-l2-card-image { width: 100%; height: 100%; object-fit: cover; display: block; }
 .att-l2-card-promoted-badge {
   position: absolute;
@@ -1030,9 +1402,37 @@
   padding: 6px 13px;
   border-radius: 999px;
 }
+/* Result position #1 only — warm gold to match JUDGMENT's accent family
+ * (this IS the agent's concluding read, just promoted to a badge) rather
+ * than reusing the plain white "emerging pick" treatment from analysis. */
+.att-l2-card-promoted-badge--top {
+  background: #f0c987;
+  color: #2a1d05;
+}
 
 .att-l2-card-body { flex-shrink: 0; padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 7px; }
-.att-l2-card-title { font-size: 22px; font-weight: 700; color: #fff; letter-spacing: -0.01em; }
+/* Long real titles (harness-authored, sometimes 80+ chars) must never push
+ * card height or overflow the card bounds — clamp everywhere, not just
+ * --compact. font-size/line-clamp come from `--l2-title-size`/
+ * `--l2-title-clamp`, set inline per card from level2Tokens.ts's
+ * TITLE_FONT_SIZE/TITLE_LINE_CLAMP tables (see Level2CandidateCard) — ONE
+ * source of truth instead of a size override per tier class scattered
+ * through this file. Importance moves size only modestly (22 -> 25px
+ * promoted, +13%), never the old 22 -> 34px (+54%) jump — see the design
+ * principle: importance is the whole object (width, border, glow, content),
+ * not typography size. */
+.att-l2-card-title {
+  font-size: var(--l2-title-size, 22px);
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  display: -webkit-box;
+  -webkit-line-clamp: var(--l2-title-clamp, 2);
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: font-size 0.4s ease;
+}
 .att-l2-card-subtitle { font-size: 16px; color: rgba(255, 255, 255, 0.5); }
 
 /* FACT — plain data, cool accent color. */
@@ -1047,8 +1447,21 @@
   margin-top: 2px;
 }
 
-/* EVIDENCE — quiet, joined data bullets; visibly quieter than FACT and JUDGMENT. */
-.att-l2-card-evidence { font-size: 15px; line-height: 1.4; color: rgba(255, 255, 255, 0.46); font-weight: 400; }
+/* EVIDENCE — quiet, joined data bullets; visibly quieter than FACT and
+   JUDGMENT. Clamped to 2 lines (real <why> sentences from the final
+   response can run long — see LEVEL2_INSTRUMENTATION_GAPS.md) rather than
+   letting a long real sentence push card height or get truncated mid-word;
+   the full text is never altered, just visually clipped with an ellipsis. */
+.att-l2-card-evidence {
+  font-size: 15px;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.46);
+  font-weight: 400;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
 
 .att-l2-card-stay { font-size: 16px; color: rgba(255, 255, 255, 0.68); }
 
@@ -1064,15 +1477,16 @@
   margin-top: 2px;
 }
 
-/* Promoted card earns bigger typography to match its bigger footprint —
-   the near-hero moment right before it crystallizes into the resolved
-   answer (same node, see `resolved` below — never a different component). */
-.att-l2-card--promoted .att-l2-card-body { padding: 26px 30px 30px; gap: 11px; }
-.att-l2-card--promoted .att-l2-card-title { font-size: 34px; }
-.att-l2-card--promoted .att-l2-card-facts { font-size: 20px; }
-.att-l2-card--promoted .att-l2-card-evidence { font-size: 17px; color: rgba(255, 255, 255, 0.58); }
-.att-l2-card--promoted .att-l2-card-stay { font-size: 18px; }
-.att-l2-card--promoted .att-l2-card-judgment { font-size: 17px; }
+/* Promoted card earns slightly roomier spacing to match its bigger
+   footprint — the near-hero moment right before it crystallizes into the
+   resolved answer (same node, see `resolved` below — never a different
+   component). Title size itself comes from --l2-title-size (see above);
+   this is just breathing room + the fact row's own modest bump. */
+.att-l2-card--promoted .att-l2-card-body { padding: 22px 24px 24px; gap: 9px; }
+.att-l2-card--promoted .att-l2-card-facts { font-size: 19px; }
+.att-l2-card--promoted .att-l2-card-evidence { font-size: 16px; color: rgba(255, 255, 255, 0.58); }
+.att-l2-card--promoted .att-l2-card-stay { font-size: 17px; }
+.att-l2-card--promoted .att-l2-card-judgment { font-size: 16px; }
 
 /* ── Resolved — the crystallization moment. Same promoted node, same
    position; the CTA row that reveals once the journey settles (consumption
@@ -1100,18 +1514,127 @@
    large, negated/deprioritized shrink/dim); once settled, the remaining
    options should read as a comparable set the viewer can actually choose
    between, not "one giant card plus leftovers" — so every one of them
-   settles to the same footprint and typography, overriding whatever
-   size/type its state class set. Placed last so it always wins. ──────── */
+   settles to the same base footprint and typography, overriding whatever
+   size/type its state class set. Placed last so it always wins.
+
+   When a real winner exists (not the honest no-promote-signal settle —
+   see --rail-secondary/--rail-tertiary below), alternates further from the
+   winner in the agent's own real response order recede a notch via opacity
+   + scale on top of this shared footprint — the same "real signal, not a
+   fabricated rank" position already documented on resultOrder in
+   Level2Experience.tsx, just given a visual expression here instead of
+   being purely positional. ─────────────────────────────────────────────── */
 .att-l2-card--crystallized {
-  width: 400px;
-  height: 480px;
+  width: 390px;
+  height: 560px;
 }
 .att-l2-card--crystallized .att-l2-card-body { padding: 18px 20px 20px; gap: 7px; }
-.att-l2-card--crystallized .att-l2-card-title { font-size: 22px; }
-.att-l2-card--crystallized .att-l2-card-facts { font-size: 17px; }
-.att-l2-card--crystallized .att-l2-card-evidence { font-size: 15px; color: rgba(255, 255, 255, 0.46); }
-.att-l2-card--crystallized .att-l2-card-stay { font-size: 16px; }
-.att-l2-card--crystallized .att-l2-card-judgment { font-size: 15px; }
+.att-l2-card--crystallized .att-l2-card-facts { font-size: 16px; }
+.att-l2-card--crystallized .att-l2-card-evidence { font-size: 14px; color: rgba(255, 255, 255, 0.46); }
+.att-l2-card--crystallized .att-l2-card-stay { font-size: 15px; }
+.att-l2-card--crystallized .att-l2-card-judgment { font-size: 14px; }
+/* Fixed rail footprint overrides the analysis-tier width entirely — the
+ * media frame keeps the SAME aspect-ratio (see .att-l2-card-image-wrap),
+ * just at this larger absolute size, so the "shape never changes" rule
+ * holds all the way through to the resolved rail too. */
+
+/* Rank-based recession for non-winner rail peers — ONLY applied when a real
+ * winner exists (Level2Experience gates this on isResolved, never on the
+ * honest isSettledWithoutWinner state, where there is no real signal to
+ * base it on). Opacity + scale, not width: the rail is a nowrap horizontal
+ * strip laid out on a uniform RAIL_STEP, so shrinking a card's real box
+ * would throw off the scroll-position math for no visual benefit — a
+ * painted-smaller card reads the same to the viewer. */
+/* opacity needs !important here: the base .att-l2-card entrance reveal is a
+ * forwards-filling animation on `opacity` (0 -> 1), and a filling animation
+ * permanently outranks a normal-priority stylesheet rule on the same
+ * property regardless of specificity (confirmed earlier this session for
+ * `scale`/`translate` — same mechanism, different property). Author
+ * !important is the one thing that legitimately outranks an animation in
+ * the cascade, so it's the correct tool here (scale isn't animated by the
+ * reveal, so it doesn't need it). */
+.att-l2-card--rail-secondary { opacity: 0.82 !important; scale: 0.94; }
+.att-l2-card--rail-tertiary { opacity: 0.55 !important; scale: 0.85; }
+
+/* Result rail focus ring — TV remote LEFT/RIGHT navigation (see
+ * Level2Experience's focusedIndex), reusing the same focus-border language
+ * as the rest of the app rather than inventing a new one. */
+.att-l2-card--focused {
+  border-color: rgba(255, 255, 255, 0.88) !important;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.5), 0 0 24px 6px rgba(255, 255, 255, 0.18) !important;
+  /* A receded (--rail-secondary/--rail-tertiary) card the viewer actually
+   * navigates to via remote should never look half-disabled while focused. */
+  opacity: 1 !important;
+  scale: 1 !important;
+}
+
+/* ── Compact analysis cards (7+ candidates) — image + title + rating only;
+   evidence/subtitle/stay rows are hidden in JSX (Level2CandidateCard's
+   `compact` prop), this just tightens the remaining typography so it still
+   reads cleanly at the smaller footprint. Never applied once crystallized —
+   compact is purely an analysis-density concern (see #7 in the brief this
+   was built against). ────────────────────────────────────────────────── */
+.att-l2-card--compact .att-l2-card-body { padding: 12px 14px 14px; gap: 4px; }
+/* Title size/clamp already come from --l2-title-size/--l2-title-clamp (see
+ * .att-l2-card-title) — nothing to override here anymore. */
+.att-l2-card--compact .att-l2-card-facts { font-size: 13px; }
+.att-l2-card--compact .att-l2-card-judgment { font-size: 11px; }
+.att-l2-card--compact .att-l2-card-promoted-badge { font-size: 10px; padding: 4px 9px; top: 8px; left: 8px; }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   LEVEL 2 — UI STATE GALLERY (dev-only, see Level2UIGallery.tsx). A
+   vertically-scrolling debug page — unlike every other Level 2 surface this
+   is explicitly NOT a TV-safe fixed canvas, since it only ever runs behind
+   the dev inspector's `D` key for a developer looking at a monitor, not the
+   leadership-facing product itself. ───────────────────────────────────── */
+.att-l2-gallery {
+  position: absolute;
+  inset: 0;
+  z-index: 45;
+  background: #07030d;
+  overflow-y: auto;
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  color: #fff;
+}
+.att-l2-gallery-header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 28px 40px;
+  background: rgba(7, 3, 13, 0.96);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+.att-l2-gallery-title { font-size: 15px; font-weight: 700; letter-spacing: 0.04em; margin-bottom: 6px; }
+.att-l2-gallery-subtitle { font-size: 13px; line-height: 1.5; color: rgba(255, 255, 255, 0.5); max-width: 900px; }
+.att-l2-gallery-body { padding: 8px 40px 80px; display: flex; flex-direction: column; gap: 40px; }
+.att-l2-gallery-section { display: flex; flex-direction: column; gap: 16px; }
+.att-l2-gallery-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(205, 165, 255, 0.75);
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.att-l2-gallery-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--l2-gap, 22px);
+}
+.att-l2-gallery-row--isolated { align-items: flex-start; gap: 28px; }
+.att-l2-gallery-cell { display: flex; flex-direction: column; gap: 10px; }
+.att-l2-gallery-cell-label { font-size: 12px; font-weight: 600; color: rgba(255, 255, 255, 0.55); }
+/* The gallery re-parents cards outside .att-l2-canvas/.att-l2-grid, so their
+ * entrance/reveal animation (opacity 0 -> 1) needs to actually be visible
+ * here too — same rule, just not nested under the production canvas. */
+.att-l2-gallery .att-l2-card { position: relative; }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    LEVEL 3 — Collaborative Agent placeholder. Communicates the direction

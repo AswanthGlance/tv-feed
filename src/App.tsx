@@ -12,6 +12,8 @@ import { INTERSTITIAL_QUESTIONS } from './data/preferenceQuestions';
 import { WARM_START_FEED_ITEMS } from './data/warmStartFeedItems';
 import { composeFeedWithPreferences } from './logic/feedComposer';
 import type { UnifiedFeedItem } from './logic/feedComposer';
+import { TIKTOK_CARDS } from './data/tiktokData';
+import type { TikTokFeedItem } from './logic/feedComposer';
 import type { FeedItem } from './data/types';
 import { clearSignalLog, getSessionId, logInterstitial, logL1Exit, logThumbsUp, logThumbsDown, logPassiveDwell, logContextual } from './logic/signalLog';
 import type { SignalLogEntry } from './logic/signalLog';
@@ -69,32 +71,55 @@ export type AppState = {
   signalLog: SignalLogEntry[];
 };
 
+/* Inject TikTok cards into a unified feed at every 5th position starting at index 2 */
+function injectTikTokCards(base: UnifiedFeedItem[]): UnifiedFeedItem[] {
+  const result: UnifiedFeedItem[] = [];
+  let ttIdx = 0;
+  for (let i = 0; i < base.length; i++) {
+    result.push(base[i]);
+    // Insert after positions 2, 7, 12, 17, 22, 27 (i.e. i % 5 === 2, i >= 2)
+    if (i >= 2 && (i - 2) % 5 === 0 && ttIdx < TIKTOK_CARDS.length) {
+      const card = TIKTOK_CARDS[ttIdx++];
+      const ttItem: TikTokFeedItem = { type: 'tiktok', id: card.id, card };
+      result.push(ttItem);
+    }
+  }
+  return result;
+}
+
 export default function App({ warmFeedMode = false }: { warmFeedMode?: boolean }) {
   /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
   const [_sliders, _setSliders] = useState({ interactionCap: 1, interstitialN: 10, decayFactor: 0.97 });
   const [fromWelcome, setFromWelcome] = useState(false);
+  const [tiktokMode, setTiktokMode] = useState(() => new URLSearchParams(window.location.search).has('tiktok'));
 
-  const [state, setState] = useState<AppState>({
-    screen: 'welcome',
-    prevScreen: 'welcome',
-    profile: createDefaultProfile(),
-    profileDraft: createSparseEnrichedProfile(),
-    feed: [],
-    unifiedFeed: [],
-    feedIdx: 0,
-    setupSelections: {},
-    debugOpen: false,
-    sessionOverlayOpen: false,
-    dataPanelOpen: false,
-    toastMsg: '',
-    showToast: false,
-    feedbackCount: 0,
-    onboardingDone: false,
-    interactionFollowUpsToday: 0,
-    interstitialsShown: 0,
-    noInteractionCardCount: 0,
-    lastInteractionType: 'none',
-    signalLog: [],
+  const [state, setState] = useState<AppState>(() => {
+    const isTiktok = new URLSearchParams(window.location.search).has('tiktok');
+    const defaultProfile = createDefaultProfile();
+    const composed = isTiktok ? composeFeed(FEED_ITEMS, defaultProfile) : [];
+    const unified = isTiktok ? composeFeedWithPreferences(composed, []) : [];
+    return {
+      screen: isTiktok ? 'feed' : 'welcome',
+      prevScreen: 'welcome',
+      profile: defaultProfile,
+      profileDraft: createSparseEnrichedProfile(),
+      feed: composed,
+      unifiedFeed: unified,
+      feedIdx: 0,
+      setupSelections: {},
+      debugOpen: false,
+      sessionOverlayOpen: false,
+      dataPanelOpen: false,
+      toastMsg: '',
+      showToast: false,
+      feedbackCount: 0,
+      onboardingDone: isTiktok,
+      interactionFollowUpsToday: 0,
+      interstitialsShown: 0,
+      noInteractionCardCount: 0,
+      lastInteractionType: 'none',
+      signalLog: [],
+    };
   });
 
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -323,6 +348,7 @@ export default function App({ warmFeedMode = false }: { warmFeedMode?: boolean }
       if (key === 'e' || key === 'E') setState(s => ({ ...s, sessionOverlayOpen: !s.sessionOverlayOpen }));
       if (key === 's' || key === 'S') setState(s => ({ ...s, dataPanelOpen: !s.dataPanelOpen }));
       if (key === 'r' || key === 'R') handleReset();
+      if (key === 't' || key === 'T') setTiktokMode(m => !m);
       if (key === 'm' || key === 'M') {
         setState(s => {
           const markets: Array<'india'|'us'|'global'> = ['india','us','global'];
@@ -439,7 +465,7 @@ export default function App({ warmFeedMode = false }: { warmFeedMode?: boolean }
             {screen === 'feed' && (
               <FeedScreen
                 feed={feed}
-                unifiedFeed={state.unifiedFeed}
+                unifiedFeed={tiktokMode ? injectTikTokCards(state.unifiedFeed) : state.unifiedFeed}
                 feedIdx={feedIdx}
                 profile={profile}
                 onNext={(dwellMs) => handleFeedNav('next', dwellMs)}

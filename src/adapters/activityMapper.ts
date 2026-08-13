@@ -6,6 +6,7 @@ import {
   buildPlacePhotoIndex,
   extractEvidenceForToolSpans,
   extractFinalResponseEvidence,
+  extractPreferenceEvidence,
 } from './evidenceExtractor';
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -264,7 +265,9 @@ export function buildThinkingSteps(
     const evidence =
       unit.key === 'generating'
         ? extractFinalResponseEvidence(options.finalOutputValue, photoIndex)
-        : extractEvidenceForToolSpans(toolSpans);
+        : unit.key === 'recalling'
+          ? extractPreferenceEvidence(spans)
+          : extractEvidenceForToolSpans(toolSpans);
 
     return {
       id: nextStepId(),

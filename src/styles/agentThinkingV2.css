@@ -1,0 +1,415 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   AGENT THINKING V2 — /agent_thinking_v2
+
+   The simplified Level 2 thinking → result flow. `.atv2-*` namespace only
+   (the /agent_thinking_trace route owns `.att-*`; the thinking value
+   renderers reused here bring their own `.att-l2v-*` / `.att-l2t-*` styles
+   from level2Scenario.css — this file scopes a few overrides under
+   `.atv2-evidence` and never edits that sheet).
+
+   LAYOUT (1920×1080 fixed stage, no CSS scaling):
+
+     TOP LEFT      Glance logo
+     TOP CENTER    level selector
+     TOP RIGHT     user query (persistent through every phase)
+     CENTER        agent mascot + one narration line
+     BELOW CENTER  lightweight evidence
+
+   PHASES (data-phase on the stage):
+
+     intro         agent acknowledges the task, centered
+     thinking      centered narration + evidence below
+     compressing   evidence gathers itself; closing statement holds
+     handoff       agent travels center → top-left (the hero transition)
+     final         the existing L1 template owns the stage
+
+   MOTION LANGUAGE: opacity, blur→sharp, small translation, restrained scale,
+   one shared-position transition. No bounce, no overshoot, no giant zoom.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.atv2-stage {
+  --atv2-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --atv2-text: rgba(255, 255, 255, 0.94);
+  --atv2-muted: rgba(255, 255, 255, 0.58);
+  --atv2-faint: rgba(255, 255, 255, 0.36);
+  --atv2-line: rgba(255, 255, 255, 0.12);
+
+  /* The agent's two anchor points. Top-left matches the L1 template's own
+     mascot exactly (top:156 left:72, 80×80) so the handoff lands where the
+     final response's mascot pops in. */
+  --atv2-agent-home-x: 72px;
+  --atv2-agent-home-y: 156px;
+  /* centered: wrapper center (112, 196) → screen (960, 440) */
+  --atv2-agent-center: translate(848px, 244px) scale(1.3);
+
+  position: relative;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  background: #07030d;
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  color: #fff;
+}
+
+/* ── Ambient purple background (same family as the existing stage) ───────── */
+
+.atv2-bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(162deg, #0e051e 0%, #13082a 40%, #0a0518 70%, #04020b 100%);
+}
+.atv2-bg-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 1300px 720px at 55% 26%, rgba(90, 38, 178, 0.28), transparent 62%),
+    radial-gradient(ellipse 700px 500px at 14% 18%, rgba(110, 52, 192, 0.15), transparent 58%);
+}
+.atv2-bg-vignette {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 280px;
+  pointer-events: none;
+  background: linear-gradient(to top, rgba(4, 2, 11, 1) 0%, rgba(4, 2, 11, 0.5) 50%, transparent 100%);
+}
+
+/* ── Chrome: logo / level selector / query ──────────────────────────────── */
+
+.atv2-header {
+  position: absolute;
+  top: 44px;
+  left: 72px;
+  z-index: 20;
+}
+.atv2-logo {
+  height: 30px;
+  width: auto;
+  display: block;
+}
+
+.atv2-level-switch {
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  display: flex;
+  gap: 2px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  padding: 4px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+.atv2-level-btn {
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.42);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  padding: 7px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+.atv2-level-btn:hover { color: rgba(255, 255, 255, 0.7); }
+.atv2-level-btn--active {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+.atv2-level-btn:focus { outline: none; }
+.atv2-level-btn:focus-visible { box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5); }
+
+/* The user's query — small, top-right, context only. Persistent through
+   thinking, compression, and the final response. */
+.atv2-query {
+  position: absolute;
+  top: 44px;
+  right: 72px;
+  max-width: 30%;
+  z-index: 120; /* stays above the final L1 layer */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  text-align: right;
+}
+.atv2-query-prefix {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--atv2-faint);
+}
+.atv2-query-pill {
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid var(--atv2-line);
+  border-radius: 14px;
+  padding: 9px 16px;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.78);
+}
+.atv2-query-text {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* ── THE AGENT — one element, two anchors, one shared-position transition ──
+   Centered while thinking; travels to the top-left on handoff. This is the
+   hero moment: "thinking is complete, now I'm getting the answer." */
+
+.atv2-agent {
+  position: absolute;
+  left: var(--atv2-agent-home-x);
+  top: var(--atv2-agent-home-y);
+  width: 80px;
+  height: 80px;
+  z-index: 110;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: var(--atv2-agent-center);
+  transition: transform 0.78s var(--atv2-ease), opacity 0.3s ease;
+  will-change: transform;
+}
+.atv2-agent--handoff,
+.atv2-agent--final {
+  transform: none;
+}
+/* Once the L1 template mounts, its own mascot pops in at the same spot —
+   the traveler fades out underneath it rather than doubling up. */
+.atv2-agent--final {
+  opacity: 0;
+  transition: transform 0.78s var(--atv2-ease), opacity 0.3s ease 0.45s;
+}
+
+/* ── CENTER NARRATION — one message at a time, under the mascot ─────────── */
+
+.atv2-narration-slot {
+  position: absolute;
+  left: 50%;
+  top: 505px;
+  transform: translateX(-50%);
+  width: 1160px;
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+.atv2-narration {
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+  color: var(--atv2-text);
+  text-wrap: balance;
+  animation: atv2-line-in 0.55s var(--atv2-ease) both;
+}
+@keyframes atv2-line-in {
+  from { opacity: 0; transform: translateY(14px); filter: blur(7px); }
+  to   { opacity: 1; transform: none; filter: blur(0); }
+}
+/* The closing statement fades with the traveling agent — the final statement
+   belongs to the L1 template, not to this slot. */
+.atv2-narration-slot--handoff { opacity: 0; }
+
+/* the quiet typing pulse rides centered under the narration */
+.atv2-narration-slot { flex-direction: column; align-items: center; gap: 22px; }
+.atv2-ambient { margin-left: 0; }
+
+/* ── LIGHTWEIGHT EVIDENCE — below the centered agent ─────────────────────
+   The canvas underneath varies per archetype (tiles, text signals, slots,
+   comparison rows, route stops) but the agent + narration above it is the
+   constant visual anchor. */
+
+.atv2-evidence {
+  position: absolute;
+  left: 160px;
+  right: 160px;
+  top: 625px;
+  height: 330px;
+  z-index: 90;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  overflow: hidden;
+  /* content taller than the region fades out, never clips hard */
+  -webkit-mask-image: linear-gradient(to bottom, #000 78%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 78%, transparent 100%);
+  transition: transform 0.62s var(--atv2-ease), opacity 0.62s var(--atv2-ease), filter 0.62s var(--atv2-ease);
+}
+
+/* COMPRESSING — the thinking canvas visibly wraps up: shrinks slightly,
+   consolidates inward, dims. */
+.atv2-evidence--compressing {
+  transform: scale(0.94) translateY(-10px);
+  opacity: 0.75;
+}
+/* HANDOFF — evidence collapses out entirely; no competing canvas remains
+   behind the final response. */
+.atv2-evidence--handoff {
+  transform: scale(0.86) translateY(-22px);
+  opacity: 0;
+  filter: blur(6px);
+}
+
+.atv2-pass {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  animation: atv2-line-in 0.5s var(--atv2-ease) both;
+}
+
+/* Scoped adjustments to the shared thinking renderers (level2Scenario.css),
+   applied only inside this experience: */
+
+/* tiles sit centered under the agent */
+.atv2-evidence .att-l2t-grid,
+.atv2-evidence .att-l2v-entities {
+  justify-content: center;
+  align-items: flex-start;
+  max-width: 1400px;
+}
+
+/* a receding preview drops its metadata — title only, still readable */
+.atv2-evidence .att-l2t--receding .att-l2t-fact {
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+/* tile facts fade in when enrichment lands */
+.atv2-evidence .att-l2t-fact { transition: opacity 0.4s ease; }
+
+/* shimmer scaffolding for the source-gathering scan */
+.atv2-evidence .att-l2t {
+  position: relative;
+}
+.atv2-evidence .att-l2t::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(100deg, transparent 30%, rgba(205, 165, 255, 0.1) 50%, transparent 70%);
+  background-size: 250% 100%;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+/* SOURCE PASS — "looking across a few sources": no technical source cards,
+   just a gentle scan drifting across the existing previews. */
+.atv2-evidence--scanning .att-l2t::after {
+  opacity: 1;
+  animation: atv2-scan 1.8s linear infinite;
+}
+@keyframes atv2-scan {
+  from { background-position: 125% 0; }
+  to   { background-position: -25% 0; }
+}
+
+/* comparison / route / text values center as a block */
+.atv2-evidence .att-l2v-compare,
+.atv2-evidence .att-l2v-route,
+.atv2-evidence .att-l2v-text,
+.atv2-evidence .att-l2v-avail,
+.atv2-evidence .att-l2v-timeline,
+.atv2-evidence .att-l2v-clusters {
+  margin: 0 auto;
+}
+
+/* ── FINAL RESPONSE — deliberate reveal, then stillness ─────────────────── */
+
+.atv2-final-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  animation: atv2-final-in 0.7s var(--atv2-ease) both;
+}
+@keyframes atv2-final-in {
+  from { opacity: 0; transform: translateY(14px); filter: blur(6px); }
+  to   { opacity: 1; transform: none; filter: blur(0); }
+}
+
+/* ── Dev chrome (D) — outside the consumer canvas ───────────────────────── */
+
+.atv2-dev-panel {
+  position: absolute;
+  left: 28px;
+  bottom: 80px;
+  z-index: 140;
+  width: 250px;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid var(--atv2-line);
+  background: rgba(10, 12, 18, 0.85);
+  backdrop-filter: blur(8px);
+  font-size: 12px;
+  color: var(--atv2-muted);
+}
+.atv2-dev-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--atv2-muted);
+  margin-bottom: 10px;
+}
+.atv2-dev-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 3px 0;
+}
+.atv2-dev-row b { color: var(--atv2-text); font-weight: 600; text-align: right; }
+.atv2-dev-keys {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--atv2-line);
+  font-size: 10px;
+  color: var(--atv2-faint);
+  line-height: 1.5;
+}
+
+.atv2-error {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 90;
+  max-width: 800px;
+  text-align: center;
+  font-size: 18px;
+  color: rgba(255, 160, 160, 0.85);
+}
+
+.atv2-fixture-tag {
+  position: absolute;
+  right: 72px;
+  bottom: 32px;
+  z-index: 120;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.02em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atv2-agent,
+  .atv2-evidence,
+  .atv2-narration,
+  .atv2-pass,
+  .atv2-final-layer { animation: none; transition: none; }
+}

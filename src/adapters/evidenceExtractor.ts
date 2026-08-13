@@ -1,6 +1,15 @@
 import type { PhoenixSpan } from '../types/phoenix';
 import type { ThinkingEvidence } from '../types/thinking';
 import { asString, safeParseJson } from '../utils/safeJson';
+import {
+  deepExtractResults,
+  deepSafeParse,
+  extractDescription,
+  extractImageUrl,
+  extractTitle,
+  looksLikeSerializedJson,
+  normalizeWebSearchOutput,
+} from '../utils/resultNormalizer';
 
 /* ─────────────────────────────────────────────────────────────────────────────
    Shapes below are transcribed from real tool.output payloads observed on the
@@ -100,22 +109,141 @@ export function extractRouteEvidence(toolSpans: PhoenixSpan[]): ThinkingEvidence
   return evidence;
 }
 
-/** tool.WebSearch / tool.WebFetch -> generic research evidence when the
- *  trace has no structured place/product data (e.g. a menu lookup). */
+/** tool.WebSearch / tool.WebFetch -> real search-result evidence.
+ *  Previously this sliced-and-dumped the raw tool.output string (which is
+ *  itself frequently JSON, e.g. `{"type":"web_search_results",...}`)
+ *  straight into `description`, which is the exact bug reported: raw JSON
+ *  rendered verbatim in the leadership UI. Fixed by routing through
+ *  normalizeWebSearchOutput, which safe-parses (including doubly-encoded
+ *  strings), finds the actual result list, and extracts title/image/
+ *  source/description per item — never the unparsed payload itself. */
 export function extractWebResultEvidence(toolSpans: PhoenixSpan[]): ThinkingEvidence[] {
   const evidence: ThinkingEvidence[] = [];
   for (const span of toolSpans) {
     const input = safeParseJson<{ query?: string; url?: string; prompt?: string }>(toolAttr(span, 'tool.input'));
-    const output = asString(toolAttr(span, 'tool.output'));
-    if (!output) continue;
-    const snippet = output.replace(/\s+/g, ' ').trim().slice(0, 220);
-    evidence.push({
-      id: nextId('result'),
-      type: 'result',
-      title: input?.query || input?.url || 'Search result',
-      description: snippet,
-      url: input?.url,
-    });
+    const rawOutput = toolAttr(span, 'tool.output');
+    const { evidence: normalized } = normalizeWebSearchOutput(rawOutput, input);
+    for (const ev of normalized) {
+      evidence.push({
+        id: ev.id,
+        type: ev.type === 'summary' ? 'summary' : 'web_result',
+        title: ev.title,
+        subtitle: ev.subtitle,
+        description: ev.description,
+        image: ev.image,
+        source: ev.source,
+        url: ev.url,
+        raw: ev.raw,
+      });
+    }
+  }
+  return evidence;
+}
+
+/** tool.PlaceReviews -> review snippets. Shape isn't confirmed against a
+ *  real payload (unlike PlaceSearch/GetRoute), so this uses the same
+ *  generic result-list extraction as web search rather than guessing at a
+ *  specific schema, and drops anything that still looks like unparsed JSON. */
+export function extractReviewEvidence(toolSpans: PhoenixSpan[]): ThinkingEvidence[] {
+  const evidence: ThinkingEvidence[] = [];
+  for (const span of toolSpans) {
+    const parsed = deepSafeParse(toolAttr(span, 'tool.output'));
+    const records = deepExtractResults(parsed);
+    for (const r of records) {
+      const description = extractDescription(r, 160);
+      if (!description) continue;
+      const ratingVal = r.rating;
+      evidence.push({
+        id: nextId('review'),
+        type: 'text',
+        title: extractTitle(r) || 'Review',
+        description,
+        rating: typeof ratingVal === 'number' ? ratingVal : undefined,
+        raw: r,
+      });
+    }
+  }
+  return evidence;
+}
+
+/** tool.VTONGenerate (and any other future image-generation tool) ->
+ *  a single generated-image evidence item, when the output actually
+ *  carries a resolvable image field. No fabricated placeholder image if
+ *  the real payload doesn't have one — see extractImageUrl. */
+export function extractGeneratedVisualEvidence(toolSpans: PhoenixSpan[]): ThinkingEvidence[] {
+  const evidence: ThinkingEvidence[] = [];
+  for (const span of toolSpans) {
+    const parsed = deepSafeParse(toolAttr(span, 'tool.output'));
+    const records = deepExtractResults(parsed);
+    const record = records[0] ?? (parsed && typeof parsed === 'object' ? (parsed as Record<string, unknown>) : undefined);
+    const image = record ? extractImageUrl(record) : undefined;
+    if (!image) continue;
+    evidence.push({ id: nextId('visual'), type: 'image', title: 'Generated visual', image, raw: record });
+  }
+  return evidence;
+}
+
+const PREFERENCE_CHIP_MAXLEN = 40;
+
+/** Truncates on a word boundary rather than mid-word, so a chip never ends
+ *  with a half-cut word. */
+function shortenPreferencePhrase(text: string): string {
+  const clean = text.replace(/\s+/g, ' ').trim().replace(/\.$/, '');
+  if (clean.length <= PREFERENCE_CHIP_MAXLEN) return clean;
+  let out = '';
+  for (const word of clean.split(' ')) {
+    if (`${out} ${word}`.trim().length > PREFERENCE_CHIP_MAXLEN) break;
+    out = `${out} ${word}`.trim();
+  }
+  return out ? `${out}…` : `${clean.slice(0, PREFERENCE_CHIP_MAXLEN)}…`;
+}
+
+/** memory.retrieval is a RETRIEVER-kind span (OpenInference convention),
+ *  not a TOOL span, so it's passed the whole unit's spans rather than
+ *  toolSpans. Confirmed real shape (inspected live against
+ *  aitv-mewtwo-harness): flattened indexed attributes
+ *  `retrieval.documents.{i}.document.content` — NOT a nested array under
+ *  a single `retrieval.documents` key. `memory.hit: false` traces (no
+ *  stored facts yet for that user) genuinely have none of these keys, in
+ *  which case this degrades to an empty list — never fabricates specific
+ *  preferences — and the caller shows an honest generic visual instead. */
+export function extractPreferenceEvidence(spans: PhoenixSpan[]): ThinkingEvidence[] {
+  const evidence: ThinkingEvidence[] = [];
+  for (const span of spans) {
+    if (span.span_kind !== 'RETRIEVER') continue;
+    const attrs = span.attributes ?? {};
+
+    for (let i = 0; i < 20; i++) {
+      const content = asString(attrs[`retrieval.documents.${i}.document.content`]);
+      if (content === undefined) break;
+      if (!content.trim() || looksLikeSerializedJson(content)) continue;
+      evidence.push({ id: nextId('preference'), type: 'preference', title: shortenPreferencePhrase(content), raw: content });
+    }
+    if (evidence.length) continue;
+
+    // Fallback 1: a nested array/object shape, in case instrumentation
+    // ever changes away from flattened keys.
+    const fromOutput = deepSafeParse(toolAttr(span, 'tool.output'));
+    for (const doc of deepExtractResults(fromOutput)) {
+      const nested = doc.document && typeof doc.document === 'object' ? (doc.document as Record<string, unknown>) : doc;
+      const text = extractDescription(nested, 60) ?? extractTitle(nested);
+      if (!text || looksLikeSerializedJson(text)) continue;
+      evidence.push({ id: nextId('preference'), type: 'preference', title: shortenPreferencePhrase(text), raw: doc });
+    }
+    if (evidence.length) continue;
+
+    // Fallback 2: output.value's own markdown fact list (real shape seen:
+    // "## Fact\n- [id] User is located in Bengaluru, Karnataka.").
+    const outputText = asString(attrs['output.value']);
+    if (outputText) {
+      const factLines = outputText.match(/^-\s*(?:\[[a-f0-9-]+\]\s*)?.+$/gim) ?? [];
+      for (const line of factLines) {
+        const cleaned = line.replace(/^-\s*(?:\[[a-f0-9-]+\]\s*)?/, '').trim();
+        if (cleaned && !looksLikeSerializedJson(cleaned)) {
+          evidence.push({ id: nextId('preference'), type: 'preference', title: shortenPreferencePhrase(cleaned) });
+        }
+      }
+    }
   }
   return evidence;
 }
@@ -136,8 +264,12 @@ export function extractEvidenceForToolSpans(toolSpans: PhoenixSpan[]): ThinkingE
       out.push(...extractPlaceEvidence(spans));
     } else if (name === 'GetRoute') {
       out.push(...extractRouteEvidence(spans));
+    } else if (name === 'PlaceReviews') {
+      out.push(...extractReviewEvidence(spans));
     } else if (name === 'WebSearch' || name === 'WebFetch') {
       out.push(...extractWebResultEvidence(spans));
+    } else if (name === 'VTONGenerate') {
+      out.push(...extractGeneratedVisualEvidence(spans));
     }
   }
   return out;

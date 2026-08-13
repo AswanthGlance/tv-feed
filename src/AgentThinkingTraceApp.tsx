@@ -1,4 +1,8 @@
 import './styles/agentThinkingTrace.css';
+// Level 2 scenario-system baseline styles. Loaded after the main sheet so a
+// UI pass can override anything here without fighting specificity — see the
+// file header: it is an engineering baseline, not a visual design.
+import './styles/level2Scenario.css';
 import AgentExperience from './components/AgentThinkingTrace/AgentExperience';
 
 /**

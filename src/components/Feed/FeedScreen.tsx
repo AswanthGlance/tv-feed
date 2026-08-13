@@ -21,6 +21,10 @@ import L0Glance from '../L0/L0Glance';
 import PreferenceCard from './PreferenceCard';
 import type { UnifiedFeedItem } from '../../logic/feedComposer';
 import { getConversationalCTA } from '../../logic/ctaGenerator';
+import TikTokL0Card from '../TikTok/TikTokL0Card';
+import TikTokVideoExpanded from '../TikTok/TikTokVideoExpanded';
+import TikTokCollectionL1 from '../TikTok/TikTokCollectionL1';
+import type { TikTokCard } from '../../data/tiktokTypes';
 
 /*
  * OVERLAYS_ENABLED = false:
@@ -139,6 +143,7 @@ export default function FeedScreen({
   /* Resolve the current unified feed item if available */
   const unifiedCurrent = unifiedFeed?.[feedIdx];
   const isPreferenceCard = unifiedCurrent?.type === 'preference';
+  const isTikTokCard = unifiedCurrent?.type === 'tiktok';
 
   /* For preference cards we still need a valid FeedItem for dwell/signal logic —
      use the previous glance item. For glance cards, use the normal feed item. */
@@ -200,6 +205,10 @@ export default function FeedScreen({
   // L0→L1 transition
   const [showTransition, setShowTransition] = useState(false);
   const [transitionCTARect, setTransitionCTARect] = useState<DOMRect | null>(null);
+
+  // TikTok expanded overlays
+  const [tikTokOverlay, setTikTokOverlay] = useState<'video' | 'collection' | null>(null);
+  const [activeTikTokCard, setActiveTikTokCard] = useState<TikTokCard | null>(null);
 
   // Idle auto-advance — after 12s of no interaction, move to next card
   const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -518,7 +527,7 @@ export default function FeedScreen({
 
       if (key === 'ArrowUp') { onPrev(Date.now() - cardShownAt.current); setShowContextual(false); }
       if (key === 'ArrowDown') { onNext(Date.now() - cardShownAt.current); setShowContextual(false); }
-      if (key === 'ArrowLeft' && !isPreferenceCard) {
+      if (key === 'ArrowLeft' && !isPreferenceCard && !isTikTokCard) {
         if (onAgentHub) { onAgentHub(); } else { setNavOpen(true); setNavFocusIdx(0); }
       }
       if (key === 'ArrowRight') {
@@ -545,6 +554,13 @@ export default function FeedScreen({
         });
       }
       if (key === 'Enter') {
+        // TikTok card — open expanded experience directly
+        if (isTikTokCard && unifiedCurrent?.type === 'tiktok') {
+          const c = unifiedCurrent.card;
+          setActiveTikTokCard(c);
+          setTikTokOverlay(c.variant === 'collection' ? 'collection' : 'video');
+          return;
+        }
         // CTA click = strong positive + play L0→L1 transition before opening L1
         onThumbsUp(item, { categories: [item.category], subCategories: item.subCategories.slice(0, 2) } as any, 'cta_click');
         deepDiveOpenedAt.current = Date.now();
@@ -584,6 +600,8 @@ export default function FeedScreen({
     onAgentHub,
     onPinnedDock,
     hubOpen,
+    isTikTokCard,
+    unifiedCurrent,
   ]);
 
   if (!item) {
@@ -645,8 +663,20 @@ export default function FeedScreen({
         </div>
       )}
 
-      {/* Current feed item — L0 glance or preference card */}
-      {isPreferenceCard && unifiedCurrent?.type === 'preference' ? (
+      {/* Current feed item — L0 glance, TikTok card, or preference card */}
+      {isTikTokCard && unifiedCurrent?.type === 'tiktok' ? (
+        <TikTokL0Card
+          key={unifiedCurrent.id}
+          card={unifiedCurrent.card}
+          focused={overlay === 'none' && tikTokOverlay === null}
+          onSelect={() => {
+            const c = unifiedCurrent.card;
+            setActiveTikTokCard(c);
+            setTikTokOverlay(c.variant === 'collection' ? 'collection' : 'video');
+          }}
+          toast={toast}
+        />
+      ) : isPreferenceCard && unifiedCurrent?.type === 'preference' ? (
         <PreferenceCard
           key={unifiedCurrent.id}
           question={unifiedCurrent.question}
@@ -1013,6 +1043,24 @@ export default function FeedScreen({
             </div>
           </div>
         </div>
+      )}
+
+      {/* TikTok expanded overlays */}
+      {tikTokOverlay === 'video' && activeTikTokCard?.variant === 'single-video' && (
+        <TikTokVideoExpanded
+          card={activeTikTokCard}
+          onClose={() => { setTikTokOverlay(null); setActiveTikTokCard(null); }}
+          onAskAI={() => { setTikTokOverlay(null); setActiveTikTokCard(null); onAgentHub?.(); }}
+          toast={toast}
+        />
+      )}
+      {tikTokOverlay === 'collection' && activeTikTokCard?.variant === 'collection' && (
+        <TikTokCollectionL1
+          card={activeTikTokCard}
+          onClose={() => { setTikTokOverlay(null); setActiveTikTokCard(null); }}
+          onAskAI={() => { setTikTokOverlay(null); setActiveTikTokCard(null); onAgentHub?.(); }}
+          toast={toast}
+        />
       )}
 
       {/* L0→L1 cinematic transition */}

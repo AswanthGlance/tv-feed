@@ -42,6 +42,7 @@ import AgentHubApp from './AgentHubApp'
 import NewConversationApp from './NewConversationApp'
 import CapabilityL1App from './CapabilityL1App'
 import AgentThinkingTraceApp from './AgentThinkingTraceApp'
+import AgentThinkingV2App from './AgentThinkingV2App'
 
 declare global { interface Window { __L0_PREVIEW__?: string; __BEAM_POC__?: boolean; __INTERSTITIAL_PREVIEW__?: boolean; __L0_EXPORT__?: boolean } }
 
@@ -113,6 +114,8 @@ const isCapabilityL1   = window.location.pathname.startsWith('/l1-category')
                       || window.location.pathname.startsWith('/l1_category');
 const isAgentThinkingTrace = window.location.pathname === '/agent_thinking_trace'
                       || window.location.pathname === '/agent-thinking-trace';
+const isAgentThinkingV2 = window.location.pathname === '/agent_thinking_v2'
+                      || window.location.pathname === '/agent-thinking-v2';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -151,6 +154,7 @@ createRoot(document.getElementById('root')!).render(
      isL1Scenarios      ? <L1Scenarios /> :
      isCapabilityL1     ? <CapabilityL1App /> :
      isAgentThinkingTrace ? <AgentThinkingTraceApp /> :
+     isAgentThinkingV2    ? <AgentThinkingV2App /> :
                           <App />}
   </StrictMode>,
 )

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { ThinkingEvidence, ThinkingScenario, ThinkingStepStatus } from '../types/thinking';
+import type { ThinkingScenario, ThinkingStepStatus } from '../types/thinking';
 import { normalizeDuration, type PlaybackMode } from '../utils/timing';
 
 const DEMO_MAX_GAP_MS = 900;
@@ -39,7 +39,6 @@ export interface TracePlaybackState {
   totalDuration: number;
   activeStepIndex: number;
   stepStatuses: ThinkingStepStatus[];
-  visibleEvidence: ThinkingEvidence[];
   isPlaying: boolean;
   isComplete: boolean;
   mode: PlaybackMode;
@@ -141,15 +140,6 @@ export function useTracePlayback(scenario: ThinkingScenario | undefined): TraceP
     });
   }, [scenario, activeStepIndex]);
 
-  const visibleEvidence = useMemo(() => {
-    if (!scenario) return [];
-    const out: ThinkingEvidence[] = [];
-    scenario.steps.forEach((step, i) => {
-      if (i <= activeStepIndex) out.push(...step.evidence);
-    });
-    return out;
-  }, [scenario, activeStepIndex]);
-
   const play = useCallback(() => {
     if (isComplete) setElapsedTime(0);
     setIsPlaying(true);
@@ -182,7 +172,6 @@ export function useTracePlayback(scenario: ThinkingScenario | undefined): TraceP
     totalDuration: total,
     activeStepIndex,
     stepStatuses,
-    visibleEvidence,
     isPlaying,
     isComplete,
     mode,

@@ -10,6 +10,7 @@
 
 import type { FeedItem } from '../data/types';
 import type { QuestionConfig } from '../data/preferenceQuestions';
+import type { TikTokCard } from '../data/tiktokTypes';
 
 export const PREFERENCE_INTERVAL    = 5;  /* one preference card every N L0s */
 export const MAX_PREFERENCE_CARDS   = 6;  /* cap total preference cards in feed */
@@ -26,7 +27,13 @@ export type PreferenceFeedItem = {
   question: QuestionConfig;
 };
 
-export type UnifiedFeedItem = GlanceFeedItem | PreferenceFeedItem;
+export type TikTokFeedItem = {
+  type: 'tiktok';
+  id:   string;
+  card: TikTokCard;
+};
+
+export type UnifiedFeedItem = GlanceFeedItem | PreferenceFeedItem | TikTokFeedItem;
 
 /**
  * Compose a unified feed from L0 cards and preference questions.

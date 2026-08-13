@@ -45,6 +45,7 @@ import {
 // same reason: a faithful replay of /food-l1, not a re-approximation of it.
 import {
   PLACES as FoodPlaces,
+  type Place,
   type NavDir as FoodNavDir,
   type CtaId as FoodCtaId,
   CTA_ORDER as FoodCtaOrder,
@@ -94,27 +95,6 @@ const RAMEN_BULLETS = [
 ];
 const RAMEN_CLOSING = 'Serve immediately while piping hot to keep the noodles from getting soggy.';
 
-// The body reveals as an ordered sequence of blocks (intro → subheading →
-// each bullet → closing) so the container grows and the reading surface
-// "composes" the way the heading already does, instead of fading in as one
-// flat chunk once the heading finishes.
-const IDX_INTRO         = 0;
-const IDX_SUB           = 1;
-const IDX_BULLET_START  = 2;
-const IDX_BULLET_END    = IDX_BULLET_START + RAMEN_BULLETS.length - 1;
-const IDX_CLOSING       = IDX_BULLET_END + 1;
-const BODY_BLOCK_COUNT  = IDX_CLOSING + 1;
-
-/* ─── Text + Carousel variant — same sequence as above, with two extra
-   blocks inserted after the ingredients and before the closing line: the
-   FoodPlaces carousel itself, then one more paragraph that resumes the
-   reading surface after it. Reuses IDX_INTRO/IDX_SUB/IDX_BULLET_* as-is
-   since that portion of the sequence is identical; only the tail shifts. ── */
-const IDX_CAROUSEL_TC       = IDX_BULLET_END + 1;
-const IDX_POST_CAROUSEL_TC  = IDX_CAROUSEL_TC + 1;
-const IDX_CLOSING_TC        = IDX_POST_CAROUSEL_TC + 1;
-const BODY_BLOCK_COUNT_TC   = IDX_CLOSING_TC + 1;
-
 const RAMEN_POST_CAROUSEL = "Whichever style you go with, the core technique stays the same — build a flavorful base, cook the noodles separately so they don't turn mushy, and finish with fresh toppings right before serving.";
 
 // Continues the conversation about this specific recipe — not the generic
@@ -124,6 +104,71 @@ const TEXT_PROMPTS = [
   'Make this vegetarian',
   'What toppings work best?',
   'Suggest how to make chashu pork',
+];
+
+/* ─── external data contracts ─────────────────────────────────────────────
+   The four scenario components below are the production-like final-response
+   templates other experiences (Level 2 agent thinking) REUSE rather than
+   re-approximate. Each takes an optional `data` prop; with no prop it renders
+   exactly the hardcoded /l1-scenarios demo content, so this page's behavior
+   is unchanged. Adapters live with the caller (see
+   src/level2/finalResponse/adaptToL1.ts), never here. ── */
+
+/** Same shape as FoodL1Scenarios' Place, with the numeric facts optional so
+ *  adapted real-trace entities (which often lack a rating or price) remain
+ *  valid. The default demo data satisfies it as-is. */
+export type L1CardItem = Omit<Place, 'rating' | 'ratingCount' | 'price'> & {
+  rating?: number;
+  ratingCount?: string;
+  price?: string;
+};
+
+export interface L1CardsData {
+  agentLine: string;
+  places: L1CardItem[];
+  prompts: string[];
+}
+
+export interface L1CardsTabsData {
+  agentLine: string;
+  tabs: Array<{ id: string; label: string }>;
+  tabItems: Record<string, TravelItem[]>;
+  prompts: string[];
+}
+
+export type L1TextBlock = { kind: 'p' | 'sub' | 'bullet'; text: string };
+
+export interface L1TextOnlyData {
+  heading: string;
+  blocks: L1TextBlock[];
+  prompts: string[];
+}
+
+export type L1TextCarouselBlock = L1TextBlock | { kind: 'carousel' };
+
+export interface L1TextCarouselData {
+  heading: string;
+  blocks: L1TextCarouselBlock[];
+  places: L1CardItem[];
+  prompts: string[];
+}
+
+/* The approved demo content, expressed through the same block sequence the
+   data contract uses (intro → subheading → each bullet → closing). */
+const DEFAULT_TEXT_BLOCKS: L1TextBlock[] = [
+  { kind: 'p', text: RAMEN_INTRO },
+  { kind: 'sub', text: RAMEN_SUBHEADING },
+  ...RAMEN_BULLETS.map((b): L1TextBlock => ({ kind: 'bullet', text: b })),
+  { kind: 'p', text: RAMEN_CLOSING },
+];
+
+const DEFAULT_TC_BLOCKS: L1TextCarouselBlock[] = [
+  { kind: 'p', text: RAMEN_INTRO },
+  { kind: 'sub', text: RAMEN_SUBHEADING },
+  ...RAMEN_BULLETS.map((b): L1TextCarouselBlock => ({ kind: 'bullet', text: b })),
+  { kind: 'carousel' },
+  { kind: 'p', text: RAMEN_POST_CAROUSEL },
+  { kind: 'p', text: RAMEN_CLOSING },
 ];
 
 /* ─── layout — identical coordinates to FoodL1Scenarios / TravelL1 ─────── */
@@ -294,7 +339,11 @@ function PromptRow({ prompts, visible, activeIdx }: { prompts: string[]; visible
    entrance sequence finishes. ── */
 type FoodZone = 'intro' | 'cta' | 'inputs' | 'qrModal' | 'flyout';
 
-function CardsScenario() {
+export function CardsScenario({ data }: { data?: L1CardsData } = {}) {
+  const places = data?.places ?? (FoodPlaces as L1CardItem[]);
+  const prompts = data?.prompts ?? FoodFollowUps;
+  const agentLine = data?.agentLine ?? 'Here are my top picks for a date in Pune, curated for that premium, intimate vibe.';
+
   const { phase, typingStarted, onTypingDone, introDone } = useIntroSequence();
 
   const [cardIdx, setCardIdx] = useState(0);
@@ -309,7 +358,7 @@ function CardsScenario() {
   const [toast, setToast] = useState<string | null>(null);
   const toastRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const place = FoodPlaces[cardIdx];
+  const place = places[cardIdx];
   const railShift = L_PAD - cardIdx * (COL_W + CARD_G);
 
   const showToast = (msg: string) => {
@@ -355,7 +404,7 @@ function CardsScenario() {
           e.preventDefault();
           if (ctaIdx < 2) {
             setCtaIdx(i => i + 1);
-          } else if (cardIdx < FoodPlaces.length - 1) {
+          } else if (cardIdx < places.length - 1) {
             setNavDir('right'); setCardIdx(i => i + 1); setCtaIdx(FoodPrimaryIdx.right);
           }
         }
@@ -384,14 +433,14 @@ function CardsScenario() {
 
       if (zone === 'inputs') {
         if (k === 'ArrowLeft')  { e.preventDefault(); setPromptIdx(i => Math.max(0, i - 1)); }
-        if (k === 'ArrowRight') { e.preventDefault(); setPromptIdx(i => Math.min(FoodFollowUps.length - 1, i + 1)); }
+        if (k === 'ArrowRight') { e.preventDefault(); setPromptIdx(i => Math.min(prompts.length - 1, i + 1)); }
         if (k === 'ArrowUp')    { e.preventDefault(); setZone('cta'); }
         return;
       }
     };
     window.addEventListener('keydown', handle);
     return () => window.removeEventListener('keydown', handle);
-  }, [introDone, zone, cardIdx, navDir, ctaIdx, flyoutIdx, flyoutOpen, qrOpen, promptIdx, place.id, wishlisted]);
+  }, [introDone, zone, cardIdx, navDir, ctaIdx, flyoutIdx, flyoutOpen, qrOpen, promptIdx, place.id, wishlisted, places.length, prompts.length]);
 
   const ctaOrder     = FoodCtaOrder[navDir];
   const focusedCtaId = zone === 'cta' ? ctaOrder[ctaIdx] : null;
@@ -400,7 +449,7 @@ function CardsScenario() {
   return (
     <>
       <AgentIntro
-        text="Here are my top picks for a date in Pune, curated for that premium, intimate vibe."
+        text={agentLine}
         typingStarted={typingStarted} onDone={onTypingDone}
         highlighted={introDone && zone === 'intro'}
       />
@@ -411,7 +460,7 @@ function CardsScenario() {
           display: 'flex', alignItems: 'flex-start', gap: CARD_G,
           transform: `translateX(${railShift}px)`, transition: 'transform 0.65s cubic-bezier(0.16,1,0.3,1)', willChange: 'transform', zIndex: 5,
         }}>
-          {FoodPlaces.map((p, i) => {
+          {places.map((p, i) => {
             const isFocused = introDone && cardIdx === i && (zone === 'cta' || zone === 'flyout' || zone === 'qrModal');
 
             if (isFocused) {
@@ -446,14 +495,16 @@ function CardsScenario() {
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                          <span style={{ color: '#ffba71', fontSize: 20, lineHeight: '24px', fontWeight: 600, fontFamily: 'Inter,sans-serif', textTransform: 'uppercase' }}>{p.rating}</span>
-                          <img src="/images/l1/star.svg" alt="" style={{ width: 24, height: 24 }} />
-                          <span style={{ color: '#ffba71', fontSize: 20, lineHeight: '24px', fontWeight: 600, fontFamily: 'Inter,sans-serif', textTransform: 'uppercase' }}>({p.ratingCount} reviews)</span>
-                        </div>
+                        {p.rating != null && (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <span style={{ color: '#ffba71', fontSize: 20, lineHeight: '24px', fontWeight: 600, fontFamily: 'Inter,sans-serif', textTransform: 'uppercase' }}>{p.rating}</span>
+                            <img src="/images/l1/star.svg" alt="" style={{ width: 24, height: 24 }} />
+                            {p.ratingCount && <span style={{ color: '#ffba71', fontSize: 20, lineHeight: '24px', fontWeight: 600, fontFamily: 'Inter,sans-serif', textTransform: 'uppercase' }}>({p.ratingCount} reviews)</span>}
+                          </div>
+                        )}
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                           <p style={{ fontSize: 32, fontWeight: 600, lineHeight: '44px', margin: 0, overflow: 'hidden' }}>{p.name}</p>
-                          <p style={{ fontSize: 24, fontWeight: 600, lineHeight: '32px', margin: 0 }}>{p.price}</p>
+                          <p style={{ fontSize: 24, fontWeight: 600, lineHeight: '32px', margin: 0 }}>{p.price ?? p.area}</p>
                         </div>
                       </div>
 
@@ -555,13 +606,15 @@ function CardsScenario() {
                   <span style={{ fontSize: 22, lineHeight: '28px', fontWeight: 500, fontFamily: 'Inter,sans-serif' }}>{p.agentLabel}</span>
                 </div>
                 <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: 22, display: 'flex', flexDirection: 'column', gap: 16 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <span style={{ color: '#ffba71', fontSize: 22, lineHeight: '24px', fontWeight: 600, fontFamily: 'Inter,sans-serif' }}>{p.rating}</span>
-                    <img src="/images/l1/star.svg" alt="" style={{ width: 24, height: 24 }} />
-                  </div>
+                  {p.rating != null && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ color: '#ffba71', fontSize: 22, lineHeight: '24px', fontWeight: 600, fontFamily: 'Inter,sans-serif' }}>{p.rating}</span>
+                      <img src="/images/l1/star.svg" alt="" style={{ width: 24, height: 24 }} />
+                    </div>
+                  )}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                     <p style={{ fontSize: 32, fontWeight: 500, lineHeight: '44px', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</p>
-                    <p style={{ fontSize: 24, fontWeight: 600, lineHeight: '32px', margin: 0, opacity: 0.7 }}>{p.price}</p>
+                    <p style={{ fontSize: 24, fontWeight: 600, lineHeight: '32px', margin: 0, opacity: 0.7 }}>{p.price ?? p.area}</p>
                   </div>
                 </div>
                 <div style={{ position: 'absolute', inset: 0, boxShadow: 'inset 0 0 20px rgba(255,255,255,0.3)', borderRadius: 30, pointerEvents: 'none' }} />
@@ -572,7 +625,7 @@ function CardsScenario() {
         </div>
       )}
 
-      <PromptRow prompts={FoodFollowUps} visible={phase >= PHASE.PROMPTS} activeIdx={introDone && zone === 'inputs' ? promptIdx : null} />
+      <PromptRow prompts={prompts} visible={phase >= PHASE.PROMPTS} activeIdx={introDone && zone === 'inputs' ? promptIdx : null} />
 
       {qrOpen && (
         <>
@@ -607,12 +660,14 @@ function CardsScenario() {
                 <img src={place.photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12, minWidth: 0 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <img src="/images/l1/star.svg" alt="" style={{ width: 20, height: 20 }} />
-                  <span style={{ color: '#ffba71', fontSize: 18, lineHeight: '20px', fontWeight: 600, fontFamily: 'Inter,sans-serif', textTransform: 'uppercase' }}>
-                    {place.rating} ({place.ratingCount} reviews)
-                  </span>
-                </div>
+                {place.rating != null && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <img src="/images/l1/star.svg" alt="" style={{ width: 20, height: 20 }} />
+                    <span style={{ color: '#ffba71', fontSize: 18, lineHeight: '20px', fontWeight: 600, fontFamily: 'Inter,sans-serif', textTransform: 'uppercase' }}>
+                      {place.rating}{place.ratingCount ? ` (${place.ratingCount} reviews)` : ''}
+                    </span>
+                  </div>
+                )}
                 <p style={{ fontSize: 22, fontWeight: 500, color: 'rgba(255,255,255,0.9)', letterSpacing: '-0.22px', margin: 0, fontFamily: "'Manrope','Plus Jakarta Sans',sans-serif" }}>{place.name}</p>
               </div>
             </div>
@@ -642,7 +697,12 @@ function CardsScenario() {
    until the entrance sequence finishes. ── */
 type TravelZone = 'intro' | 'tabs' | 'cta' | 'inputs' | 'qrModal' | 'flyout';
 
-function CardsTabsScenario() {
+export function CardsTabsScenario({ data }: { data?: L1CardsTabsData } = {}) {
+  const tabs = data?.tabs ?? TravelTabs;
+  const tabItems = data?.tabItems ?? (TravelTabItems as Record<string, TravelItem[]>);
+  const prompts = data?.prompts ?? TravelFollowUps;
+  const agentLine = data?.agentLine ?? 'Here’s your Coorg weekend escape — a lush, misty retreat for nature and coffee lovers alike.';
+
   const { phase, typingStarted, onTypingDone, introDone } = useIntroSequence();
 
   const [tabIdx, setTabIdx] = useState(0);
@@ -658,18 +718,18 @@ function CardsTabsScenario() {
   const [toast, setToast] = useState<string | null>(null);
   const toastRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const tab   = TravelTabs[tabIdx];
-  const items = TravelTabItems[tab.id];
+  const tab   = tabs[tabIdx];
+  const items = tabItems[tab.id];
   const place = items[cardIdx];
 
-  const offsetBefore = TravelTabs.slice(0, tabIdx).reduce((acc, tb) => {
-    const n = TravelTabItems[tb.id].length;
+  const offsetBefore = tabs.slice(0, tabIdx).reduce((acc, tb) => {
+    const n = tabItems[tb.id].length;
     return acc + n * COL_W + (n - 1) * CARD_G + TRAVEL_SECTION_GAP;
   }, 0);
   const railShift = L_PAD - (offsetBefore + cardIdx * (COL_W + CARD_G));
 
-  const hasNextSectionNudge = tabIdx < TravelTabs.length - 1 && cardIdx >= items.length - 2;
-  const nextSectionFirstItem = hasNextSectionNudge ? TravelTabItems[TravelTabs[tabIdx + 1].id][0] : null;
+  const hasNextSectionNudge = tabIdx < tabs.length - 1 && cardIdx >= items.length - 2;
+  const nextSectionFirstItem = hasNextSectionNudge ? tabItems[tabs[tabIdx + 1].id][0] : null;
 
   const showToast = (msg: string) => {
     if (toastRef.current) clearTimeout(toastRef.current);
@@ -718,8 +778,8 @@ function CardsTabsScenario() {
 
       if (zone === 'tabs') {
         e.preventDefault();
-        if (k === 'ArrowLeft'  && tabIdx > 0)                     switchTab(tabIdx - 1);
-        if (k === 'ArrowRight' && tabIdx < TravelTabs.length - 1) switchTab(tabIdx + 1);
+        if (k === 'ArrowLeft'  && tabIdx > 0)               switchTab(tabIdx - 1);
+        if (k === 'ArrowRight' && tabIdx < tabs.length - 1) switchTab(tabIdx + 1);
         if (k === 'ArrowUp')   setZone('intro');
         if (k === 'ArrowDown' || k === 'Enter') { setZone('cta'); setCtaIdx(TravelPrimaryIdx[navDir]); }
         return;
@@ -732,7 +792,7 @@ function CardsTabsScenario() {
             setCtaIdx(i => i + 1);
           } else if (cardIdx < items.length - 1) {
             setNavDir('right'); setCardIdx(i => i + 1); setCtaIdx(TravelPrimaryIdx.right);
-          } else if (tabIdx < TravelTabs.length - 1) {
+          } else if (tabIdx < tabs.length - 1) {
             setTabIdx(tabIdx + 1); setCardIdx(0); setNavDir('right'); setCtaIdx(TravelPrimaryIdx.right);
           }
         }
@@ -743,7 +803,7 @@ function CardsTabsScenario() {
           } else if (cardIdx > 0) {
             setNavDir('left'); setCardIdx(i => i - 1); setCtaIdx(TravelPrimaryIdx.left);
           } else if (tabIdx > 0) {
-            const prevItems = TravelTabItems[TravelTabs[tabIdx - 1].id];
+            const prevItems = tabItems[tabs[tabIdx - 1].id];
             setTabIdx(tabIdx - 1); setCardIdx(prevItems.length - 1); setNavDir('left'); setCtaIdx(TravelPrimaryIdx.left);
           }
         }
@@ -764,14 +824,14 @@ function CardsTabsScenario() {
 
       if (zone === 'inputs') {
         if (k === 'ArrowLeft')  { e.preventDefault(); setPromptIdx(i => Math.max(0, i - 1)); }
-        if (k === 'ArrowRight') { e.preventDefault(); setPromptIdx(i => Math.min(TravelFollowUps.length - 1, i + 1)); }
+        if (k === 'ArrowRight') { e.preventDefault(); setPromptIdx(i => Math.min(prompts.length - 1, i + 1)); }
         if (k === 'ArrowUp')    { e.preventDefault(); setZone('cta'); }
         return;
       }
     };
     window.addEventListener('keydown', handle);
     return () => window.removeEventListener('keydown', handle);
-  }, [introDone, zone, tabIdx, cardIdx, navDir, ctaIdx, flyoutIdx, flyoutOpen, qrOpen, promptIdx, place.id, wishlisted, items.length]);
+  }, [introDone, zone, tabIdx, cardIdx, navDir, ctaIdx, flyoutIdx, flyoutOpen, qrOpen, promptIdx, place.id, wishlisted, items.length, tabs.length, prompts.length]);
 
   const ctaOrder     = TravelCtaOrder[navDir];
   const focusedCtaId = zone === 'cta' ? ctaOrder[ctaIdx] : null;
@@ -925,7 +985,7 @@ function CardsTabsScenario() {
   return (
     <>
       <AgentIntro
-        text="Here’s your Coorg weekend escape — a lush, misty retreat for nature and coffee lovers alike."
+        text={agentLine}
         typingStarted={typingStarted} onDone={onTypingDone}
         highlighted={introDone && zone === 'intro'}
       />
@@ -934,7 +994,7 @@ function CardsTabsScenario() {
         <div style={{ position: 'absolute', top: TABS_TOP, left: L_PAD - 28, right: 120, zIndex: 6, animation: 'l1s-fadeUp 0.35s ease both' }}>
           <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 1, background: 'rgba(255,255,255,0.14)' }} />
           <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4, position: 'relative' }}>
-            {TravelTabs.map((t, i) => {
+            {tabs.map((t, i) => {
               const active  = tabIdx === i;
               const focused = introDone && zone === 'tabs' && active;
               return (
@@ -960,11 +1020,11 @@ function CardsTabsScenario() {
           position: 'absolute', top: CARD_TOP_TABS, left: 0, height: EXP_H, display: 'flex', alignItems: 'center',
           transform: `translateX(${railShift}px)`, transition: 'transform 0.65s cubic-bezier(0.16,1,0.3,1)', willChange: 'transform', zIndex: 4,
         }}>
-          {TravelTabs.map((t, ti) => (
+          {tabs.map((t, ti) => (
             <Fragment key={t.id}>
               {ti > 0 && <div style={{ width: TRAVEL_SECTION_GAP, flexShrink: 0 }} />}
               <div style={{ display: 'flex', alignItems: 'center', gap: CARD_G }}>
-                {TravelTabItems[t.id].map((p, i) => {
+                {tabItems[t.id].map((p, i) => {
                   const isFocused = introDone && tabIdx === ti && cardIdx === i && (zone === 'cta' || zone === 'flyout' || zone === 'qrModal');
                   if (isFocused) {
                     return (
@@ -1001,7 +1061,7 @@ function CardsTabsScenario() {
         </div>
       )}
 
-      <PromptRow prompts={TravelFollowUps} visible={phase >= PHASE.PROMPTS} activeIdx={introDone && zone === 'inputs' ? promptIdx : null} />
+      <PromptRow prompts={prompts} visible={phase >= PHASE.PROMPTS} activeIdx={introDone && zone === 'inputs' ? promptIdx : null} />
 
       {qrOpen && (
         <>
@@ -1080,11 +1140,15 @@ function CardsTabsScenario() {
    once the user has actually reached the top/bottom. ── */
 type TextZone = 'intro' | 'reading' | 'inputs';
 
-function TextOnlyScenario() {
+export function TextOnlyScenario({ data }: { data?: L1TextOnlyData } = {}) {
+  const heading = data?.heading ?? RAMEN_HEADING;
+  const blocks = data?.blocks ?? DEFAULT_TEXT_BLOCKS;
+  const prompts = data?.prompts ?? TEXT_PROMPTS;
+
   const { typingStarted, onTypingDone } = useIntroSequence();
 
-  // -1 = only the heading exists so far; 0..BODY_BLOCK_COUNT-1 = that many
-  // body blocks have started revealing; >= BODY_BLOCK_COUNT = fully composed.
+  // -1 = only the heading exists so far; 0..blocks.length-1 = that many
+  // body blocks have started revealing; >= blocks.length = fully composed.
   const [bodyIdx, setBodyIdx] = useState(-1);
   // Flips once the content has grown to fill TEXT_CARD_MAX_HEIGHT — this is
   // what introduces the card chrome, the scrollbar, and the follow-scroll.
@@ -1096,7 +1160,7 @@ function TextOnlyScenario() {
   const [viewportRatio, setViewportRatio] = useState(1);
 
   const scrollRef = useRef<HTMLDivElement>(null);
-  const fullyComposed = bodyIdx >= BODY_BLOCK_COUNT;
+  const fullyComposed = bodyIdx >= blocks.length;
 
   const handleTypingDone = () => { setBodyIdx(0); onTypingDone(); };
   // Each block only advances the sequence once — guards against a block
@@ -1125,10 +1189,10 @@ function TextOnlyScenario() {
     if (!el) return;
     const max = el.scrollHeight - el.clientHeight;
     if (max <= 0) return;
-    if (bodyIdx < BODY_BLOCK_COUNT) {
+    if (bodyIdx < blocks.length) {
       el.scrollTo({ top: max, behavior: 'smooth' });
     }
-  }, [bodyIdx, capped]);
+  }, [bodyIdx, capped, blocks.length]);
 
   // Fully composed → the follow-scroll above naturally stops (bodyIdx no
   // longer changes) → after a short settle beat, unlock focus + manual scroll.
@@ -1173,13 +1237,13 @@ function TextOnlyScenario() {
       }
 
       // zone === 'inputs'
-      if (e.key === 'ArrowRight') { e.preventDefault(); setPromptIdx(i => Math.min(TEXT_PROMPTS.length - 1, i + 1)); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); setPromptIdx(i => Math.min(prompts.length - 1, i + 1)); }
       if (e.key === 'ArrowLeft')  { e.preventDefault(); setPromptIdx(i => Math.max(0, i - 1)); }
       if (e.key === 'ArrowUp')    { e.preventDefault(); setZone('reading'); }
     };
     window.addEventListener('keydown', handle);
     return () => window.removeEventListener('keydown', handle);
-  }, [interactionEnabled, zone]);
+  }, [interactionEnabled, zone, prompts.length]);
 
   const trackH  = TEXT_CARD_MAX_HEIGHT - 48;
   const thumbH  = Math.max(28, trackH * viewportRatio);
@@ -1246,45 +1310,93 @@ function TextOnlyScenario() {
           }}
         >
           <p style={{ fontSize: 28, lineHeight: '40px', fontWeight: 600, color: '#fff', margin: '0 0 28px 0' }}>
-            <GlanceTextReveal text={RAMEN_HEADING} playing={typingStarted} resolvedOpacity={0.98} resolveMs={TEXT_ONLY_HEADING_RESOLVE_MS} charDuration={TEXT_ONLY_HEADING_CHAR_MS} onDone={handleTypingDone} />
+            <GlanceTextReveal text={heading} playing={typingStarted} resolvedOpacity={0.98} resolveMs={TEXT_ONLY_HEADING_RESOLVE_MS} charDuration={TEXT_ONLY_HEADING_CHAR_MS} onDone={handleTypingDone} />
           </p>
 
-          {bodyIdx >= IDX_INTRO && (
-            <p style={{ fontSize: 22, lineHeight: '34px', color: 'rgba(255,255,255,0.75)', margin: '0 0 32px 0' }}>
-              <GlanceTextReveal text={RAMEN_INTRO} playing resolvedOpacity={0.85} resolveMs={BODY_RESOLVE_MS.p} charDuration={BODY_CHAR_DURATION.p} onDone={() => advanceBody(IDX_INTRO)} />
-            </p>
-          )}
+          <TextBlockSequence blocks={blocks} bodyIdx={bodyIdx} advanceBody={advanceBody} />
+        </div>
+      </div>
 
-          {bodyIdx >= IDX_SUB && (
-            <p style={{ fontSize: 24, fontWeight: 700, color: '#fff', margin: '0 0 20px 0' }}>
-              <GlanceTextReveal text={RAMEN_SUBHEADING} playing resolvedOpacity={0.98} resolveMs={BODY_RESOLVE_MS.sub} charDuration={BODY_CHAR_DURATION.sub} onDone={() => advanceBody(IDX_SUB)} />
-            </p>
-          )}
+      <PromptRow prompts={prompts} visible={fullyComposed} activeIdx={interactionEnabled && zone === 'inputs' ? promptIdx : null} />
+    </>
+  );
+}
 
-          {bodyIdx >= IDX_BULLET_START && (
-            <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 14 }}>
-              {RAMEN_BULLETS.map((b, i) => {
-                const idx = IDX_BULLET_START + i;
-                if (bodyIdx < idx) return null;
+/** The block-by-block reveal sequence shared by Text Only and Text +
+ *  Carousel. Same per-kind treatment the approved Figma content used: `p`
+ *  paragraphs, `sub` subheadings, `bullet` runs grouped into one list. A `p`
+ *  that directly follows a bullet run takes the closing-line treatment
+ *  (top-margined, fast resolve) — that is exactly what the original closing
+ *  line was. */
+function TextBlockSequence({
+  blocks,
+  bodyIdx,
+  advanceBody,
+  maxWidth,
+  renderCarousel,
+}: {
+  blocks: L1TextCarouselBlock[];
+  bodyIdx: number;
+  advanceBody: (i: number) => void;
+  maxWidth?: number;
+  /** Only supplied by Text + Carousel — renders the inline card rail for a
+   *  `carousel` block. Text Only never passes one (and never has the block). */
+  renderCarousel?: () => React.ReactNode;
+}) {
+  return (
+    <>
+      {blocks.map((blk, idx) => {
+        if (bodyIdx < idx) return null;
+
+        if (blk.kind === 'carousel') {
+          return <Fragment key={idx}>{renderCarousel?.()}</Fragment>;
+        }
+
+        if (blk.kind === 'bullet') {
+          // The whole contiguous bullet run renders as ONE list, emitted at
+          // the run's first index; later bullets are rows inside it.
+          if (idx > 0 && blocks[idx - 1].kind === 'bullet') return null;
+          const run: Array<{ text: string; blockIdx: number }> = [];
+          for (let j = idx; j < blocks.length && blocks[j].kind === 'bullet'; j++) {
+            run.push({ text: (blocks[j] as L1TextBlock).text, blockIdx: j });
+          }
+          return (
+            <ul key={idx} style={{ maxWidth, margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 14 }}>
+              {run.map(({ text, blockIdx }) => {
+                if (bodyIdx < blockIdx) return null;
                 return (
-                  <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 14, fontSize: 22, lineHeight: '32px', color: 'rgba(255,255,255,0.85)' }}>
+                  <li key={blockIdx} style={{ display: 'flex', alignItems: 'flex-start', gap: 14, fontSize: 22, lineHeight: '32px', color: 'rgba(255,255,255,0.85)' }}>
                     <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'rgba(255,255,255,0.5)', marginTop: 14, flexShrink: 0 }} />
-                    <span><GlanceTextReveal text={b} playing resolvedOpacity={0.9} resolveMs={BODY_RESOLVE_MS.bullet} charDuration={BODY_CHAR_DURATION.bullet} onDone={() => advanceBody(idx)} /></span>
+                    <span><GlanceTextReveal text={text} playing resolvedOpacity={0.9} resolveMs={BODY_RESOLVE_MS.bullet} charDuration={BODY_CHAR_DURATION.bullet} onDone={() => advanceBody(blockIdx)} /></span>
                   </li>
                 );
               })}
             </ul>
-          )}
+          );
+        }
 
-          {bodyIdx >= IDX_CLOSING && (
-            <p style={{ fontSize: 22, lineHeight: '34px', color: 'rgba(255,255,255,0.75)', margin: '32px 0 0 0' }}>
-              <GlanceTextReveal text={RAMEN_CLOSING} playing resolvedOpacity={0.85} resolveMs={BODY_RESOLVE_MS.closing} charDuration={BODY_CHAR_DURATION.closing} onDone={() => advanceBody(IDX_CLOSING)} />
+        if (blk.kind === 'sub') {
+          return (
+            <p key={idx} style={{ maxWidth, fontSize: 24, fontWeight: 700, color: '#fff', margin: '0 0 20px 0' }}>
+              <GlanceTextReveal text={blk.text} playing resolvedOpacity={0.98} resolveMs={BODY_RESOLVE_MS.sub} charDuration={BODY_CHAR_DURATION.sub} onDone={() => advanceBody(idx)} />
             </p>
-          )}
-        </div>
-      </div>
+          );
+        }
 
-      <PromptRow prompts={TEXT_PROMPTS} visible={fullyComposed} activeIdx={interactionEnabled && zone === 'inputs' ? promptIdx : null} />
+        const followsBullets = idx > 0 && blocks[idx - 1].kind === 'bullet';
+        return (
+          <p key={idx} style={{ maxWidth, fontSize: 22, lineHeight: '34px', color: 'rgba(255,255,255,0.75)', margin: followsBullets ? '32px 0 0 0' : '0 0 32px 0' }}>
+            <GlanceTextReveal
+              text={blk.text}
+              playing
+              resolvedOpacity={0.85}
+              resolveMs={followsBullets ? BODY_RESOLVE_MS.closing : BODY_RESOLVE_MS.p}
+              charDuration={followsBullets ? BODY_CHAR_DURATION.closing : BODY_CHAR_DURATION.p}
+              onDone={() => advanceBody(idx)}
+            />
+          </p>
+        );
+      })}
     </>
   );
 }
@@ -1315,7 +1427,13 @@ function TextOnlyScenario() {
       carousel's visible range is what hands focus back to the surface, not
       a key. The qrOpen/flyoutOpen overlays are the only things that fully
       capture the keyboard, exactly like on /food-l1. ── */
-function TextCarouselScenario() {
+export function TextCarouselScenario({ data }: { data?: L1TextCarouselData } = {}) {
+  const heading = data?.heading ?? RAMEN_HEADING;
+  const blocks = data?.blocks ?? DEFAULT_TC_BLOCKS;
+  const places = data?.places ?? (FoodPlaces as L1CardItem[]);
+  const prompts = data?.prompts ?? TEXT_PROMPTS;
+  const carouselIdx = blocks.findIndex((b) => b.kind === 'carousel');
+
   const { typingStarted, onTypingDone } = useIntroSequence();
 
   const [bodyIdx, setBodyIdx] = useState(-1);
@@ -1342,8 +1460,8 @@ function TextCarouselScenario() {
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
-  const fullyComposed = bodyIdx >= BODY_BLOCK_COUNT_TC;
-  const place = FoodPlaces[carouselCardIdx];
+  const fullyComposed = bodyIdx >= blocks.length;
+  const place = places[carouselCardIdx];
 
   const handleTypingDone = () => { setBodyIdx(0); onTypingDone(); };
   const advanceBody = (i: number) => setBodyIdx(prev => (prev === i ? i + 1 : prev));
@@ -1366,16 +1484,16 @@ function TextCarouselScenario() {
   // Widen the moment the carousel becomes the active block — locks in and
   // never narrows back, same "grows and stays" pattern as the height cap.
   useEffect(() => {
-    if (bodyIdx >= IDX_CAROUSEL_TC) setWidened(true);
-  }, [bodyIdx]);
+    if (carouselIdx >= 0 && bodyIdx >= carouselIdx) setWidened(true);
+  }, [bodyIdx, carouselIdx]);
 
   // The carousel isn't text, so there's no GlanceTextReveal onDone to chain
   // off — it just holds the sequence for a fixed beat while it fades in.
   useEffect(() => {
-    if (bodyIdx !== IDX_CAROUSEL_TC) return;
-    const t = setTimeout(() => advanceBody(IDX_CAROUSEL_TC), CAROUSEL_REVEAL_MS);
+    if (carouselIdx < 0 || bodyIdx !== carouselIdx) return;
+    const t = setTimeout(() => advanceBody(carouselIdx), CAROUSEL_REVEAL_MS);
     return () => clearTimeout(t);
-  }, [bodyIdx]);
+  }, [bodyIdx, carouselIdx]);
 
   useLayoutEffect(() => {
     if (!capped) return;
@@ -1383,10 +1501,10 @@ function TextCarouselScenario() {
     if (!el) return;
     const max = el.scrollHeight - el.clientHeight;
     if (max <= 0) return;
-    if (bodyIdx < BODY_BLOCK_COUNT_TC) {
+    if (bodyIdx < blocks.length) {
       el.scrollTo({ top: max, behavior: 'smooth' });
     }
-  }, [bodyIdx, capped]);
+  }, [bodyIdx, capped, blocks.length]);
 
   useEffect(() => {
     if (!fullyComposed) return;
@@ -1481,7 +1599,7 @@ function TextCarouselScenario() {
             e.preventDefault();
             if (ctaIdx < 2) {
               setCtaIdx(i => i + 1);
-            } else if (carouselCardIdx < FoodPlaces.length - 1) {
+            } else if (carouselCardIdx < places.length - 1) {
               setNavDir('right'); setCarouselCardIdx(i => i + 1); setCtaIdx(FoodPrimaryIdx.right);
             }
             return;
@@ -1523,13 +1641,13 @@ function TextCarouselScenario() {
       }
 
       // zone === 'inputs'
-      if (e.key === 'ArrowRight') { e.preventDefault(); setPromptIdx(i => Math.min(TEXT_PROMPTS.length - 1, i + 1)); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); setPromptIdx(i => Math.min(prompts.length - 1, i + 1)); }
       if (e.key === 'ArrowLeft')  { e.preventDefault(); setPromptIdx(i => Math.max(0, i - 1)); }
       if (e.key === 'ArrowUp')    { e.preventDefault(); setZone('reading'); }
     };
     window.addEventListener('keydown', handle);
     return () => window.removeEventListener('keydown', handle);
-  }, [interactionEnabled, zone, carouselInView, carouselCardIdx, navDir, ctaIdx, flyoutIdx, flyoutOpen, qrOpen, wishlisted, place.id]);
+  }, [interactionEnabled, zone, carouselInView, carouselCardIdx, navDir, ctaIdx, flyoutIdx, flyoutOpen, qrOpen, wishlisted, place.id, places.length, prompts.length]);
 
   const trackH  = TEXT_CARD_MAX_HEIGHT - 48;
   const thumbH  = Math.max(28, trackH * viewportRatio);
@@ -1607,37 +1725,10 @@ function TextCarouselScenario() {
           }}
         >
           <p style={{ maxWidth: TEXT_MEASURE_WIDTH, fontSize: 28, lineHeight: '40px', fontWeight: 600, color: '#fff', margin: '0 0 28px 0' }}>
-            <GlanceTextReveal text={RAMEN_HEADING} playing={typingStarted} resolvedOpacity={0.98} resolveMs={TEXT_ONLY_HEADING_RESOLVE_MS} charDuration={TEXT_ONLY_HEADING_CHAR_MS} onDone={handleTypingDone} />
+            <GlanceTextReveal text={heading} playing={typingStarted} resolvedOpacity={0.98} resolveMs={TEXT_ONLY_HEADING_RESOLVE_MS} charDuration={TEXT_ONLY_HEADING_CHAR_MS} onDone={handleTypingDone} />
           </p>
 
-          {bodyIdx >= IDX_INTRO && (
-            <p style={{ maxWidth: TEXT_MEASURE_WIDTH, fontSize: 22, lineHeight: '34px', color: 'rgba(255,255,255,0.75)', margin: '0 0 32px 0' }}>
-              <GlanceTextReveal text={RAMEN_INTRO} playing resolvedOpacity={0.85} resolveMs={BODY_RESOLVE_MS.p} charDuration={BODY_CHAR_DURATION.p} onDone={() => advanceBody(IDX_INTRO)} />
-            </p>
-          )}
-
-          {bodyIdx >= IDX_SUB && (
-            <p style={{ maxWidth: TEXT_MEASURE_WIDTH, fontSize: 24, fontWeight: 700, color: '#fff', margin: '0 0 20px 0' }}>
-              <GlanceTextReveal text={RAMEN_SUBHEADING} playing resolvedOpacity={0.98} resolveMs={BODY_RESOLVE_MS.sub} charDuration={BODY_CHAR_DURATION.sub} onDone={() => advanceBody(IDX_SUB)} />
-            </p>
-          )}
-
-          {bodyIdx >= IDX_BULLET_START && (
-            <ul style={{ maxWidth: TEXT_MEASURE_WIDTH, margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 14 }}>
-              {RAMEN_BULLETS.map((b, i) => {
-                const idx = IDX_BULLET_START + i;
-                if (bodyIdx < idx) return null;
-                return (
-                  <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 14, fontSize: 22, lineHeight: '32px', color: 'rgba(255,255,255,0.85)' }}>
-                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'rgba(255,255,255,0.5)', marginTop: 14, flexShrink: 0 }} />
-                    <span><GlanceTextReveal text={b} playing resolvedOpacity={0.9} resolveMs={BODY_RESOLVE_MS.bullet} charDuration={BODY_CHAR_DURATION.bullet} onDone={() => advanceBody(idx)} /></span>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-
-          {bodyIdx >= IDX_CAROUSEL_TC && (
+          <TextBlockSequence blocks={blocks} bodyIdx={bodyIdx} advanceBody={advanceBody} maxWidth={TEXT_MEASURE_WIDTH} renderCarousel={() => (
             <div style={{ margin: '8px 0 32px 0', animation: 'l1s-fadeUp 0.5s ease both' }}>
               {/* Viewport clips the rail — narrower than /food-l1's full-screen
                  rail since this one is nested in the reading column. The
@@ -1648,7 +1739,7 @@ function TextCarouselScenario() {
                   transform: `translateX(${-(carouselCardIdx * (COL_W + CARD_G))}px)`,
                   transition: 'transform 0.5s cubic-bezier(0.16,1,0.3,1)',
                 }}>
-                  {FoodPlaces.map((p, i) => {
+                  {places.map((p, i) => {
                     // Bug fix: the carousel must not keep showing card focus once
                     // the zone has moved on (e.g. to the prompt row) — carouselInView
                     // alone isn't enough since scroll position can still overlap it.
@@ -1686,14 +1777,16 @@ function TextCarouselScenario() {
 
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                                  <span style={{ color: '#ffba71', fontSize: 20, lineHeight: '24px', fontWeight: 600, fontFamily: 'Inter,sans-serif', textTransform: 'uppercase' }}>{p.rating}</span>
-                                  <img src="/images/l1/star.svg" alt="" style={{ width: 24, height: 24 }} />
-                                  <span style={{ color: '#ffba71', fontSize: 20, lineHeight: '24px', fontWeight: 600, fontFamily: 'Inter,sans-serif', textTransform: 'uppercase' }}>({p.ratingCount} reviews)</span>
-                                </div>
+                                {p.rating != null && (
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                                    <span style={{ color: '#ffba71', fontSize: 20, lineHeight: '24px', fontWeight: 600, fontFamily: 'Inter,sans-serif', textTransform: 'uppercase' }}>{p.rating}</span>
+                                    <img src="/images/l1/star.svg" alt="" style={{ width: 24, height: 24 }} />
+                                    {p.ratingCount && <span style={{ color: '#ffba71', fontSize: 20, lineHeight: '24px', fontWeight: 600, fontFamily: 'Inter,sans-serif', textTransform: 'uppercase' }}>({p.ratingCount} reviews)</span>}
+                                  </div>
+                                )}
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                                   <p style={{ fontSize: 32, fontWeight: 600, lineHeight: '44px', margin: 0, overflow: 'hidden' }}>{p.name}</p>
-                                  <p style={{ fontSize: 24, fontWeight: 600, lineHeight: '32px', margin: 0 }}>{p.price}</p>
+                                  <p style={{ fontSize: 24, fontWeight: 600, lineHeight: '32px', margin: 0 }}>{p.price ?? p.area}</p>
                                 </div>
                               </div>
 
@@ -1789,13 +1882,15 @@ function TextCarouselScenario() {
                           <span style={{ fontSize: 22, lineHeight: '28px', fontWeight: 500, fontFamily: 'Inter,sans-serif' }}>{p.agentLabel}</span>
                         </div>
                         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: 22, display: 'flex', flexDirection: 'column', gap: 16 }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                            <span style={{ color: '#ffba71', fontSize: 22, lineHeight: '24px', fontWeight: 600, fontFamily: 'Inter,sans-serif' }}>{p.rating}</span>
-                            <img src="/images/l1/star.svg" alt="" style={{ width: 24, height: 24 }} />
-                          </div>
+                          {p.rating != null && (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                              <span style={{ color: '#ffba71', fontSize: 22, lineHeight: '24px', fontWeight: 600, fontFamily: 'Inter,sans-serif' }}>{p.rating}</span>
+                              <img src="/images/l1/star.svg" alt="" style={{ width: 24, height: 24 }} />
+                            </div>
+                          )}
                           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                             <p style={{ fontSize: 32, fontWeight: 500, lineHeight: '44px', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</p>
-                            <p style={{ fontSize: 24, fontWeight: 600, lineHeight: '32px', margin: 0, opacity: 0.7 }}>{p.price}</p>
+                            <p style={{ fontSize: 24, fontWeight: 600, lineHeight: '32px', margin: 0, opacity: 0.7 }}>{p.price ?? p.area}</p>
                           </div>
                         </div>
                         <div style={{ position: 'absolute', inset: 0, boxShadow: 'inset 0 0 20px rgba(255,255,255,0.3)', borderRadius: 30, pointerEvents: 'none' }} />
@@ -1805,23 +1900,11 @@ function TextCarouselScenario() {
                 </div>
               </div>
             </div>
-          )}
-
-          {bodyIdx >= IDX_POST_CAROUSEL_TC && (
-            <p style={{ maxWidth: TEXT_MEASURE_WIDTH, fontSize: 22, lineHeight: '34px', color: 'rgba(255,255,255,0.75)', margin: 0 }}>
-              <GlanceTextReveal text={RAMEN_POST_CAROUSEL} playing resolvedOpacity={0.85} resolveMs={BODY_RESOLVE_MS.p} charDuration={BODY_CHAR_DURATION.p} onDone={() => advanceBody(IDX_POST_CAROUSEL_TC)} />
-            </p>
-          )}
-
-          {bodyIdx >= IDX_CLOSING_TC && (
-            <p style={{ maxWidth: TEXT_MEASURE_WIDTH, fontSize: 22, lineHeight: '34px', color: 'rgba(255,255,255,0.75)', margin: '32px 0 0 0' }}>
-              <GlanceTextReveal text={RAMEN_CLOSING} playing resolvedOpacity={0.85} resolveMs={BODY_RESOLVE_MS.closing} charDuration={BODY_CHAR_DURATION.closing} onDone={() => advanceBody(IDX_CLOSING_TC)} />
-            </p>
-          )}
+          )} />
         </div>
       </div>
 
-      <PromptRow prompts={TEXT_PROMPTS} visible={fullyComposed} activeIdx={interactionEnabled && zone === 'inputs' ? promptIdx : null} />
+      <PromptRow prompts={prompts} visible={fullyComposed} activeIdx={interactionEnabled && zone === 'inputs' ? promptIdx : null} />
 
       {qrOpen && (
         <>
@@ -1856,12 +1939,14 @@ function TextCarouselScenario() {
                 <img src={place.photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12, minWidth: 0 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <img src="/images/l1/star.svg" alt="" style={{ width: 20, height: 20 }} />
-                  <span style={{ color: '#ffba71', fontSize: 18, lineHeight: '20px', fontWeight: 600, fontFamily: 'Inter,sans-serif', textTransform: 'uppercase' }}>
-                    {place.rating} ({place.ratingCount} reviews)
-                  </span>
-                </div>
+                {place.rating != null && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <img src="/images/l1/star.svg" alt="" style={{ width: 20, height: 20 }} />
+                    <span style={{ color: '#ffba71', fontSize: 18, lineHeight: '20px', fontWeight: 600, fontFamily: 'Inter,sans-serif', textTransform: 'uppercase' }}>
+                      {place.rating}{place.ratingCount ? ` (${place.ratingCount} reviews)` : ''}
+                    </span>
+                  </div>
+                )}
                 <p style={{ fontSize: 22, fontWeight: 500, color: 'rgba(255,255,255,0.9)', letterSpacing: '-0.22px', margin: 0, fontFamily: "'Manrope','Plus Jakarta Sans',sans-serif" }}>{place.name}</p>
               </div>
             </div>
@@ -1879,6 +1964,38 @@ function TextCarouselScenario() {
         }}>{toast}</div>
       )}
     </>
+  );
+}
+
+/** The animations + hairline-border classes every scenario component depends
+ *  on. Exported so a host that mounts a scenario OUTSIDE this page (Level 2's
+ *  final response) can bring the styles with it. Injecting it twice is
+ *  harmless — the rules are identical. */
+export function L1ScenarioStyles() {
+  return (
+    <style>{`
+      @keyframes l1s-fadeUp  { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+      @keyframes l1s-fadeDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+      @keyframes l1s-mascotIn { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
+      @keyframes l1s-fadeIn { from { opacity: 0; } to { opacity: 1; } }
+      @keyframes l1s-slideInRight { from { opacity: 0; transform: translateX(480px); } to { opacity: 1; transform: translateX(0); } }
+      @keyframes l1s-toastIn { from { opacity: 0; transform: translateX(-50%) translateY(10px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+      .l1s-gborder { position: relative; }
+      .l1s-gborder::before {
+        content: ''; position: absolute; inset: 0; border-radius: inherit;
+        padding: var(--l1s-hairline, 2px);
+        background: linear-gradient(180deg, #ffffff, rgba(255,255,255,0.2));
+        opacity: 0.15;
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        mask-composite: exclude;
+        pointer-events: none;
+      }
+      /* Text Only renders its own scrollbar thumb — hide the native one. */
+      .l1s-noscrollbar::-webkit-scrollbar { display: none; }
+      .l1s-noscrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+    `}</style>
   );
 }
 
@@ -1957,29 +2074,7 @@ export default function L1Scenarios() {
   return (
     <div style={{ width: '100vw', height: '100vh', background: '#000', overflow: 'hidden', position: 'relative' }}>
       <ScaleSync />
-      <style>{`
-        @keyframes l1s-fadeUp  { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes l1s-fadeDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes l1s-mascotIn { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
-        @keyframes l1s-fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes l1s-slideInRight { from { opacity: 0; transform: translateX(480px); } to { opacity: 1; transform: translateX(0); } }
-        @keyframes l1s-toastIn { from { opacity: 0; transform: translateX(-50%) translateY(10px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
-        .l1s-gborder { position: relative; }
-        .l1s-gborder::before {
-          content: ''; position: absolute; inset: 0; border-radius: inherit;
-          padding: var(--l1s-hairline, 2px);
-          background: linear-gradient(180deg, #ffffff, rgba(255,255,255,0.2));
-          opacity: 0.15;
-          -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-          -webkit-mask-composite: xor;
-          mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-          mask-composite: exclude;
-          pointer-events: none;
-        }
-        /* Text Only renders its own scrollbar thumb — hide the native one. */
-        .l1s-noscrollbar::-webkit-scrollbar { display: none; }
-        .l1s-noscrollbar { scrollbar-width: none; -ms-overflow-style: none; }
-      `}</style>
+      <L1ScenarioStyles />
 
       <div style={{
         width: W, height: H, position: 'absolute', top: 0, left: 0, transformOrigin: 'top left',

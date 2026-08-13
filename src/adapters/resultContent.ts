@@ -36,7 +36,12 @@ export function deriveResultContent(
   template: ResultTemplateId
 ): ResolvedResultContent | undefined {
   const chrome = RESULT_TEMPLATE_CHROME[template];
-  const evidence = scenario?.steps.flatMap((s) => s.evidence) ?? [];
+  // Prefer the final "generating" step's own evidence (the agent's curated
+  // place_card/card_template/plain-text answer) over a flatMap of every
+  // step — otherwise an earlier search/tool step's raw candidate evidence
+  // could outrank the real curated answer as the result page's hero card.
+  const finalStep = [...(scenario?.steps ?? [])].reverse().find((s) => s.type === 'generating');
+  const evidence = finalStep?.evidence.length ? finalStep.evidence : (scenario?.steps.flatMap((s) => s.evidence) ?? []);
 
   const titled = evidence.filter((e) => e.title);
   if (titled.length > 0) {
