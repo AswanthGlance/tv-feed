@@ -30,6 +30,7 @@ import HybridHubPanel, { PinnedWidgetsRail, DEFAULT_PINNED } from './components/
 import TwoLevelNavPanel from './components/AgentHub/TwoLevelNavPanel';
 import ExploreFirstPanel, { ExploreMiniMenu, PinnedDockRight } from './components/AgentHub/ExploreFirstPanel';
 import V6Experience from './components/AgentHub/v6/V6Experience';
+import V6CinematicExperience from './components/AgentHub/v6/V6CinematicExperience';
 import { V6_L0_OPEN_X, V6_L0_CLOSED_LEFT, V6_EASE, V6_OPEN_MS } from './components/AgentHub/v6/v6Data';
 
 declare global { interface Window { GLANCE_CTX: Record<string, string>; GLANCE_STATE: string; } }
@@ -140,9 +141,14 @@ export type WarmProfile1CrisperAppProps = {
    * no P toggle, nothing but the product experience.
    */
   final?: boolean;
+  /**
+   * Which V6 hub renders: 'classic' (three calm sections, /agent_hub_final)
+   * or 'cinematic' (selected-Explore masthead, /agent_hub_final_v2).
+   */
+  v6Variant?: 'classic' | 'cinematic';
 };
 
-export default function WarmProfile1CrisperApp({ final = false }: WarmProfile1CrisperAppProps = {}) {
+export default function WarmProfile1CrisperApp({ final = false, v6Variant = 'classic' }: WarmProfile1CrisperAppProps = {}) {
   const { feed: initialFeed, unifiedFeed: initialUnified } = buildInitialFeed();
 
   const [state, setState] = useState<WarmStartState>({
@@ -581,17 +587,20 @@ export default function WarmProfile1CrisperApp({ final = false }: WarmProfile1Cr
             {/* Option 6 — Connected Hub. Always mounted while selected: the
                 persistent strip lives on L0 and travels with the composition
                 when the hub opens, so mount/unmount would break continuity. */}
-            {isV6 && (
-              <V6Experience
-                open={navOpenConcept === 6}
-                onRequestOpen={openNav}
-                onClose={closeNav}
-                onToast={toast}
-                currentCategory={currentCategory}
-                presentation={presentation}
-                onStripFocus={setV6StripFocused}
-              />
-            )}
+            {isV6 && (() => {
+              const V6Hub = v6Variant === 'cinematic' ? V6CinematicExperience : V6Experience;
+              return (
+                <V6Hub
+                  open={navOpenConcept === 6}
+                  onRequestOpen={openNav}
+                  onClose={closeNav}
+                  onToast={toast}
+                  currentCategory={currentCategory}
+                  presentation={presentation}
+                  onStripFocus={setV6StripFocused}
+                />
+              );
+            })()}
           </TVStage>
           <Toast msg={toastMsg} show={showToast} />
         </div>
