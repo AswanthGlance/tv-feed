@@ -42,14 +42,15 @@ const SQ = 132;
 const PAD = (V6_STRIP_ZONE_W - SQ) / 2; // 34
 
 /**
- * Closed-state floating panel geometry — the panel floats INSIDE the zone
- * with visible margins on every side (Find My treatment), and the tiles
- * (fixed at PAD from the zone edge) sit exactly centered in it:
- * 20 + (160 − 120) / 2 = 40 = PAD.
+ * Closed-state floating panel geometry — the panel HUGS its content: it
+ * spans x 20..180 in the zone (visible margin from the screen edge, ~40px
+ * gap to L0 content) and its height follows the tile stack, vertically
+ * centered (Find My treatment — a floating object, never a column).
+ * Horizontally: the inner content block starts at PAD (34), so the panel
+ * extends PAD − 20 = 14px beyond it on each side.
  */
-const PANEL_MARGIN_L = 20;
-const PANEL_MARGIN_Y = 28;
-const PANEL_W = SQ + 2 * (PAD - PANEL_MARGIN_L);   // 160 — right edge at x = 180
+const PANEL_BLEED_X = PAD - 20;  // 14 — panel edges at x = 20 / 180
+const PANEL_BLEED_Y = 18;
 const PANEL_RADIUS = 32;
 
 export function PinGlyph({ size = 10, tint = 'rgba(255,255,255,0.55)' }: { size?: number; tint?: string }) {
@@ -64,7 +65,7 @@ export function PinGlyph({ size = 10, tint = 'rgba(255,255,255,0.55)' }: { size?
 const LABEL: React.CSSProperties = {
   fontFamily: FONT, fontSize: 9, fontWeight: 800, letterSpacing: '0.18em',
   textTransform: 'uppercase', color: 'rgba(255,255,255,0.38)',
-  margin: '0 2px 8px',
+  margin: '0 0 8px', textAlign: 'center',
 };
 
 export type V6PersistentStripProps = {
@@ -95,26 +96,8 @@ export default function V6PersistentStrip({ open, pins, actives, focusedId, onIt
       zIndex: 58, pointerEvents: 'auto',
       animation: 'v6-fade-in 0.5s ease both',
     }}>
-      {/* closed only: ONE floating rounded glass panel — a Find My-style
-          object sitting ABOVE Ambient, never a sidebar. It touches no screen
-          edge: visible L0 background shows on all four sides, and the L0
-          background itself stays full-bleed behind it. The panel, not the
-          tiles, carries the container role. */}
-      <div style={{
-        position: 'absolute',
-        top: PANEL_MARGIN_Y, bottom: PANEL_MARGIN_Y,
-        left: PANEL_MARGIN_L, width: PANEL_W,
-        borderRadius: PANEL_RADIUS,
-        background: 'linear-gradient(180deg, rgba(22,20,34,0.5) 0%, rgba(11,10,19,0.58) 100%)',
-        backdropFilter: 'blur(30px) saturate(1.15)', WebkitBackdropFilter: 'blur(30px) saturate(1.15)',
-        boxShadow: `
-          inset 0 1px 0 rgba(255,255,255,0.08),
-          inset 0 0 0 1px rgba(255,255,255,0.06),
-          0 24px 70px rgba(0,0,0,0.45)`,
-        opacity: open ? 0 : 1,
-        transition: `opacity ${V6_OPEN_MS}ms ease`,
-        pointerEvents: 'none',
-      }} />
+      {/* open only: the zone's own frosted surface — darker than the hub,
+          hairline boundaries, so the composition reads as three layers */}
       <div style={{
         position: 'absolute', inset: 0,
         background: 'linear-gradient(180deg, rgba(6,5,13,0.92) 0%, rgba(4,4,9,0.96) 100%)',
@@ -125,13 +108,34 @@ export default function V6PersistentStrip({ open, pins, actives, focusedId, onIt
         pointerEvents: 'none',
       }} />
 
-      {/* Content column — tiles float vertically centered in the full-height surface */}
+      {/* Content column — the tile stack floats vertically centered */}
       <div style={{
         position: 'relative', height: '100%', boxSizing: 'border-box',
         padding: `0 ${PAD}px`,
         display: 'flex', flexDirection: 'column', justifyContent: 'center',
       }}>
         <div style={{ position: 'relative' }}>
+          {/* closed only: ONE floating rounded glass panel — a Find My-style
+              object sitting ABOVE Ambient, never a sidebar or a column. It
+              HUGS the tile stack (dynamic height, vertically centered),
+              touches no screen edge, and the L0 background stays full-bleed
+              and faintly perceptible through it. */}
+          <div style={{
+            position: 'absolute',
+            top: -PANEL_BLEED_Y, bottom: -PANEL_BLEED_Y,
+            left: -PANEL_BLEED_X, right: -PANEL_BLEED_X,
+            borderRadius: PANEL_RADIUS,
+            background: 'linear-gradient(180deg, rgba(22,20,34,0.5) 0%, rgba(11,10,19,0.58) 100%)',
+            backdropFilter: 'blur(30px) saturate(1.15)', WebkitBackdropFilter: 'blur(30px) saturate(1.15)',
+            boxShadow: `
+              inset 0 1px 0 rgba(255,255,255,0.08),
+              inset 0 0 0 1px rgba(255,255,255,0.06),
+              0 24px 70px rgba(0,0,0,0.45)`,
+            opacity: open ? 0 : 1,
+            transition: `opacity ${V6_OPEN_MS}ms ease`,
+            pointerEvents: 'none',
+          }} />
+
           {/* PINNED — user intent */}
           <div style={LABEL}>Pinned</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>

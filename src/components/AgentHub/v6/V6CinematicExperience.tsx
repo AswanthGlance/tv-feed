@@ -54,8 +54,8 @@ const ROW_LEN: Record<Zone, number> = {
 const clamp = (n: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, n));
 const pinId = (id: string) => `pin-${id}`;
 
-/** the masthead atmosphere occupies the hub's upper ~42% and fades out */
-const MASTHEAD_H = 470;
+/** the masthead atmosphere occupies the hub's upper ~40% and fades out */
+const MASTHEAD_H = 440;
 
 const HEADING: CSSProperties = {
   fontFamily: FONT, fontSize: 13, fontWeight: 800, letterSpacing: '0.16em',
@@ -490,7 +490,7 @@ export default function V6CinematicExperience({ open, onRequestOpen, onClose, on
             <div style={{
               display: 'grid',
               gridTemplateColumns: `repeat(${V6_CIN_COLS}, 1fr)`,
-              gridTemplateRows: 'repeat(2, 146px)',
+              gridTemplateRows: 'repeat(2, 184px)',
               gap: 16,
             }}>
               {V6_CINEMATIC_CARDS.map((c, i) => (
