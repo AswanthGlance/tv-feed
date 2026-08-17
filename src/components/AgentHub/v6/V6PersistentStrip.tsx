@@ -37,19 +37,21 @@ import {
   V6_MAX_PINS, type V6StripItem,
 } from './v6Data';
 
-/** square tile size — width == height, always */
-const SQ = 132;
-const PAD = (V6_STRIP_ZONE_W - SQ) / 2; // 34
+/** square tile size — width == height, always. Sized so the full stack
+ *  (2 pinned + 5 active + labels + divider + pin affordance) fits the
+ *  full-height sidecar with breathing room. */
+const SQ = 120;
+const PAD = (V6_STRIP_ZONE_W - SQ) / 2; // 40
 
 /**
  * Closed-state floating panel geometry — the panel floats INSIDE the zone
  * with visible margins on every side (Find My treatment), and the tiles
  * (fixed at PAD from the zone edge) sit exactly centered in it:
- * 20 + (160 − 132) / 2 = 34 = PAD.
+ * 20 + (160 − 120) / 2 = 40 = PAD.
  */
 const PANEL_MARGIN_L = 20;
 const PANEL_MARGIN_Y = 28;
-const PANEL_W = SQ + 28;   // 160 — right edge at x = 180
+const PANEL_W = SQ + 2 * (PAD - PANEL_MARGIN_L);   // 160 — right edge at x = 180
 const PANEL_RADIUS = 32;
 
 export function PinGlyph({ size = 10, tint = 'rgba(255,255,255,0.55)' }: { size?: number; tint?: string }) {
