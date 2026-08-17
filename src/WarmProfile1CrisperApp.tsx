@@ -29,6 +29,8 @@ import CurvedNavPanel from './components/AgentHub/CurvedNavPanel';
 import HybridHubPanel, { PinnedWidgetsRail, DEFAULT_PINNED } from './components/AgentHub/HybridHubPanel';
 import TwoLevelNavPanel from './components/AgentHub/TwoLevelNavPanel';
 import ExploreFirstPanel, { ExploreMiniMenu, PinnedDockRight } from './components/AgentHub/ExploreFirstPanel';
+import V6Experience from './components/AgentHub/v6/V6Experience';
+import { V6_L0_OPEN_X, V6_L0_CLOSED_LEFT, V6_EASE, V6_OPEN_MS } from './components/AgentHub/v6/v6Data';
 
 declare global { interface Window { GLANCE_CTX: Record<string, string>; GLANCE_STATE: string; } }
 window.GLANCE_CTX = { city: 'Bangalore', weather: 'rainy', day: 'Saturday', timeOfDay: 'morning', upcomingContext: 'weekend' };
@@ -83,12 +85,13 @@ const IDLE_CEILING_MS = 60_000;
 // numbering has changed over time (Hybrid Hub was "2.5", Explore First was "4").
 const NAV_STORAGE_KEY = 'glance-agent-hub-nav-option';
 
-const OPTION_IDS: Record<1 | 2 | 3 | 4 | 5, string> = {
+const OPTION_IDS: Record<1 | 2 | 3 | 4 | 5 | 6, string> = {
   1: 'agent-hub',
   2: 'nav-rail',
   3: 'workspace',
   4: 'hybrid-hub',
   5: 'explore-first',
+  6: 'connected-hub',
 };
 
 /**
@@ -96,15 +99,16 @@ const OPTION_IDS: Record<1 | 2 | 3 | 4 | 5, string> = {
  * meant Hybrid Hub (old "2.5") becomes Option 4; anything that meant Explore
  * First (old "4") becomes Option 5. A bare legacy "4" therefore maps to 5.
  */
-const NAV_ALIASES: Record<string, 1 | 2 | 3 | 4 | 5> = {
+const NAV_ALIASES: Record<string, 1 | 2 | 3 | 4 | 5 | 6> = {
   'agent-hub': 1,     '1': 1, 'option-1': 1,
   'nav-rail': 2,      '2': 2, 'option-2': 2,
   'workspace': 3,     '3': 3, 'option-3': 3,
   'hybrid-hub': 4,    '2.5': 4, 'option-2-5': 4, 'option2.5': 4,
   'explore-first': 5, '4': 5, 'option-4': 5, '5': 5, 'option-5': 5,
+  'connected-hub': 6, '6': 6, 'option-6': 6,
 };
 
-function loadNavOption(): 1 | 2 | 3 | 4 | 5 {
+function loadNavOption(): 1 | 2 | 3 | 4 | 5 | 6 {
   try {
     const stored = localStorage.getItem(NAV_STORAGE_KEY);
     if (stored && stored in NAV_ALIASES) return NAV_ALIASES[stored];
@@ -129,7 +133,16 @@ type WarmStartState = {
   showToast: boolean;
 };
 
-export default function WarmProfile1CrisperApp() {
+export type WarmProfile1CrisperAppProps = {
+  /**
+   * Final/showcase mode (/agent_hub_final): locks the experience to Option 6
+   * (Connected Hub) and hides every prototype control — no option selector,
+   * no P toggle, nothing but the product experience.
+   */
+  final?: boolean;
+};
+
+export default function WarmProfile1CrisperApp({ final = false }: WarmProfile1CrisperAppProps = {}) {
   const { feed: initialFeed, unifiedFeed: initialUnified } = buildInitialFeed();
 
   const [state, setState] = useState<WarmStartState>({
@@ -285,17 +298,51 @@ export default function WarmProfile1CrisperApp() {
 
   // ── Navigation-concept exploration selector (dev, L0-only) ──────────────────
   // 1 = full-screen Agent Hub · 2 = curved vertical nav · 3 = AI Workspace ·
-  // 4 = Hybrid Hub (previously "Option 2.5") · 5 = Explore-first (previously "Option 4")
-  type NavOption = 1 | 2 | 3 | 4 | 5;
-  const [navOption, setNavOption] = useState<NavOption>(loadNavOption);
+  // 4 = Hybrid Hub (previously "Option 2.5") · 5 = Explore-first (previously "Option 4") ·
+  // 6 = Connected Hub (persistent strip as the spatial bridge, one ← opens the hub)
+  type NavOption = 1 | 2 | 3 | 4 | 5 | 6;
+  const [navOption, setNavOption] = useState<NavOption>(final ? 6 : loadNavOption);
   const [navOpenConcept, setNavOpenConcept] = useState<NavOption | null>(null);
   const navOpen = navOpenConcept !== null;
 
-  // Persist the selected option (stored by implementation identity, not number,
-  // so future renumbering can't corrupt saved selections).
+  // V6: true while hub focus rests on the persistent strip — L0 presence is
+  // slightly restored (see l0Treatment below).
+  const [v6StripFocused, setV6StripFocused] = useState(false);
+
+  // Presentation/demo mode — hides all prototype chrome (option selector,
+  // sound toggle, keyboard hints) so the leadership demo reads as product.
+  // Toggle with P; persisted per browser.
+  const [presentation, setPresentation] = useState<boolean>(() => {
+    if (final) return true; // final mode is always presentation — no dev chrome
+    try { return localStorage.getItem('glance-presentation-mode') === 'on'; } catch { return false; }
+  });
   useEffect(() => {
+    if (final) return; // P toggle disabled — final mode never shows dev chrome
+    const handler = (e: KeyboardEvent) => {
+      if (e.key !== 'p' && e.key !== 'P') return;
+      setPresentation(prev => {
+        const next = !prev;
+        try { localStorage.setItem('glance-presentation-mode', next ? 'on' : 'off'); } catch { /* private mode */ }
+        return next;
+      });
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [final]);
+  const presentationAnnounced = useRef(false);
+  useEffect(() => {
+    if (!presentationAnnounced.current) { presentationAnnounced.current = true; return; }
+    toast(presentation ? '✦ Presentation mode — prototype controls hidden (P to exit)' : 'Development mode — prototype controls visible');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [presentation]);
+
+  // Persist the selected option (stored by implementation identity, not number,
+  // so future renumbering can't corrupt saved selections). Final mode never
+  // persists — the lock is per-URL, not a saved preference.
+  useEffect(() => {
+    if (final) return;
     try { localStorage.setItem(NAV_STORAGE_KEY, OPTION_IDS[navOption]); } catch { /* private mode */ }
-  }, [navOption]);
+  }, [navOption, final]);
 
   // Option 4 (Hybrid Hub): which agent the hub focuses on entry — set by the
   // pinned widget the user clicked, defaults to the first pinned agent.
@@ -315,6 +362,7 @@ export default function WarmProfile1CrisperApp() {
       if (e.key === '3') { setNavOption(3); toast('← opens Option 3 · AI Workspace'); }
       if (e.key === '4') { setNavOption(4); toast('← opens Option 4 · Hybrid Hub'); }
       if (e.key === '5') { setNavOption(5); toast('← opens Option 5 · Explore First'); }
+      if (e.key === '6') { setNavOption(6); toast('← opens Option 6 · Connected Hub'); }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
@@ -346,8 +394,23 @@ export default function WarmProfile1CrisperApp() {
   // Per-concept L0 treatment while the nav is open.
   // Option 1 (full-screen hub): dim heavily. Option 2/3 (left panels): keep L0
   // legible on the right, nudged right + slightly scaled for spatial continuity.
+  // Option 6 (Connected Hub): closed, L0 stays full-bleed edge-to-edge (the
+  // strip overlays its left edge behind a scrim — no reserved dead space);
+  // open, the SAME surface slides right into its own full-height zone so only
+  // its left edge remains visible as context. Brightness drops ~14% while the
+  // hub owns focus and partially recovers when focus rests on the strip (the
+  // doorway back to Ambient).
+  const isV6 = navOption === 6;
   const l0Treatment: React.CSSProperties =
-    navOpenConcept === 1
+    navOpenConcept === 6
+      ? {
+          filter: v6StripFocused ? 'brightness(0.93) saturate(0.97)' : 'brightness(0.86) saturate(0.94)',
+          opacity: 1,
+          transform: `translateX(${V6_L0_OPEN_X}px)`,
+        }
+      : isV6
+      ? { filter: 'none', opacity: 1, transform: 'translateX(0px)' }
+      : navOpenConcept === 1
       ? { filter: 'brightness(0.45)', opacity: 0.7, transform: 'none' }
       : navOpenConcept === 2
       // Option 2 nav rail: L0 shifts right, mild dim, stays clearly recognisable
@@ -397,8 +460,23 @@ export default function WarmProfile1CrisperApp() {
             <div style={{
               position: 'absolute', inset: 0,
               transformOrigin: 'right center',
-              transition: 'filter 0.34s ease, opacity 0.34s ease, transform 0.34s cubic-bezier(0.22,0.61,0.36,1)',
+              transition: isV6
+                ? `filter 0.4s ease, opacity 0.4s ease, transform ${V6_OPEN_MS}ms ${V6_EASE}`
+                : 'filter 0.34s ease, opacity 0.34s ease, transform 0.34s cubic-bezier(0.22,0.61,0.36,1)',
               pointerEvents: navOpen ? 'none' : 'auto',
+              // V6: closed, L0 is the full-bleed experience (no chrome at all);
+              // open, it becomes a physical context panel with a rounded left
+              // edge, clipped and floating beside the strip's zone.
+              ...(isV6 ? {
+                // full-bleed always — the Smart Tiles dock floats OVER the
+                // background; only the L0 *content* shifts (contentOffsetX)
+                borderRadius: navOpenConcept === 6 ? '26px 0 0 26px' : '0px',
+                overflow: 'hidden',
+                boxShadow: navOpenConcept === 6
+                  ? '0 24px 80px rgba(0,0,0,0.55), inset 0 0 0 1px rgba(255,255,255,0.07)'
+                  : 'none',
+                transition: `filter 0.4s ease, opacity 0.4s ease, transform ${V6_OPEN_MS}ms ${V6_EASE}, border-radius ${V6_OPEN_MS}ms ${V6_EASE}, box-shadow ${V6_OPEN_MS}ms ease`,
+              } : {}),
               ...l0Treatment,
             }}>
               <FeedScreen
@@ -428,6 +506,10 @@ export default function WarmProfile1CrisperApp() {
                     paused={paused}
                     onCTAClick={onCTAClick}
                     onTimelineComplete={handleTimelineComplete}
+                    // V6 closed: the Smart Tiles dock floats over the left edge
+                    // of the full-bleed background — content clears it. Open:
+                    // the offset relaxes so the context slice shows the title.
+                    contentOffsetX={isV6 && !navOpen ? V6_L0_CLOSED_LEFT : 0}
                   />
                 )}
                 idleMs={IDLE_CEILING_MS}
@@ -437,15 +519,17 @@ export default function WarmProfile1CrisperApp() {
               />
             </div>
 
-            {/* L0 exploration selector — dev only, chooses what ← opens */}
-            {!navOpen && (
+            {/* L0 exploration selector — dev only, chooses what ← opens.
+                Hidden in presentation mode (toggle with P). */}
+            {!navOpen && !presentation && (
               <NavOptionSelector active={navOption} onSelect={setNavOption} />
             )}
 
             {/* Subtle left-edge affordance — hints "press ← to explore".
                 Option 4 (Hybrid Hub) replaces it with the always-visible pinned
-                widgets; Option 5 (Explore First) with a minimal 3-item menu. */}
-            {!navOpen && navOption !== 4 && navOption !== 5 && <LeftEdgeAffordance onOpen={openNav} />}
+                widgets; Option 5 (Explore First) with a minimal 3-item menu;
+                Option 6 (Connected Hub) with the persistent strip. */}
+            {!navOpen && navOption !== 4 && navOption !== 5 && navOption !== 6 && <LeftEdgeAffordance onOpen={openNav} />}
             {!navOpen && navOption === 4 && (
               <PinnedWidgetsRail pinnedIds={pinnedIds} onOpen={openHybridHub} />
             )}
@@ -491,6 +575,21 @@ export default function WarmProfile1CrisperApp() {
                 initialFocus={exploreEntryFocus.current}
                 pinnedIds={pinnedIds}
                 onTogglePin={togglePin}
+              />
+            )}
+
+            {/* Option 6 — Connected Hub. Always mounted while selected: the
+                persistent strip lives on L0 and travels with the composition
+                when the hub opens, so mount/unmount would break continuity. */}
+            {isV6 && (
+              <V6Experience
+                open={navOpenConcept === 6}
+                onRequestOpen={openNav}
+                onClose={closeNav}
+                onToast={toast}
+                currentCategory={currentCategory}
+                presentation={presentation}
+                onStripFocus={setV6StripFocused}
               />
             )}
           </TVStage>
@@ -564,17 +663,18 @@ function LeftEdgeAffordance({ onOpen }: { onOpen: () => void }) {
 }
 
 // ─── L0 exploration selector (dev only) ─────────────────────────────────────────
-// Chooses which navigation concept ← opens. Keys 1-5 also switch it.
+// Chooses which navigation concept ← opens. Keys 1-6 also switch it.
 
 function NavOptionSelector({ active, onSelect }: {
-  active: 1 | 2 | 3 | 4 | 5; onSelect: (o: 1 | 2 | 3 | 4 | 5) => void;
+  active: 1 | 2 | 3 | 4 | 5 | 6; onSelect: (o: 1 | 2 | 3 | 4 | 5 | 6) => void;
 }) {
-  const options: { n: 1 | 2 | 3 | 4 | 5; label: string }[] = [
+  const options: { n: 1 | 2 | 3 | 4 | 5 | 6; label: string }[] = [
     { n: 1, label: 'Agent Hub' },
     { n: 2, label: 'Nav Rail' },
     { n: 3, label: 'Workspace' },
     { n: 4, label: 'Hybrid Hub' },
     { n: 5, label: 'Explore First' },
+    { n: 6, label: 'Connected Hub' },
   ];
   return (
     <div style={{

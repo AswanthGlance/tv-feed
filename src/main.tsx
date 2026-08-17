@@ -58,6 +58,9 @@ const isWarmProfile1  = window.location.pathname === '/warm_profile_1'
                      || window.location.pathname === '/warm-profile-1';
 const isWarmProfile1Crisp = window.location.pathname === '/warm_profile_1_crisp'
                      || window.location.pathname === '/warm-profile-1-crisp';
+// Final/showcase URL — Option 6 (Connected Hub) only, no prototype controls.
+const isAgentHubFinal = window.location.pathname === '/agent_hub_final'
+                     || window.location.pathname === '/agent-hub-final';
 const isWarmProfile1Crisper = window.location.pathname === '/agent_hub_exploration'
                      || window.location.pathname === '/agent-hub-exploration'
                      || window.location.pathname === '/warm_profile_1_crisper'
@@ -127,6 +130,7 @@ createRoot(document.getElementById('root')!).render(
      isWarmStart    ? <WarmStartApp /> :
      isWarmProfile1 ? <WarmProfile1App /> :
      isWarmProfile1Crisp ? <WarmProfile1CrispApp /> :
+     isAgentHubFinal ? <WarmProfile1CrisperApp final /> :
      isWarmProfile1Crisper ? <WarmProfile1CrisperApp /> :
      isWarmProfile2Crisp ? <WarmProfile2CrispApp /> :
      isColdProfile1  ? <ColdProfile1App /> :

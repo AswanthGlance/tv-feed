@@ -16,9 +16,11 @@ type Props = {
   paused?:            boolean;
   onCTAClick:         () => void;
   onTimelineComplete: () => void;
+  /** V6 Connected Hub: shift left-anchored L0 content right (bg stays full-bleed) */
+  contentOffsetX?:    number;
 };
 
-export default function WarmProfile1CrisperL0Glance({ item, profile, paused = false, onCTAClick, onTimelineComplete }: Props) {
+export default function WarmProfile1CrisperL0Glance({ item, profile, paused = false, onCTAClick, onTimelineComplete, contentOffsetX = 0 }: Props) {
   const signalData = WARM_CARD_CRISPER_DATA[item.id];
 
   if (signalData) {
@@ -35,6 +37,7 @@ export default function WarmProfile1CrisperL0Glance({ item, profile, paused = fa
         alignment={alignment}
         onTimelineComplete={onTimelineComplete}
         signalData={signalData}
+        contentOffsetX={contentOffsetX}
       />
     );
   }

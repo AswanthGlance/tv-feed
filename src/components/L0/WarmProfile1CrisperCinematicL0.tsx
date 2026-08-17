@@ -102,12 +102,27 @@ type Props = {
   alignment:          Alignment;
   onTimelineComplete: () => void;
   signalData:         WarmCardCrisperEntry;
+  /**
+   * Shifts only the LEFT-anchored foreground content (header logo, tag,
+   * title, content column) right by this many px — the background layers
+   * stay edge-to-edge. Used by V6 Connected Hub so its Smart Tiles dock can
+   * float over the background without covering the content. Right-anchored
+   * elements (clock/weather) never move.
+   */
+  contentOffsetX?:    number;
 };
+
+/** left offsets animate with the host composition's spatial ease */
+const OFFSET_TRANSITION = 'left 680ms cubic-bezier(0.32, 0.72, 0, 1)';
 
 export default function WarmProfile1CrisperCinematicL0({
   item, paused = false, ctaFocused, onCTAClick, alignment, onTimelineComplete, signalData,
+  contentOffsetX = 0,
 }: Props) {
   const geo = GEO[alignment];
+  /** applies contentOffsetX to a left-anchored CSS position */
+  const offsetLeft = (base: string): string =>
+    contentOffsetX > 0 ? `calc(${base} + ${contentOffsetX}px)` : base;
 
   const containerRef    = useRef<HTMLDivElement>(null);
   const bgRef           = useRef<HTMLDivElement>(null);
@@ -315,14 +330,16 @@ export default function WarmProfile1CrisperCinematicL0({
         zIndex: 2,
       }} />
 
-      {/* HEADER */}
+      {/* HEADER — only the left edge shifts with contentOffsetX; the clock
+          block stays right-anchored in place */}
       <div ref={headerRef} style={{
         position: 'absolute',
         top: 'clamp(16px, 3vh, 48px)',
-        left: 'clamp(20px, 4.5vw, 88px)',
+        left: offsetLeft('clamp(20px, 4.5vw, 88px)'),
         right: 'clamp(20px, 4.5vw, 88px)',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         zIndex: 30, willChange: 'opacity, transform',
+        transition: OFFSET_TRANSITION,
       }}>
         <img
           src={LOGO_SRC}
@@ -350,12 +367,13 @@ export default function WarmProfile1CrisperCinematicL0({
       <div style={{
         position: 'absolute',
         top: 'clamp(80px, 12vh, 140px)',
-        left: 'clamp(20px, 4.5vw, 88px)',
+        left: offsetLeft('clamp(20px, 4.5vw, 88px)'),
         zIndex: 20,
         display: 'flex',
         flexDirection: 'column',
         gap: 'clamp(6px, 0.8vh, 10px)',
         maxWidth: 'clamp(300px, 45vw, 700px)',
+        transition: OFFSET_TRANSITION,
       }}>
         <div ref={tagRef} style={{
           display: 'inline-flex', alignItems: 'center', gap: 6,
@@ -391,10 +409,13 @@ export default function WarmProfile1CrisperCinematicL0({
         </h1>
       </div>
 
-      {/* CONTENT COLUMN */}
+      {/* CONTENT COLUMN — center stays centered, right stays right-anchored;
+          only a left-anchored column picks up the V6 content offset */}
       <div style={{
         position: 'absolute',
-        left:   alignment === 'right' ? 0 : geo.contentLeft,
+        left:   alignment === 'right' ? 0
+              : alignment === 'center' ? geo.contentLeft
+              : offsetLeft(geo.contentLeft!),
         right:  geo.contentRight,
         bottom: BOTTOM,
         width:  alignment === 'right' ? undefined : geo.contentWidth,
@@ -403,6 +424,7 @@ export default function WarmProfile1CrisperCinematicL0({
         display: 'flex',
         flexDirection: 'column',
         gap: 0,
+        transition: OFFSET_TRANSITION,
       }}>
 
         {/* CENTER TEMPLATE */}
