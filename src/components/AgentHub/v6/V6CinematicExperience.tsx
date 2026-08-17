@@ -59,7 +59,7 @@ const MASTHEAD_H = 470;
 
 const HEADING: CSSProperties = {
   fontFamily: FONT, fontSize: 13, fontWeight: 800, letterSpacing: '0.16em',
-  textTransform: 'uppercase', color: 'rgba(255,255,255,0.46)', margin: '0 2px 10px',
+  textTransform: 'uppercase', color: 'rgba(255,255,255,0.46)', margin: '0 2px 14px',
 };
 
 export type V6CinematicExperienceProps = {
@@ -407,7 +407,7 @@ export default function V6CinematicExperience({ open, onRequestOpen, onClose, on
         <div style={{
           position: 'relative', height: '100%', boxSizing: 'border-box',
           display: 'flex', flexDirection: 'column',
-          padding: `30px ${HUB_PAD_R}px 20px ${HUB_PAD_L}px`,
+          padding: `34px ${HUB_PAD_R}px 28px ${HUB_PAD_L}px`,
         }}>
           {/* brand row — floats over the masthead */}
           <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: 10, ...seq(0) }}>
@@ -418,7 +418,7 @@ export default function V6CinematicExperience({ open, onRequestOpen, onClose, on
           </div>
 
           {/* 1 · MASTHEAD COPY — why might I want to do this? */}
-          <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', paddingBottom: 22, ...seq(1) }}>
+          <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', paddingBottom: 32, ...seq(1) }}>
             {/* key remount = quick rise-in on every focus change; the image
                 crossfade behind carries the cinematic weight */}
             <div key={masthead.id} style={{ maxWidth: 640, animation: 'v6-rise-in 0.32s ease both' }}>
@@ -452,7 +452,7 @@ export default function V6CinematicExperience({ open, onRequestOpen, onClose, on
             {/* Ask Glance — compact conversational affordance, never a hero */}
             <div style={{
               display: 'flex', alignItems: 'center', gap: 11, boxSizing: 'border-box',
-              width: 252, height: 46, padding: '0 8px 0 18px', borderRadius: 999, marginTop: 20, cursor: 'pointer',
+              width: 252, height: 46, padding: '0 8px 0 18px', borderRadius: 999, marginTop: 26, cursor: 'pointer',
               background: zone === 'ask'
                 ? 'linear-gradient(180deg, rgba(48,45,70,0.92) 0%, rgba(26,24,42,0.92) 100%)'
                 : 'linear-gradient(180deg, rgba(24,22,38,0.72) 0%, rgba(14,13,24,0.72) 100%)',
@@ -490,8 +490,8 @@ export default function V6CinematicExperience({ open, onRequestOpen, onClose, on
             <div style={{
               display: 'grid',
               gridTemplateColumns: `repeat(${V6_CIN_COLS}, 1fr)`,
-              gridTemplateRows: 'repeat(2, 150px)',
-              gap: 14,
+              gridTemplateRows: 'repeat(2, 146px)',
+              gap: 16,
             }}>
               {V6_CINEMATIC_CARDS.map((c, i) => (
                 <CinExploreCard
@@ -507,7 +507,7 @@ export default function V6CinematicExperience({ open, onRequestOpen, onClose, on
           </div>
 
           {/* 3 · YOUR SPACE — utilities */}
-          <div style={{ flexShrink: 0, marginTop: 18, ...seq(3) }}>
+          <div style={{ flexShrink: 0, marginTop: 30, ...seq(3) }}>
             <div style={{ ...HEADING, color: 'rgba(255,255,255,0.32)', fontSize: 12 }}>Your Space</div>
             <div style={{ display: 'flex', gap: SPACE_GAP }}>
               {V6_SPACE_TILES.map((tile, i) => (
