@@ -6,10 +6,10 @@
  * V6Experience — this variant changes the visual hierarchy:
  *
  *   1 · SELECTED EXPLORE MASTHEAD  emotional / contextual / cinematic
- *   2 · EXPLORE                    primary discovery (structured bento)
- *   3 · CONTINUE                   personal continuation (quiet, compact)
- *   4 · YOUR SPACE                 utilities
- *   5 · SMART TILES                persistent / active context (unchanged)
+ *   2 · EXPLORE                    primary discovery (equal cards, 4×2)
+ *   3 · YOUR SPACE                 utilities
+ *   4 · SMART TILES                persistent / active context (unchanged)
+ * (No Continue row — ongoing threads live on the persistent strip.)
  *
  * The focused Explore card drives the masthead: its imagery becomes the
  * hub's upper background (edge-to-edge atmosphere, never another card), and
@@ -35,21 +35,19 @@ import {
   type V6StripItem, type V6HubTarget,
 } from './v6Data';
 import {
-  V6_CINEMATIC_CARDS, V6_CIN_COLS, V6_CIN_ROW_H, cinBentoMove,
-  V6_CIN_CONTINUE, V6_MASTHEAD_FADE_MS,
-  type V6CinematicCard, type V6CinContinueItem,
+  V6_CINEMATIC_CARDS, V6_CIN_COLS, V6_MASTHEAD_FADE_MS,
+  type V6CinematicCard,
 } from './v6CinematicData';
 import { v6sfx, sfxEnabled, setSfxEnabled } from './v6Sounds';
 
-type Zone = 'strip' | 'ask' | 'explore' | 'continue' | 'space';
+type Zone = 'strip' | 'ask' | 'explore' | 'space';
 
-const ROW_ORDER: Zone[] = ['ask', 'explore', 'continue', 'space'];
+const ROW_ORDER: Zone[] = ['ask', 'explore', 'space'];
 
 const ROW_LEN: Record<Zone, number> = {
   strip: 0,
   ask: 1,
   explore: V6_CINEMATIC_CARDS.length,
-  continue: V6_CIN_CONTINUE.length,
   space: V6_SPACE_TILES.length,
 };
 
@@ -85,7 +83,7 @@ export default function V6CinematicExperience({ open, onRequestOpen, onClose, on
   /** which Explore experience owns the masthead — the last focused card */
   const [mastheadIdx, setMastheadIdx] = useState(0);
 
-  const mem = useRef<Record<Zone, number>>({ strip: 0, ask: 0, explore: 0, continue: 0, space: 0 });
+  const mem = useRef<Record<Zone, number>>({ strip: 0, ask: 0, explore: 0, space: 0 });
   const holdRef = useRef<{ t: ReturnType<typeof setTimeout> | null; fired: boolean }>({ t: null, fired: false });
   const listenT = useRef<ReturnType<typeof setTimeout> | null>(null);
   const prevOpen = useRef(false);
@@ -175,22 +173,6 @@ export default function V6CinematicExperience({ open, onRequestOpen, onClose, on
       });
       return;
     }
-    if (z === 'continue') {
-      const item = V6_CIN_CONTINUE[i];
-      const id = pinId(item.id);
-      if (pins.some(p => p.id === id)) { unpin(id); return; }
-      // ← from this pin lands on the related Explore experience — the shared
-      // V6HubTarget type has no 'continue' zone (classic V6 has no such row).
-      const relatedExplore: Record<string, number> = {
-        'cont-coorg': 0, 'cont-birthday': 3, 'cont-living': 2, 'cont-movie': 1,
-      };
-      addPin({
-        id, kind: 'pinned', contentType: 'thread', status: 'Continue', tone: item.tone,
-        hero: item.title, context: item.sub, image: item.image,
-        target: { zone: 'explore', idx: relatedExplore[item.id] ?? 0 },
-      });
-      return;
-    }
     if (z === 'strip') {
       const item = stripItems[i];
       if (!item) return;
@@ -224,11 +206,6 @@ export default function V6CinematicExperience({ open, onRequestOpen, onClose, on
     if (zone === 'explore') {
       v6sfx.select();
       onToast?.(`Starting ${V6_CINEMATIC_CARDS[idx].title}…`);
-      return;
-    }
-    if (zone === 'continue') {
-      v6sfx.select();
-      onToast?.(`Resuming ${V6_CIN_CONTINUE[idx].title}…`);
       return;
     }
     if (zone === 'space') {
@@ -278,6 +255,10 @@ export default function V6CinematicExperience({ open, onRequestOpen, onClose, on
         return;
       }
 
+      // Explore is a uniform 4×2 grid — ←/→ move within a grid row, ↑/↓
+      // step between its two rows before leaving the section.
+      const expCol = idx % V6_CIN_COLS;
+
       if (k === 'ArrowLeft') {
         if (zone === 'strip') {
           const item = stripItems[idx];
@@ -286,8 +267,7 @@ export default function V6CinematicExperience({ open, onRequestOpen, onClose, on
         }
         if (zone === 'ask') return;
         if (zone === 'explore') {
-          const n = cinBentoMove(idx, 'left');
-          if (n !== null) { v6sfx.navH(-1); setIdx(n); }
+          if (expCol > 0) { v6sfx.navH(-1); setIdx(i => i - 1); }
           return;
         }
         if (idx > 0) { v6sfx.navH(-1); setIdx(i => i - 1); }
@@ -298,8 +278,7 @@ export default function V6CinematicExperience({ open, onRequestOpen, onClose, on
         if (zone === 'strip') { onClose(); return; }
         if (zone === 'ask') { v6sfx.navH(1); gotoZone('strip'); return; }
         if (zone === 'explore') {
-          const n = cinBentoMove(idx, 'right');
-          if (n !== null) { v6sfx.navH(1); setIdx(n); return; }
+          if (expCol < V6_CIN_COLS - 1 && idx + 1 < ROW_LEN.explore) { v6sfx.navH(1); setIdx(i => i + 1); return; }
           v6sfx.navH(1);
           gotoZone('strip');
           return;
@@ -315,9 +294,9 @@ export default function V6CinematicExperience({ open, onRequestOpen, onClose, on
           if (idx < stripItems.length - 1) { v6sfx.navV(); setIdx(i => i + 1); }
           return;
         }
-        if (zone === 'explore') {
-          const n = cinBentoMove(idx, 'down');
-          if (n !== null) { v6sfx.navV(); setIdx(n); return; }
+        if (zone === 'explore' && idx + V6_CIN_COLS < ROW_LEN.explore) {
+          v6sfx.navV(); setIdx(i => i + V6_CIN_COLS);
+          return;
         }
         const r = ROW_ORDER.indexOf(zone);
         if (r < ROW_ORDER.length - 1) { v6sfx.navV(); gotoZone(ROW_ORDER[r + 1]); }
@@ -329,9 +308,9 @@ export default function V6CinematicExperience({ open, onRequestOpen, onClose, on
           if (idx > 0) { v6sfx.navV(); setIdx(i => i - 1); }
           return;
         }
-        if (zone === 'explore') {
-          const n = cinBentoMove(idx, 'up');
-          if (n !== null) { v6sfx.navV(); setIdx(n); return; }
+        if (zone === 'explore' && idx - V6_CIN_COLS >= 0) {
+          v6sfx.navV(); setIdx(i => i - V6_CIN_COLS);
+          return;
         }
         const r = ROW_ORDER.indexOf(zone);
         if (r > 0) { v6sfx.navV(); gotoZone(ROW_ORDER[r - 1]); }
@@ -503,14 +482,16 @@ export default function V6CinematicExperience({ open, onRequestOpen, onClose, on
             </div>
           </div>
 
-          {/* 2 · EXPLORE — the structured Bento: what can I do? */}
+          {/* 2 · EXPLORE — equal cards, calm and even: what can I do?
+              (The masthead above carries the hierarchy. No Continue row —
+              ongoing threads live on the persistent strip.) */}
           <div style={{ flexShrink: 0, ...seq(2) }}>
             <div style={HEADING}>Explore</div>
             <div style={{
               display: 'grid',
               gridTemplateColumns: `repeat(${V6_CIN_COLS}, 1fr)`,
-              gridTemplateRows: V6_CIN_ROW_H.map(h => `${h}px`).join(' '),
-              gap: 12,
+              gridTemplateRows: 'repeat(2, 150px)',
+              gap: 14,
             }}>
               {V6_CINEMATIC_CARDS.map((c, i) => (
                 <CinExploreCard
@@ -525,23 +506,8 @@ export default function V6CinematicExperience({ open, onRequestOpen, onClose, on
             </div>
           </div>
 
-          {/* 3 · CONTINUE — things waiting for me (quieter than Explore) */}
-          <div style={{ flexShrink: 0, marginTop: 16, ...seq(3) }}>
-            <div style={{ ...HEADING, color: 'rgba(255,255,255,0.32)', fontSize: 12 }}>Continue</div>
-            <div style={{ display: 'flex', gap: 10 }}>
-              {V6_CIN_CONTINUE.map((item, i) => (
-                <CinContinueCard
-                  key={item.id}
-                  item={item}
-                  focused={zone === 'continue' && idx === i}
-                  onClick={() => gotoZone('continue', i)}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* 4 · YOUR SPACE — utilities */}
-          <div style={{ flexShrink: 0, marginTop: 16, ...seq(4) }}>
+          {/* 3 · YOUR SPACE — utilities */}
+          <div style={{ flexShrink: 0, marginTop: 18, ...seq(3) }}>
             <div style={{ ...HEADING, color: 'rgba(255,255,255,0.32)', fontSize: 12 }}>Your Space</div>
             <div style={{ display: 'flex', gap: SPACE_GAP }}>
               {V6_SPACE_TILES.map((tile, i) => (
@@ -601,24 +567,19 @@ export default function V6CinematicExperience({ open, onRequestOpen, onClose, on
 }
 
 /**
- * One bento Explore card. The card answers "what can I do?" — kept compact
- * because the masthead above provides the large visual response. Focus is
- * restrained (scale ~1.04, accent glow, brighter image); the bento never
- * reflows on focus change.
+ * One Explore card — all eight identical in size. The card answers "what can
+ * I do?" — kept compact because the masthead above provides the large visual
+ * response. Focus is restrained (scale ~1.04, accent glow, brighter image);
+ * the grid never reflows on focus change.
  */
 function CinExploreCard({ card, focused, dimmed, pinned, onClick }: {
   card: V6CinematicCard; focused: boolean; dimmed: boolean; pinned: boolean; onClick: () => void;
 }) {
-  const { rect } = card;
-  const wide = rect.w >= 3;
-
   return (
     <div
       onClick={onClick}
       style={{
         position: 'relative', boxSizing: 'border-box',
-        gridColumn: `${rect.c + 1} / span ${rect.w}`,
-        gridRow: `${rect.r + 1} / span ${rect.h}`,
         borderRadius: 15, overflow: 'hidden', cursor: 'pointer',
         background: '#0b0b12',
         opacity: dimmed ? 0.85 : 1,
@@ -655,7 +616,7 @@ function CinExploreCard({ card, focused, dimmed, pinned, onClick }: {
 
       <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: '11px 14px', boxSizing: 'border-box' }}>
         <div style={{
-          fontFamily: FONT, fontSize: wide ? 17.5 : 15.5, fontWeight: 800, letterSpacing: '-0.015em', lineHeight: 1.1,
+          fontFamily: FONT, fontSize: 16, fontWeight: 800, letterSpacing: '-0.015em', lineHeight: 1.1,
           color: focused ? '#fff' : 'rgba(255,255,255,0.94)', transition: 'color 0.25s ease',
           textShadow: '0 1px 6px rgba(0,0,0,0.65)',
           whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
@@ -676,54 +637,3 @@ function CinExploreCard({ card, focused, dimmed, pinned, onClick }: {
   );
 }
 
-/**
- * One Continue card — compact landscape, deliberately light: small thumb,
- * two lines, no image dominance. "Things waiting for me", never a second
- * hero row.
- */
-function CinContinueCard({ item, focused, onClick }: {
-  item: V6CinContinueItem; focused: boolean; onClick: () => void;
-}) {
-  return (
-    <div
-      onClick={onClick}
-      style={{
-        position: 'relative', flex: 1, minWidth: 0, height: 54, boxSizing: 'border-box',
-        borderRadius: 12, cursor: 'pointer',
-        display: 'flex', alignItems: 'center', gap: 10, padding: '0 12px 0 8px',
-        background: focused
-          ? 'linear-gradient(180deg, rgba(255,255,255,0.085) 0%, rgba(255,255,255,0.04) 100%)'
-          : 'linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.012) 100%)',
-        ...chrome(focused, 'inset 0 1px 0 rgba(255,255,255,0.05), inset 0 0 0 1px rgba(255,255,255,0.03), 0 4px 12px rgba(0,0,0,0.2)', 1.02),
-      }}
-    >
-      <img src={item.image} alt="" style={{
-        width: 36, height: 36, borderRadius: 9, objectFit: 'cover', flexShrink: 0,
-        filter: focused ? 'brightness(0.95)' : 'brightness(0.66)',
-        transition: 'filter 0.25s ease',
-        boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1), 0 2px 6px rgba(0,0,0,0.3)',
-      }} />
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{
-          fontFamily: FONT, fontSize: 12.5, fontWeight: 700, letterSpacing: '-0.01em',
-          color: focused ? '#fff' : 'rgba(255,255,255,0.82)', transition: 'color 0.25s ease',
-          whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-        }}>
-          {item.title}
-        </div>
-        <div style={{
-          fontFamily: FONT, fontSize: 10.5, fontWeight: 500, marginTop: 1,
-          color: focused ? 'rgba(255,255,255,0.58)' : 'rgba(255,255,255,0.4)',
-          transition: 'color 0.25s ease',
-          whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-        }}>
-          {item.sub}
-        </div>
-      </div>
-      <span style={{
-        width: 5, height: 5, borderRadius: '50%', background: item.tone, flexShrink: 0,
-        boxShadow: `0 0 7px ${item.tone}55`, opacity: focused ? 1 : 0.6,
-      }} />
-    </div>
-  );
-}
