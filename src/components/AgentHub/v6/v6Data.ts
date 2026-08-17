@@ -94,6 +94,13 @@ export const V6_INITIAL_PINNED: V6StripItem[] = [
     overlay: 'heavy',
     target: { zone: 'space', idx: 1 }, // Wishlist — where price tracking lives
   },
+  {
+    id: 'pin-living', kind: 'pinned', contentType: 'thread',
+    status: 'Home design', tone: '#E8CE8A',
+    hero: 'Living Room', context: '3 new concepts',
+    image: '/images/feed/feed_24-home-cozy-monsoon-living-room.jpg',
+    target: { zone: 'explore', idx: 2 }, // Redesign a Room — where the concepts live
+  },
 ];
 
 /** ACTIVE — dynamic surfaces Ambient selected because they matter right now. */
