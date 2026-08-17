@@ -119,20 +119,6 @@ export const V6_ACTIVE_ITEMS: V6StripItem[] = [
     image: '/images/feed/feed_04-food-dinner-party-table.jpg',
     target: { zone: 'explore', idx: 3 }, // Find a Gift — the shortlist's home
   },
-  {
-    id: 'act-movie', kind: 'active', contentType: 'thread',
-    status: 'CONTINUE', tone: '#B48CFF',
-    hero: 'Movie Night', context: '4 movies shortlisted',
-    image: '/images/feed/feed_60-entertainment-vinyl-music-room.jpg',
-    target: { zone: 'explore', idx: 1 }, // Movie Night — the shortlist's home
-  },
-  {
-    id: 'act-price', kind: 'active', contentType: 'shopping',
-    status: 'PRICE DROP', tone: '#6BD98A', overlay: 'heavy',
-    hero: 'Nike Pegasus', context: '↓ ₹1,450',
-    image: '/images/feed/feed_31-fashion-streetwear-editorial.jpg',
-    target: { zone: 'space', idx: 1 }, // Wishlist — where price tracking lives
-  },
 ];
 
 export const V6_MAX_PINS = 3;

@@ -37,11 +37,9 @@ import {
   V6_MAX_PINS, type V6StripItem,
 } from './v6Data';
 
-/** square tile size — width == height, always. Sized so the full stack
- *  (2 pinned + 5 active + labels + divider + pin affordance) fits the
- *  full-height sidecar with breathing room. */
-const SQ = 120;
-const PAD = (V6_STRIP_ZONE_W - SQ) / 2; // 40
+/** square tile size — width == height, always */
+const SQ = 132;
+const PAD = (V6_STRIP_ZONE_W - SQ) / 2; // 34
 
 /**
  * Closed-state floating panel geometry — the panel floats INSIDE the zone
