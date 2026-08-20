@@ -4,7 +4,14 @@
     "target": "es2023",
     "lib": ["ES2023", "DOM"],
     "module": "esnext",
-    "types": ["vite/client"],
+    // "node" is here for the *.test.ts files under src/level2 that read
+    // real fixture JSON via node:fs/__dirname (see streamToSemanticEvents.test.ts,
+    // longGapBeats.test.ts) — never actually type-checked correctly until
+    // this was added, since bare `tsc --noEmit` (no -b) silently checks
+    // nothing against this repo's root tsconfig.json (files: [], references
+    // only). Always verify with `npx tsc --noEmit -p tsconfig.app.json` or
+    // `npm run build`, never bare `npx tsc --noEmit`.
+    "types": ["vite/client", "node"],
     "skipLibCheck": true,
 
     /* Bundler mode */

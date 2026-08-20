@@ -210,6 +210,10 @@ export function buildCandidateRankingPasses(input: CandidateRankingPlanInput): T
       // rather than a finished answer fading in.
       canvas: [{ type: 'ADD_ITEMS', items: items.map((it) => ({ ...it, metadata: {} })) } as AgentMutation],
     },
+    // Provenance: the discovery work this milestone reports — the search and
+    // research calls that ran. Also what anchors this pass on the real trace
+    // clock in dev-mode Actual Trace Timing.
+    sourceEventIds: events.filter((e) => e.type === 'search' || e.type === 'retrieve').map((e) => e.id),
     confidence: 'high',
     debug: {
       narrationCount: entities.length,

@@ -10,9 +10,11 @@ import {
   CountValue,
   EntityPreviewValue,
   GenericValue,
+  IntentSummaryValue,
   MemorySignalsValue,
   RouteValue,
   SourcesValue,
+  SynthesisStructureValue,
   TextValue,
   TimelineValue,
 } from '../../components/AgentThinkingTrace/level2/ThinkingValueRenderers';
@@ -60,6 +62,8 @@ const THINKING_BY_VALUE_TYPE: Record<ThinkingValueType, AnyThinkingRenderer> = {
   cluster: ClusterValue as AnyThinkingRenderer,
   generic: GenericValue as AnyThinkingRenderer,
   memory_signals: MemorySignalsValue as AnyThinkingRenderer,
+  intent: IntentSummaryValue as AnyThinkingRenderer,
+  synthesis_structure: SynthesisStructureValue as AnyThinkingRenderer,
 };
 
 /** Archetype overrides, keyed `archetype:valueType`. */

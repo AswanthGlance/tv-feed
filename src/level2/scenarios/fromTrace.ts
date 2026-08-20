@@ -4,13 +4,15 @@ import { classifyTraceScenario, summarizeRootSpan } from '../classification/scen
 import { extractQueryRequirements } from '../classification/queryRequirements';
 import { partitionEnvelope } from '../classification/entityRole';
 import { parseResponseEnvelope } from '../normalization/responseEnvelope';
+import { toNormalizedEntity } from '../normalization/entityBridge';
 import { extractLevel2SemanticEvents } from '../phoenix/semanticEvents';
 import { extractMemoryContext } from '../phoenix/memoryRetrieval';
 import { semanticEventsToThinkingPasses } from '../userValue/passBuilder';
 import { checkDiscoveryInvariants } from '../userValue/discoveryInvariants';
+import { resolveCandidateSet } from '../userValue/candidateResolution';
 import { buildCandidateRankingPasses } from '../userValue/candidateRankingPlan';
 import { buildListPasses, type ListPlanMeta } from '../userValue/listPlan';
-import { buildMemoryContextPass } from '../userValue/memoryContextPlan';
+import { buildMemoryContextPass, memoryFollowUpNarration } from '../userValue/memoryContextPlan';
 import { buildFinalResponse } from '../finalResponse/buildFinalResponse';
 import type { Level2Scenario, ScenarioSource } from '../types/scenario';
 import type { MemoryContext } from '../types/memory';
@@ -107,7 +109,21 @@ export function buildScenarioFromTrace(
 
   const requirements = extractQueryRequirements(summary.prompt);
   const envelope = parseResponseEnvelope(summary.output);
-  const { entities, supporting } = partitionEnvelope(envelope);
+  const { entities: parsedEntities, supporting } = partitionEnvelope(envelope);
+
+  // The final-response XML parser (responseEnvelope.ts/entityRole.ts) has no
+  // image field at all — `entities` here would always render with no photo.
+  // Discovery-time search/enrichment entities (events[].entities) DO carry a
+  // real image, recovered even from Phoenix's 2000-char tool.output
+  // truncation (see entityExtraction.ts). Backfill the final response's own
+  // entities — identity and order untouched — from their discovery-time
+  // twins, via the same resolveCandidateSet/mergeCandidate pattern
+  // passBuilder.ts already uses for every other archetype.
+  const discoveryEntities = events.flatMap((ev) => (ev.entities ?? []).map(toNormalizedEntity));
+  const entities = parsedEntities.length
+    ? resolveCandidateSet({ observed: discoveryEntities, finalEntities: parsedEntities, preferFinalIdentity: true }).canonical
+    : parsedEntities;
+
   const finalResponse = buildFinalResponse({ envelope, classification, requirements, entities, supporting });
 
   // ── Archetype integrity ───────────────────────────────────────────────
@@ -191,7 +207,44 @@ export function buildScenarioFromTrace(
   const memoryContext = extractMemoryContext(orderedSpans, summary.prompt, requirements);
   diagnostics.memory = memoryContext.diagnostics;
   const memoryPass = buildMemoryContextPass(memoryContext, summary.skills[0], Math.random);
-  const allPasses = memoryPass ? [memoryPass, ...passes] : passes;
+  // RECALL -> USE: the very next pass must read as acting on what was just
+  // recalled, not as an unrelated next step. Only the narration changes —
+  // everything else about that pass (its payload, timing, canvas mutations)
+  // is untouched, so this can never alter what the pass actually shows.
+  const allPasses = memoryPass
+    ? passes.length
+      ? [memoryPass, { ...passes[0], narration: memoryFollowUpNarration(summary.skills[0], Math.random) }, ...passes.slice(1)]
+      : [memoryPass, ...passes]
+    : passes;
+
+  // ── Real trace timing annotation ───────────────────────────────────────
+  // Each pass that maps to timed semantic events gets the REAL interval it
+  // covers: earliest mapped event start → latest mapped event completion, in
+  // ms relative to trace start. When several technical events collapsed into
+  // one consumer pass, the pass spans them all — the events are never
+  // re-exposed individually. Matched by event id first, then span id (the
+  // memory pass carries span ids only). Purely additive: demo playback never
+  // reads this; the dev-mode Actual Trace Timing scheduler does (see
+  // runtime/schedule.ts). Never fabricated — a pass with no mapped timed
+  // event simply carries none.
+  const eventById = new Map(events.map((ev) => [ev.id, ev]));
+  const eventBySpan = new Map<string, (typeof events)[number]>();
+  for (const ev of events) for (const spanId of ev.sourceSpanIds) eventBySpan.set(spanId, ev);
+  for (const pass of allPasses) {
+    const mapped = [
+      ...(pass.sourceEventIds ?? []).map((id) => eventById.get(id)),
+      ...(pass.sourceSpanIds ?? []).map((id) => eventBySpan.get(id)),
+    ].filter((ev): ev is NonNullable<typeof ev> => !!ev);
+    if (!mapped.length) continue;
+    const start = Math.min(...mapped.map((ev) => ev.startTime));
+    const end = Math.max(...mapped.map((ev) => ev.endTime));
+    if (Number.isFinite(start) && Number.isFinite(end) && end >= start) {
+      pass.traceTiming = { start, end };
+    }
+  }
+  // The real end of the whole turn — the root span's completion (the `final`
+  // semantic event). This is when the final response actually arrived.
+  const traceDurationMs = events.length ? Math.max(...events.map((ev) => ev.endTime)) : undefined;
 
   // ── Discovery invariants (dev-mode) ────────────────────────────────────
   // "Found N things" must put exactly N tiles on the canvas. Violations never
@@ -229,6 +282,10 @@ export function buildScenarioFromTrace(
       // Narration-vs-canvas discovery violations, for the dev panel. Empty on
       // a healthy trace; never read by consumer UI.
       invariantWarnings,
+      // Real end-to-end turn duration in ms — when the final response
+      // actually arrived. Read by the dev-mode Actual Trace Timing scheduler
+      // and timing diagnostics only.
+      ...(traceDurationMs != null ? { traceDurationMs } : {}),
       // List count invariants (raw result scale vs resolved vs visible, item
       // provenance) — present only on list scenarios. Dev panel only.
       ...(listMeta ? { list: listMeta } : {}),

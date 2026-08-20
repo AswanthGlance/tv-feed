@@ -126,6 +126,82 @@
   to   { opacity: 1; transform: none; }
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   ACTIVE HOLD — Real Timing only (see [data-active-hold] on .att-l2v-pass /
+   .atv2-pass, set only while a genuine real gap is holding the current pass
+   on screen). Keeps the current visual state subtly alive instead of a
+   frozen frame — never restarts an entrance, never swaps content, never
+   loops dramatically. Motion type follows the operation, not one spinner
+   reused everywhere. Demo Timing never sets the attribute, so its existing
+   cadence and motion are completely untouched by any rule below.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@keyframes att-l2v-hold-breathe {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.86; }
+}
+/* Search/research evidence — chips and skeleton lines breathe gently in a
+   staggered ripple, reusing each element's own --i so the ripple direction
+   matches the order they arrived in. */
+[data-active-hold="sources"] .att-l2v-source,
+[data-active-hold="text"] .att-l2v-text-line,
+[data-active-hold="intent"] .att-l2v-intent-chip,
+[data-active-hold="synthesis_structure"] .att-l2v-synthesis-chip {
+  animation: att-l2v-hold-breathe 2.6s ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * 220ms);
+}
+
+@keyframes att-l2v-hold-card-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.008); }
+}
+/* Candidate tiles — a near-imperceptible scale pulse, never the entrance
+   animation replaying and never a bounce. */
+[data-active-hold="entity_preview"] .att-l2t {
+  animation: att-l2v-hold-card-breathe 3.2s ease-in-out infinite;
+}
+
+@keyframes att-l2v-hold-route-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.65; }
+}
+/* Route/map — the connector and the headline metric pulse, standing in for
+   "still calculating the way there" rather than a generic shimmer. */
+[data-active-hold="route"] .att-l2v-route-arrow,
+[data-active-hold="route"] .att-l2v-route-savings,
+[data-active-hold="route"] .att-l2v-route-headline {
+  animation: att-l2v-hold-route-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes att-l2v-hold-sweep {
+  0% { background-position: -140% 0; }
+  100% { background-position: 240% 0; }
+}
+/* Comparison / cluster / anything without a more specific treatment above —
+   one soft diagonal sweep of light, standing in for "still organizing this."
+   Never applied to sources/entity_preview/route, which already have their
+   own operation-specific motion. */
+[data-active-hold="comparison_signal"],
+[data-active-hold="cluster"],
+[data-active-hold="generic"],
+[data-active-hold="availability"],
+[data-active-hold="timeline"] {
+  position: relative;
+}
+[data-active-hold="comparison_signal"]::after,
+[data-active-hold="cluster"]::after,
+[data-active-hold="generic"]::after,
+[data-active-hold="availability"]::after,
+[data-active-hold="timeline"]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(100deg, transparent 42%, rgba(255, 255, 255, 0.05) 50%, transparent 58%);
+  background-size: 220% 100%;
+  animation: att-l2v-hold-sweep 3.4s linear infinite;
+}
+
 /* STATUS pass — narration is the whole content, but the screen must not read
    as dead ("thinking ≠ empty waiting"). Three soft breathing dots ride in
    the status row beside the narration, typing-indicator style: honest
@@ -195,6 +271,36 @@
   border-radius: 2px;
   background: var(--l2s-think);
   opacity: 0.75;
+}
+
+/* ── intent chips (acknowledgement beat) — small, centered, never a card. */
+.att-l2v-intent { display: flex; flex-wrap: wrap; gap: 10px 12px; justify-content: center; max-width: 900px; }
+.att-l2v-intent-chip {
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.05);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--l2s-text);
+  white-space: nowrap;
+}
+
+/* ── synthesis chips (SYNTHESIS beat) — real section/dimension labels,
+   revealed one at a time (see SynthesisStructureValue's per-item delay).
+   A touch more present than intent chips: this is the shape of the actual
+   answer forming, not just "I understood you." */
+.att-l2v-synthesis { display: flex; flex-wrap: wrap; gap: 12px 14px; justify-content: center; max-width: 1000px; }
+.att-l2v-synthesis-chip {
+  padding: 10px 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.06);
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--l2s-text);
+  white-space: nowrap;
 }
 
 /* ── candidate canvas + thinking tile ────────────────────────────────────
@@ -838,6 +944,7 @@
   backdrop-filter: blur(8px);
 }
 .att-l2-scenario-selector-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.att-l2-scenario-head-actions { display: flex; gap: 6px; }
 .att-l2-scenario-selector-title {
   font-size: 11px;
   font-weight: 700;
@@ -855,6 +962,26 @@
   cursor: pointer;
 }
 .att-l2-scenario-refresh:disabled { opacity: 0.4; cursor: default; }
+.att-l2-source-toggle {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 10px;
+  padding: 3px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+}
+.att-l2-source-toggle-option {
+  flex: 1;
+  padding: 6px 8px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--l2s-muted);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.att-l2-source-toggle-option--active { background: rgba(255, 255, 255, 0.12); color: var(--l2s-text); }
 .att-l2-scenario-options { display: flex; flex-direction: column; gap: 2px; }
 .att-l2-scenario-option {
   display: flex;
@@ -880,6 +1007,33 @@
   border-top: 1px solid var(--l2s-line);
   font-size: 10px;
   color: var(--l2s-faint);
+  line-height: 1.4;
+}
+.att-l2-scenario-timer {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--l2s-line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--l2s-muted);
+}
+.att-l2-scenario-timer-value {
+  font-variant-numeric: tabular-nums;
+  color: var(--l2s-text);
+  font-weight: 600;
+}
+/* Dev-only note shown when Memory Retrieval is the selected scenario — see
+   ScenarioTypeSelector.tsx. Same quiet treatment as the source row above,
+   never shown outside this dev panel. */
+.att-l2-scenario-explainer {
+  margin-top: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 11px;
+  color: var(--l2s-muted);
   line-height: 1.4;
 }
 
@@ -1392,3 +1546,47 @@
   .att-l2list .att-l2t-media { transition: none; }
   .att-l2list-slot { transition: none !important; transform: none !important; }
 }
+
+/* ── Level 2 dev inspector (D key) ─────────────────────────────────────────
+   The Level2Diagnostics panel's root/chrome classes. These were never
+   defined — the component rendered as an unstyled block hidden behind the
+   stage, so the whole inspector (tabs, playback row, timing controls) was
+   effectively invisible on /agent_thinking_trace?level=2. Dev chrome only;
+   never part of the consumer canvas. */
+.att-dev-inspector {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  width: 620px;
+  max-height: calc(100% - 48px);
+  display: flex;
+  flex-direction: column;
+  background: rgba(10, 8, 18, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 16px;
+  color: #e8e6f0;
+  font-family: 'Inter', sans-serif;
+  z-index: 80;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.5);
+}
+.att-dev-sub {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+}
+.att-dev-playback {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px 0;
+  flex-shrink: 0;
+}
+.att-dev-playback .att-playback-btn {
+  padding: 4px 10px;
+  font-size: 12px;
+}
+.att-dev-playback .att-playback-btn:disabled { pointer-events: none; }

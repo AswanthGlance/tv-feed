@@ -92,6 +92,46 @@ export function priceLevelLabel(priceLevel: string | undefined): string | undefi
   }
 }
 
+const SEARCH_FIELD_MASK = 'places.id,places.displayName,places.photos,places.formattedAddress';
+
+interface RawSearchResponse {
+  places?: RawDetailsResponse[];
+}
+
+/** Text Search (New) — POST places:searchText, routed through the same
+ *  /api/places proxy (key injected server-side, never sent by the client).
+ *  Added for the Progressive L1 prototype: fetchPlaceDetails (above) needs a
+ *  place_id already in hand, which a real Level 2 trace has (place_id
+ *  carried on the `<visual>` tag — LEVEL2_INSTRUMENTATION_GAPS.md §3) but an
+ *  L0 feed card does not. This is the real, live lookup the Instant/Retrieval
+ *  lane uses to go from a card's own `locationLabel` text to a real place
+ *  (and, if one exists, a real photo) — never invented, never guessed.
+ *  Resolves `undefined` on any failure so callers fall straight through to
+ *  the existing generic fallback (src/adapters/localImageFallback.ts). */
+export async function searchPlaceText(query: string): Promise<GooglePlaceDetails | undefined> {
+  try {
+    const res = await fetch(`${API_ROOT}/places:searchText`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Goog-FieldMask': SEARCH_FIELD_MASK },
+      body: JSON.stringify({ textQuery: query, maxResultCount: 1 }),
+    });
+    if (!res.ok) return undefined;
+    const raw = (await res.json()) as RawSearchResponse;
+    const first = raw.places?.[0];
+    if (!first) return undefined;
+    return {
+      id: first.id,
+      displayName: first.displayName?.text,
+      photos: first.photos ?? [],
+      priceLevel: first.priceLevel,
+      openNow: first.regularOpeningHours?.openNow,
+      websiteUri: first.websiteUri,
+    };
+  } catch {
+    return undefined;
+  }
+}
+
 /** Lightweight on-demand connectivity check for the dev panel — a
  *  deliberately invalid place_id still tells us whether the key/proxy is
  *  configured (401/403 = not configured; 404 for the bogus id = configured

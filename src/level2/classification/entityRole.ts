@@ -76,6 +76,7 @@ export function envelopeCardToEntity(card: EnvelopeCard): NormalizedEntity {
     subtitle: shortenLocation(location) ?? location,
     location,
     externalId: card.placeId,
+    image: card.imageUrl,
     rating: extractRating(card.ratingText),
     reviewCount: extractReviewCount(card.ratingText),
     price: card.priceText,

@@ -35,6 +35,7 @@ import type { Level2RuntimeState } from '../../../level2/types/runtime';
 const SOURCE_LABEL: Record<string, string> = {
   phoenix: 'Real Agent Harness trace, mapped live',
   cached_phoenix: 'Real Agent Harness trace (cached spans)',
+  harness_stream: 'Real captured harness stream',
   fixture: 'Presentation fixture — not Phoenix output',
 };
 
@@ -115,18 +116,37 @@ export default function Level2ScenarioExperience({
         )}
 
         {/* KEYING IS LOAD-BEARING HERE.
-            An entity_preview pass keeps the STABLE key 'canvas', so the
-            candidate tiles mount exactly once — at "Found N …" — and then
-            persist untouched through enrichment, comparison and narrowing.
-            Only their props change. Keying this by pass id (as it was) tore
-            the whole row down and rebuilt it on every sentence, which is why
-            the cards appeared to reload and the images re-fetched.
-            Non-canvas passes (sources, counts, text) are ephemeral by nature
-            and keep their per-pass key so each still plays its entrance. */}
+            entity_preview, sources and route passes keep a STABLE,
+            valueType-scoped key ('entity_preview-canvas' / 'sources-canvas' /
+            'route-canvas'), so candidate tiles, evidence chips and the map
+            stage mount exactly once and then persist untouched — only their
+            props change — through enrichment, comparison, narrowing, each
+            cumulative research sub-beat (see subBeats.ts), and each of the
+            map's own locate/draw/summary beats (MapThinkingStage already
+            reads `payload.stage` reactively and transitions itself between
+            them — it was never designed to be torn down and rebuilt three
+            times). Keying by pass id did exactly that, which is why
+            cards/chips/the map appeared to reload. Genuinely ephemeral
+            passes (counts, text, intent, synthesis structure) keep their
+            per-pass key so each still plays its own one-shot entrance. */}
         {isThinking && scenario && currentPass && (
           <div
             className={`att-l2v-pass att-l2v-pass--${runtime.passPhase ?? 'hold'}`}
-            key={currentPass.valueType === 'entity_preview' ? 'canvas' : currentPass.id}
+            key={
+              currentPass.valueType === 'entity_preview' || currentPass.valueType === 'sources' || currentPass.valueType === 'route'
+                ? `${currentPass.valueType}-canvas`
+                : currentPass.id
+            }
+            // Active hold: while a real gap holds the current pass on screen
+            // (Real Timing only — see schedule.ts's "gaps are the point"),
+            // this keeps the current visual state SUBTLY alive rather than a
+            // frozen frame, without restarting its entrance or replacing its
+            // content — see the [data-active-hold] rules in level2Scenario.css.
+            data-active-hold={
+              runtime.timingMode === 'actual' && runtime.passPhase === 'hold' && currentPass.payload
+                ? currentPass.valueType ?? 'generic'
+                : undefined
+            }
           >
             {/* A status pass has no payload by contract — narration (plus the
                 ambient pulse beside it, see the status row above) is the
@@ -160,9 +180,18 @@ export default function Level2ScenarioExperience({
           selected={source.selectedArchetype}
           onSelect={source.selectArchetype}
           onRefresh={source.refresh}
+          onNextExample={source.nextExample}
           availability={source.availability}
           source={scenario ? SOURCE_LABEL[scenario.source] : undefined}
           isLoading={source.status === 'loading'}
+          sourceMode={source.sourceMode}
+          onSelectSourceMode={source.selectSourceMode}
+          harnessStreamCaptures={source.harnessStreamCaptures}
+          selectedHarnessCaptureId={source.selectedHarnessCaptureId}
+          onSelectHarnessCapture={source.selectHarnessCapture}
+          elapsedMs={scenario ? runtime.elapsed : undefined}
+          totalMs={runtime.totalDuration}
+          timingModeLabel={runtime.timingMode === 'actual' ? 'Real' : 'Demo'}
         />
       )}
 

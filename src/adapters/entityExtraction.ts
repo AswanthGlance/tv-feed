@@ -326,7 +326,7 @@ export function extractFinalPlaceCards(outputValue: string | undefined): FinalRe
 export function extractPlaceSearchEntitiesFallback(raw: string): ExtractedEntity[] {
   const objects = extractCandidateObjects(raw);
   return objects
-    .map((obj) => extractFieldsByRegex(obj, ['place_id', 'name', 'formatted_address', 'rating', 'user_rating_count', 'price_display']))
+    .map((obj) => extractFieldsByRegex(obj, ['place_id', 'name', 'formatted_address', 'rating', 'user_rating_count', 'price_display', 'photo_url']))
     .filter((f) => f.name)
     .map((f) => ({
       id: nextId('place'),
@@ -334,6 +334,7 @@ export function extractPlaceSearchEntitiesFallback(raw: string): ExtractedEntity
       externalId: f.place_id,
       title: f.name,
       subtitle: normalizeString(f.formatted_address),
+      image: f.photo_url,
       rating: normalizeNumber(f.rating),
       reviewCount: normalizeNumber(f.user_rating_count),
       price: normalizeString(f.price_display),

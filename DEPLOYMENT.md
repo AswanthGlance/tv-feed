@@ -9,7 +9,7 @@
 - URL: https://tv-feed-sandy.vercel.app
 - Team: glance-tv
 - Account: aswanthraj-7384
-- Token: vcp_4h7o7dlUS0I98jSwYc71NiqJSyITpmwPvTErjX1nWGQQAztmG91xqCbx
+- Token: <VERCEL_TOKEN> (set locally, do not commit)
 
 ## Deploy command
 
@@ -21,7 +21,7 @@ git remote set-url origin "https://AswanthGlance:${TOKEN}@github.com/AswanthGlan
 git push origin main
 
 # Deploy to Vercel
-vercel --yes --prod --scope glance-tv --token vcp_4h7o7dlUS0I98jSwYc71NiqJSyITpmwPvTErjX1nWGQQAztmG91xqCbx
+vercel --yes --prod --scope glance-tv --token "$VERCEL_TOKEN"
 ```
 
 ## Routes

@@ -33,6 +33,12 @@ export interface EnvelopeCard {
   hours?: string;
   placeId?: string;
   visualQuery?: string;
+  /** A real resolved image URL on the nested `<visual url="...">` attribute.
+   *  Real Phoenix cards never carry this (the corpus only ever offered a
+   *  search query, never a resolved URL) — it exists for the harness-stream
+   *  source, which does have real photo URLs, so this is additive and never
+   *  fires on a Phoenix-derived envelope. */
+  imageUrl?: string;
   ctaUrl?: string;
   phone?: string;
   /** `<bullets><point>` lines. Observed only on NON-entity cards in the real
@@ -101,6 +107,7 @@ function parseCard(raw: string): EnvelopeCard {
     // whole card block instead of one specific tag.
     placeId: tagAttr(raw, 'place_id'),
     visualQuery: tagAttr(raw, 'query'),
+    imageUrl: tagAttr(raw, 'url'),
     ctaUrl: extractUrl(tagContent(raw, 'cta')),
     phone: tagContent(raw, 'phone'),
     bullets: (raw.match(/<point>([\s\S]*?)<\/point>/gi) ?? [])

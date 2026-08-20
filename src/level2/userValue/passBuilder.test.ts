@@ -106,3 +106,73 @@ describe('generic pass builder — narration wording variety (opt-in via rng)', 
     expect(narration).toBe('Checking on that');
   });
 });
+
+/* Sub-beat splitting (subBeats.ts) is an OPT-IN capability — only
+   buildScenarioFromHarnessStream.ts ever sets `harnessSubBeats: true`.
+   fromTrace.ts (every real Phoenix trace) never sets it, so these tests
+   pin down the safety contract explicitly: same multi-event bucket, same
+   generic pass builder, and the flag alone decides whether it splits. */
+describe('generic pass builder — research sub-beats (harnessSubBeats opt-in)', () => {
+  const distinctQueryEvent = (id: string, query: string): SemanticAgentEvent => ({
+    id,
+    type: 'retrieve',
+    sourceSpanIds: [],
+    startTime: 0,
+    endTime: 0,
+    narration: 'Reading up on it', // the generic fallback — forces derivation from `input`
+    input: { query },
+    metadata: { tool: 'WebSearch', sources: [{ label: 'Source', url: 'https://example.com/a' }], facts: ['Source'] },
+  });
+
+  it('does NOT split a multi-call bucket when harnessSubBeats is unset (Phoenix/default safety)', () => {
+    const events = [
+      distinctQueryEvent('e1', 'Rooftop bar rice lentil fermentation ratio'),
+      distinctQueryEvent('e2', 'Rooftop bar cooking technique bronze pot'),
+    ];
+    const { passes } = semanticEventsToThinkingPasses(events, classification, reqs);
+    expect(passes.filter((p) => p.id.startsWith('pass-1-research'))).toHaveLength(1);
+    expect(passes.find((p) => p.id === 'pass-1-research')).toBeDefined();
+  });
+
+  it('splits into real sub-beats when harnessSubBeats is true and the queries genuinely differ', () => {
+    const events = [
+      distinctQueryEvent('e1', 'Ramen broth rice lentil fermentation ratio'),
+      distinctQueryEvent('e2', 'Ramen broth cooking technique bronze pot'),
+    ];
+    const { passes } = semanticEventsToThinkingPasses(events, classification, reqs, { harnessSubBeats: true });
+    const researchPasses = passes.filter((p) => p.id.startsWith('pass-1-research'));
+    expect(researchPasses.length).toBe(2);
+    expect(researchPasses[0].narration).not.toBe(researchPasses[1].narration);
+    // Cumulative: the second beat's evidence includes the first's too.
+    const firstCount = (researchPasses[0].payload as SourcesPayload).sourceCount;
+    const secondCount = (researchPasses[1].payload as SourcesPayload).sourceCount;
+    expect(secondCount).toBeGreaterThanOrEqual(firstCount);
+    // Each beat carries only its OWN event id — this is what lets
+    // buildScenarioFromHarnessStream.ts's generic traceTiming-assignment
+    // loop give each beat its own real window.
+    expect(researchPasses[0].sourceEventIds).toEqual(['e1']);
+    expect(researchPasses[1].sourceEventIds).toEqual(['e2']);
+  });
+
+  it('never forces a split when harnessSubBeats is true but there is nothing real to distinguish (no input, identical narration)', () => {
+    const events: SemanticAgentEvent[] = [
+      { id: 'e1', type: 'retrieve', sourceSpanIds: [], startTime: 0, endTime: 0, narration: 'Reading up on it', metadata: { tool: 'WebSearch', sources: [{ label: 'A', url: 'https://a.com' }], facts: ['A'] } },
+      { id: 'e2', type: 'retrieve', sourceSpanIds: [], startTime: 0, endTime: 0, narration: 'Reading up on it', metadata: { tool: 'WebSearch', sources: [{ label: 'B', url: 'https://b.com' }], facts: ['B'] } },
+    ];
+    const { passes } = semanticEventsToThinkingPasses(events, classification, reqs, { harnessSubBeats: true });
+    expect(passes.filter((p) => p.id.startsWith('pass-1-research'))).toHaveLength(1);
+  });
+
+  it('merges genuinely parallel calls into ONE beat rather than serializing them', () => {
+    const events: SemanticAgentEvent[] = [
+      { id: 'e1', type: 'retrieve', sourceSpanIds: [], startTime: 0, endTime: 0, narration: 'Reading up on it', input: { query: 'trail conditions weather' }, metadata: { tool: 'WebSearch', parallelGroup: 1, sources: [{ label: 'A', url: 'https://a.com' }], facts: ['A'] } },
+      { id: 'e2', type: 'retrieve', sourceSpanIds: [], startTime: 0, endTime: 0, narration: 'Reading up on it', input: { query: 'trail conditions weather' }, metadata: { tool: 'WebSearch', parallelGroup: 1, sources: [{ label: 'B', url: 'https://b.com' }], facts: ['B'] } },
+      { id: 'e3', type: 'retrieve', sourceSpanIds: [], startTime: 0, endTime: 0, narration: 'Reading up on it', input: { query: 'permit requirements trailhead' }, metadata: { tool: 'WebSearch', sources: [{ label: 'C', url: 'https://c.com' }], facts: ['C'] } },
+    ];
+    const { passes } = semanticEventsToThinkingPasses(events, classification, reqs, { harnessSubBeats: true });
+    const researchPasses = passes.filter((p) => p.id.startsWith('pass-1-research'));
+    expect(researchPasses).toHaveLength(2);
+    expect(researchPasses[0].sourceEventIds).toEqual(['e1', 'e2']);
+    expect(researchPasses[0].narration.toLowerCase()).toMatch(/angles|parallel/);
+  });
+});

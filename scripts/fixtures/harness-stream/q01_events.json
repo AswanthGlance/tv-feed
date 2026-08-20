@@ -1,0 +1,468 @@
+[
+  {
+    "type": "turn_started"
+  },
+  {
+    "type": "insight",
+    "subtype": "guardrail_passed",
+    "label": "Guardrail passed",
+    "ts": 1787127663881,
+    "detail": "nsfw check ✓"
+  },
+  {
+    "type": "insight",
+    "subtype": "query_enriched",
+    "label": "Enrichment skipped — no prior history",
+    "ts": 1787127663884
+  },
+  {
+    "type": "insight",
+    "subtype": "skills_selected",
+    "label": "Skills selected (2)",
+    "ts": 1787127663884,
+    "detail": "fashion (0.81), travel (0.80)"
+  },
+  {
+    "type": "insight",
+    "subtype": "skills_loaded",
+    "label": "Skills loaded (3)",
+    "ts": 1787127663888,
+    "detail": "default, fashion, travel"
+  },
+  {
+    "type": "insight",
+    "subtype": "context_built",
+    "label": "Context built",
+    "ts": 1787127663889,
+    "detail": "stm=no · 0 msgs"
+  },
+  {
+    "type": "insight",
+    "subtype": "llm_start",
+    "label": "LLM started",
+    "ts": 1787127664518
+  },
+  {
+    "type": "insight",
+    "subtype": "tools_loaded",
+    "label": "Tools loaded (16)",
+    "detail": "GetRoute, GetUserPersona, GetWeather, MemoryRead, MemoryWrite, NearbyPlaces, PlaceAutocomplete, PlaceDetails, PlaceSearch, ProductFetch, ProductSearch, Task, TodoWrite, VTONGenerate, WebFetch, WebSearch",
+    "ts": 1787127664523
+  },
+  {
+    "type": "system",
+    "subtype": "transition",
+    "text": "user_query"
+  },
+  {
+    "type": "system",
+    "subtype": "token_count",
+    "text": "0 / 100,000 tokens (threshold)",
+    "token_count": 0,
+    "threshold": 100000
+  },
+  {
+    "type": "insight",
+    "subtype": "llm_thinking",
+    "label": "LLM thinking…",
+    "ts": 1787127665842
+  },
+  {
+    "type": "stream_request_start"
+  },
+  {
+    "type": "text_interim",
+    "text": "Pulling up school backpacks for both boys and girls now.",
+    "step_id": 1,
+    "names": [
+      "ProductSearch"
+    ],
+    "tools": [
+      {
+        "tool_name": "ProductSearch",
+        "user_facing_tool_label": "Finding products",
+        "icon": "https://tv.glance-cdn.com/public/AI-team-assets/harness_assets/tool-icons/Bag.png"
+      }
+    ]
+  },
+  {
+    "type": "insight",
+    "subtype": "tool_selected",
+    "label": "Tool → ProductSearch",
+    "ts": 1787127667852,
+    "detail": "school backpack"
+  },
+  {
+    "type": "tool_use",
+    "name": "ProductSearch",
+    "input": {
+      "query_text": "school backpack",
+      "country": "IN",
+      "gender": "MALE",
+      "max_results": 10,
+      "vton_eligible": true
+    },
+    "tool_use_id": "7fa6f092-e975-465a-b6d9-55d56fcbe985"
+  },
+  {
+    "type": "insight",
+    "subtype": "tool_selected",
+    "label": "Tool → ProductSearch",
+    "ts": 1787127667859,
+    "detail": "school backpack"
+  },
+  {
+    "type": "tool_use",
+    "name": "ProductSearch",
+    "input": {
+      "query_text": "school backpack",
+      "country": "IN",
+      "gender": "FEMALE",
+      "max_results": 10,
+      "vton_eligible": true
+    },
+    "tool_use_id": "f0c5db70-94c0-4e40-8edd-1ed5dca587c4"
+  },
+  {
+    "type": "insight",
+    "subtype": "token_usage",
+    "label": "Tokens — in: 32,354 · out: 214",
+    "ts": 1787127667863,
+    "detail": "step 1"
+  },
+  {
+    "type": "system",
+    "subtype": "usage",
+    "input_tokens": 32354,
+    "output_tokens": 214,
+    "reasoning_tokens": 0,
+    "reasoning_estimated": false,
+    "cache_read_tokens": 0,
+    "text": "Tokens — in: 32,354 · out: 214"
+  },
+  {
+    "type": "insight",
+    "subtype": "parallel_tools",
+    "label": "Running 2 tools in parallel",
+    "ts": 1787127667867,
+    "detail": "ProductSearch, ProductSearch"
+  },
+  {
+    "type": "parallel_batch",
+    "count": 2,
+    "names": [
+      "ProductSearch",
+      "ProductSearch"
+    ]
+  },
+  {
+    "type": "insight",
+    "subtype": "tool_done",
+    "label": "Tool done: ProductSearch",
+    "ts": 1787127669784,
+    "detail": "6008 chars"
+  },
+  {
+    "type": "tool_result",
+    "name": "ProductSearch",
+    "text": "{\"type\": \"product_results\", \"query\": \"school backpack\", \"total\": 10, \"processing_time_ms\": 927.0, \"products\": [{\"product_id\": \"3c6ae584-961e-5ef6-af1e-2bf4e05d26d1\", \"title\": \"Solid School Backpack\", \"brand\": \"Savana\", \"price\": 1090.0, \"original_price\": 1090.0, \"currency\": \"INR\", \"image_url\": \"https://m-us-mob-ailooks-prod.glance-cdn.com/catalog/images/2026/08/13/48fe0a5c18520f45e68cadfcae17d9113036bf89.jpg\", \"deeplink_url\": \"https://www.savana.com/details/solid-school-backpack-1911392\", \"in_stock\": true, \"category\": [\"Accessories/Backpack\"], \"gender\": \"KIDS\", \"similarity_score\": 0.2763731079507381, \"vton_enabled\": true}, {\"product_id\": \"0b487109-f813-59fe-95be-b674816820fe\", \"title\": \"Solid School Backpack\", \"brand\": \"Savana\", \"price\": 817.0, \"original_price\": 817.0, \"currency\": \"INR\", \"image_url\": \"https://m-us-mob-ailooks-prod.glance-cdn.com/catalog/images/2026/08/13/67fcd9dc67ceb311ae64d8fdf8b567f93d919ac8.jpg\", \"deeplink_url\": \"https://www.savana.com/details/solid-school-backpack-1893232\", \"in_stock\": true, \"category\": [\"Accessories/Backpack\"], \"gender\": \"UNISEX\", \"similarity_score\": 0.2763731079507381, \"vton_enabled\": true}, {\"product_id\": \"1474304e-61db-5fe9-b521-9cb5a868d830\", \"title\": \"Solid School Backpack\", \"brand\": \"Savana\", \"price\": 763.0, \"original_price\": 763.0, \"currency\": \"INR\", \"image_url\": \"https://m-us-mob-ailooks-prod.glance-cdn.com/catalog/images/2026/08/13/ce0fc264ddb8fb493e03db5930c68e3a26c853e3.jpg\", \"deeplink_url\": \"https://www.savana.com/details/solid-school-backpack-1887622\", \"in_stock\": true, \"category\": [\"Accessories/Backpack\"], \"gender\": \"UNISEX\", \"similarity_score\": 0.2763731079507381, \"vton_enabled\": true}, {\"product_id\": \"91267493-fccb-53cf-bd81-913aa66380f6\", \"title\": \"Patched School Backpack\", \"brand\": \"Savana\", \"price\": 1011.0, \"original_price\": 1011.0, \"currency\": \"INR\", \"image_url\": \"https://m-us-mob-ailooks-prod.glance-cdn.com/catalog/images/2026/08/13/b09bcf2d699d77d268ce627c63d88cb1d080cbd0.jpg\", \"deeplink_url\": \"https://www.savana.com/details/patched-school-backpack-1887692\", \"in_stock\": true, \"category\": [\"Accessories/Backpack\"], \"gender\": \"UNISEX\", \"similarity_score\": 0.2763731079507381, \"vton_enabled\": true}, {\"product_id\": \"f766f734-ead0-55ad-bccc-7fcb6862dfc7\", \"title\": \"Skybags Unisex Sizzler Pro Green School Backpack with Insulated Tiffin Pouch\", \"brand\": \"Skybags\", \"price\": 2688.0, \"original_price\": 2688.0, \"currency\": \"INR\", \"image_url\": \"https://m-us-mob-ailooks-prod.glance-cdn.com/catalog/images/2026/08/12/6cc8c7ce881a20f7ddc1243c0699bb0ca77dbd5c.jpg\", \"deeplink_url\": \"https://www.myntra.com/backpacks/skybags/skybags-unisex-sizzler-pro-green-school-backpack-with-insulated-tiffin-pouch---39l/39487195/buy\", \"in_stock\": true, \"category\": [\"Accessories/Backpack\"], \"gender\": \"UNISEX\", \"similarity_score\": 0.2763731079507381, \"vton_enabled\": true}, {\"product_id\": \"dcc6b46a-5d92-5690-853a-6717267fd726\", \"title\": \"Skybags Unisex Kenshi Stealth Black School Backpack with 3 Compartments & Rain Cover - 34L\", \"brand\": \"Skybags\", \"price\": 2016.0, \"original_price\": 2016.0, \"currency\": \"INR\", \"image_url\": \"https://m-us-mob-ailooks-prod.glance-cdn.com/catalog/images/2026/08/04/7f1efe4750c2fcb15cab81dab6654a88b58c4279.jpg\", \"deeplink_url\": \"https://www.myntra.com/backpacks/skybags/skybags-unisex-kenshi-stealth-black-school-backpack-with-3-compartments--rain-cover---34l/39487183/buy\", \"in_stock\": true, \"category\": [\"Accessories/Backpack\"], \"gender\": \"UNISEX\", \"similarity_score\": 0.27637310795069625, \"vton_enabled\": true}, {\"product_id\": \"31755b71-12ee-54e8-9929-6f6aa246b249\", \"title\": \"Skybags Unisex Manga Anime Black School Backpack - 27L\", \"brand\": \"Skybags\", \"price\": 1470.0, \"original_price\": 1470.0, \"currency\": \"INR\", \"image_url\": \"https://m-us-mob-ailooks-prod.glance-cdn.com/catalog/images/2026/08/13/63ca4d3b2313a6e9e3446c189e190c97c34bbd2a.jpg\", \"deeplink_url\": \"https://www.myntra.com/backpacks/skybags/skybags-unisex-manga-anime-black-school-backpack-with-3-compartments--front-pocket---27l/39487174/buy\", \"in_stock\": true, \"category\": [\"Accessories/Backpack\"], \"gender\": \"UNISEX\", \"similarity_score\": 0.2763731079449343, \"vton_enabled\": true}, {\"product_id\": \"16b187ce-ad03-5079-8897-0075cf76af25\", \"title\": \"URBAN CARRIER Unisex School Backpack\", \"brand\": \"URBAN CARRIER\", \"price\": 562.0, \"original_price\": 562.0, \"currency\": \"INR\", \"image_url\": \"https://m-us-mob-ailooks-prod.glance-cdn.com/catalog/images/2026/08/05/c5e7e583f3398493714c14b35807c1c5cb9ed6b1.jpg\", \"deeplink_url\": \"https://www.myntra.com/backpacks/urban+carrier/urban-carrier-unisex-school--backpack/32496179/buy\", \"in_stock\": true, \"category\": [\"Accessories/Backpack\"], \"gender\": \"UNISEX\", \"similarity_score\": 0.27637310792910363, \"vton_enabled\": true}, {\"product_id\": \"33e37428-32e3-527f-b156-b4fb53b47c10\", \"title\": \"Skybags Unisex Manga Anime Teal School Backpack with 3 Compartments & Front Pocke\", \"brand\": \"Skybags\", \"price\": 1470.0, \"original_price\": 1470.0, \"currency\": \"INR\", \"image_url\": \"https://m-us-mob-ailooks-prod.glance-cdn.com/catalog/images/2026/08/04/76e9143a8715e0f45201d6d0dc01817f0654b1c6.jpg\", \"deeplink_url\": \"https://www.myntra.com/backpacks/skybags/skybags-unisex-manga-anime-teal-school-backpack-with-3-compartments--front-pocket---27l/39487175/buy\", \"in_stock\": true, \"category\": [\"Accessories/Backpack\"], \"gender\": \"UNISEX\", \"similarity_score\": 0.27637310774075863, \"vton_enabled\": true}, {\"product_id\": \"d18f5165-9548-5b38-83d9-f1dc0d91cb2f\", \"title\": \"VAYA PRODYGY Unisex Purple Colourblocked School Bag 26L\", \"brand\": \"Vaya\", \"price\": 3141.0, \"original_price\": 3141.0, \"currency\": \"INR\", \"image_url\": \"https://m-us-mob-ailooks-prod.glance-cdn.com/catalog/images/2026/08/03/3da5d416cb94e2486d2f7daf6582e3f34f482a0c.jpg\", \"deeplink_url\": \"https://www.myntra.com/backpacks/vaya/vaya-prodygy-unisex-purple-colourblocked-teenagers-school-bag-26l/36269850/buy\", \"in_stock\": true, \"category\": [\"Accessories/Backpack\"], \"gender\": \"KIDS\", \"similarity_score\": 0.2763731073866833, \"vton_enabled\": true}]}",
+    "tool_use_id": "7fa6f092-e975-465a-b6d9-55d56fcbe985",
+    "is_error": false,
+    "error_reason": null
+  },
+  {
+    "type": "insight",
+    "subtype": "tool_done",
+    "label": "Tool done: ProductSearch",
+    "ts": 1787127669789,
+    "detail": "6004 chars"
+  },
+  {
+    "type": "tool_result",
+    "name": "ProductSearch",
+    "text": "{\"type\": \"product_results\", \"query\": \"school backpack\", \"total\": 10, \"processing_time_ms\": 833.0, \"products\": [{\"product_id\": \"3c6ae584-961e-5ef6-af1e-2bf4e05d26d1\", \"title\": \"Solid School Backpack\", \"brand\": \"Savana\", \"price\": 1090.0, \"original_price\": 1090.0, \"currency\": \"INR\", \"image_url\": \"https://m-us-mob-ailooks-prod.glance-cdn.com/catalog/images/2026/08/13/48fe0a5c18520f45e68cadfcae17d9113036bf89.jpg\", \"deeplink_url\": \"https://www.savana.com/details/solid-school-backpack-1911392\", \"in_stock\": true, \"category\": [\"Accessories/Backpack\"], \"gender\": \"KIDS\", \"similarity_score\": 0.2763735681189653, \"vton_enabled\": true}, {\"product_id\": \"0b487109-f813-59fe-95be-b674816820fe\", \"title\": \"Solid School Backpack\", \"brand\": \"Savana\", \"price\": 817.0, \"original_price\": 817.0, \"currency\": \"INR\", \"image_url\": \"https://m-us-mob-ailooks-prod.glance-cdn.com/catalog/images/2026/08/13/67fcd9dc67ceb311ae64d8fdf8b567f93d919ac8.jpg\", \"deeplink_url\": \"https://www.savana.com/details/solid-school-backpack-1893232\", \"in_stock\": true, \"category\": [\"Accessories/Backpack\"], \"gender\": \"UNISEX\", \"similarity_score\": 0.2763735681189653, \"vton_enabled\": true}, {\"product_id\": \"1474304e-61db-5fe9-b521-9cb5a868d830\", \"title\": \"Solid School Backpack\", \"brand\": \"Savana\", \"price\": 763.0, \"original_price\": 763.0, \"currency\": \"INR\", \"image_url\": \"https://m-us-mob-ailooks-prod.glance-cdn.com/catalog/images/2026/08/13/ce0fc264ddb8fb493e03db5930c68e3a26c853e3.jpg\", \"deeplink_url\": \"https://www.savana.com/details/solid-school-backpack-1887622\", \"in_stock\": true, \"category\": [\"Accessories/Backpack\"], \"gender\": \"UNISEX\", \"similarity_score\": 0.2763735681189653, \"vton_enabled\": true}, {\"product_id\": \"91267493-fccb-53cf-bd81-913aa66380f6\", \"title\": \"Patched School Backpack\", \"brand\": \"Savana\", \"price\": 1011.0, \"original_price\": 1011.0, \"currency\": \"INR\", \"image_url\": \"https://m-us-mob-ailooks-prod.glance-cdn.com/catalog/images/2026/08/13/b09bcf2d699d77d268ce627c63d88cb1d080cbd0.jpg\", \"deeplink_url\": \"https://www.savana.com/details/patched-school-backpack-1887692\", \"in_stock\": true, \"category\": [\"Accessories/Backpack\"], \"gender\": \"UNISEX\", \"similarity_score\": 0.2763735681189653, \"vton_enabled\": true}, {\"product_id\": \"f766f734-ead0-55ad-bccc-7fcb6862dfc7\", \"title\": \"Skybags Unisex Sizzler Pro Green School Backpack with Insulated Tiffin Pouch\", \"brand\": \"Skybags\", \"price\": 2688.0, \"original_price\": 2688.0, \"currency\": \"INR\", \"image_url\": \"https://m-us-mob-ailooks-prod.glance-cdn.com/catalog/images/2026/08/12/6cc8c7ce881a20f7ddc1243c0699bb0ca77dbd5c.jpg\", \"deeplink_url\": \"https://www.myntra.com/backpacks/skybags/skybags-unisex-sizzler-pro-green-school-backpack-with-insulated-tiffin-pouch---39l/39487195/buy\", \"in_stock\": true, \"category\": [\"Accessories/Backpack\"], \"gender\": \"UNISEX\", \"similarity_score\": 0.2763735681189653, \"vton_enabled\": true}, {\"product_id\": \"dcc6b46a-5d92-5690-853a-6717267fd726\", \"title\": \"Skybags Unisex Kenshi Stealth Black School Backpack with 3 Compartments & Rain Cover - 34L\", \"brand\": \"Skybags\", \"price\": 2016.0, \"original_price\": 2016.0, \"currency\": \"INR\", \"image_url\": \"https://m-us-mob-ailooks-prod.glance-cdn.com/catalog/images/2026/08/04/7f1efe4750c2fcb15cab81dab6654a88b58c4279.jpg\", \"deeplink_url\": \"https://www.myntra.com/backpacks/skybags/skybags-unisex-kenshi-stealth-black-school-backpack-with-3-compartments--rain-cover---34l/39487183/buy\", \"in_stock\": true, \"category\": [\"Accessories/Backpack\"], \"gender\": \"UNISEX\", \"similarity_score\": 0.2763735681189234, \"vton_enabled\": true}, {\"product_id\": \"31755b71-12ee-54e8-9929-6f6aa246b249\", \"title\": \"Skybags Unisex Manga Anime Black School Backpack - 27L\", \"brand\": \"Skybags\", \"price\": 1470.0, \"original_price\": 1470.0, \"currency\": \"INR\", \"image_url\": \"https://m-us-mob-ailooks-prod.glance-cdn.com/catalog/images/2026/08/13/63ca4d3b2313a6e9e3446c189e190c97c34bbd2a.jpg\", \"deeplink_url\": \"https://www.myntra.com/backpacks/skybags/skybags-unisex-manga-anime-black-school-backpack-with-3-compartments--front-pocket---27l/39487174/buy\", \"in_stock\": true, \"category\": [\"Accessories/Backpack\"], \"gender\": \"UNISEX\", \"similarity_score\": 0.276373568113161, \"vton_enabled\": true}, {\"product_id\": \"16b187ce-ad03-5079-8897-0075cf76af25\", \"title\": \"URBAN CARRIER Unisex School Backpack\", \"brand\": \"URBAN CARRIER\", \"price\": 562.0, \"original_price\": 562.0, \"currency\": \"INR\", \"image_url\": \"https://m-us-mob-ailooks-prod.glance-cdn.com/catalog/images/2026/08/05/c5e7e583f3398493714c14b35807c1c5cb9ed6b1.jpg\", \"deeplink_url\": \"https://www.myntra.com/backpacks/urban+carrier/urban-carrier-unisex-school--backpack/32496179/buy\", \"in_stock\": true, \"category\": [\"Accessories/Backpack\"], \"gender\": \"UNISEX\", \"similarity_score\": 0.276373568097329, \"vton_enabled\": true}, {\"product_id\": \"33e37428-32e3-527f-b156-b4fb53b47c10\", \"title\": \"Skybags Unisex Manga Anime Teal School Backpack with 3 Compartments & Front Pocke\", \"brand\": \"Skybags\", \"price\": 1470.0, \"original_price\": 1470.0, \"currency\": \"INR\", \"image_url\": \"https://m-us-mob-ailooks-prod.glance-cdn.com/catalog/images/2026/08/04/76e9143a8715e0f45201d6d0dc01817f0654b1c6.jpg\", \"deeplink_url\": \"https://www.myntra.com/backpacks/skybags/skybags-unisex-manga-anime-teal-school-backpack-with-3-compartments--front-pocket---27l/39487175/buy\", \"in_stock\": true, \"category\": [\"Accessories/Backpack\"], \"gender\": \"UNISEX\", \"similarity_score\": 0.2763735679089679, \"vton_enabled\": true}, {\"product_id\": \"d18f5165-9548-5b38-83d9-f1dc0d91cb2f\", \"title\": \"VAYA PRODYGY Unisex Purple Colourblocked School Bag 26L\", \"brand\": \"Vaya\", \"price\": 3141.0, \"original_price\": 3141.0, \"currency\": \"INR\", \"image_url\": \"https://m-us-mob-ailooks-prod.glance-cdn.com/catalog/images/2026/08/03/3da5d416cb94e2486d2f7daf6582e3f34f482a0c.jpg\", \"deeplink_url\": \"https://www.myntra.com/backpacks/vaya/vaya-prodygy-unisex-purple-colourblocked-teenagers-school-bag-26l/36269850/buy\", \"in_stock\": true, \"category\": [\"Accessories/Backpack\"], \"gender\": \"KIDS\", \"similarity_score\": 0.27637356755486236, \"vton_enabled\": true}]}",
+    "tool_use_id": "f0c5db70-94c0-4e40-8edd-1ed5dca587c4",
+    "is_error": false,
+    "error_reason": null
+  },
+  {
+    "type": "insight",
+    "subtype": "agent_turn",
+    "label": "Agent turn 2",
+    "ts": 1787127669793,
+    "detail": "continuing after tool results"
+  },
+  {
+    "type": "system",
+    "subtype": "transition",
+    "text": "tool_call_followup"
+  },
+  {
+    "type": "system",
+    "subtype": "token_count",
+    "text": "32,354 / 100,000 tokens (threshold)",
+    "token_count": 32354,
+    "threshold": 100000
+  },
+  {
+    "type": "insight",
+    "subtype": "llm_thinking",
+    "label": "LLM thinking…",
+    "ts": 1787127669796
+  },
+  {
+    "type": "stream_request_start"
+  },
+  {
+    "type": "insight",
+    "subtype": "token_usage",
+    "label": "Tokens — in: 35,000 · out: 521 · cached: 31,680",
+    "ts": 1787127676939,
+    "detail": "step 2"
+  },
+  {
+    "type": "system",
+    "subtype": "usage",
+    "input_tokens": 35000,
+    "output_tokens": 521,
+    "reasoning_tokens": 0,
+    "reasoning_estimated": false,
+    "cache_read_tokens": 31680,
+    "text": "Tokens — in: 35,000 (cache: 31,680) · out: 521"
+  },
+  {
+    "type": "text_final",
+    "blocks": [
+      {
+        "type": "text",
+        "text": "Here are some great school backpack options for both boys and girls, ranging from budget-friendly to feature-rich designs:"
+      },
+      {
+        "type": "product_picks",
+        "products": [
+          {
+            "product_id": "16b187ce-ad03-5079-8897-0075cf76af25",
+            "title": "URBAN CARRIER Unisex School Backpack",
+            "brand": "URBAN CARRIER",
+            "price": 562.0,
+            "original_price": 562.0,
+            "currency": "INR",
+            "image_url": "https://m-us-mob-ailooks-prod.glance-cdn.com/catalog/images/2026/08/05/c5e7e583f3398493714c14b35807c1c5cb9ed6b1.jpg",
+            "deeplink_url": "https://www.myntra.com/backpacks/urban+carrier/urban-carrier-unisex-school--backpack/32496179/buy",
+            "in_stock": true,
+            "category": [
+              "Accessories/Backpack"
+            ],
+            "gender": "UNISEX",
+            "vton_enabled": true,
+            "product_label": "Budget Pick",
+            "llm_reasoning": "affordable and durable for daily use"
+          },
+          {
+            "product_id": "1474304e-61db-5fe9-b521-9cb5a868d830",
+            "title": "Solid School Backpack",
+            "brand": "Savana",
+            "price": 763.0,
+            "original_price": 763.0,
+            "currency": "INR",
+            "image_url": "https://m-us-mob-ailooks-prod.glance-cdn.com/catalog/images/2026/08/13/ce0fc264ddb8fb493e03db5930c68e3a26c853e3.jpg",
+            "deeplink_url": "https://www.savana.com/details/solid-school-backpack-1887622",
+            "in_stock": true,
+            "category": [
+              "Accessories/Backpack"
+            ],
+            "gender": "UNISEX",
+            "vton_enabled": true,
+            "product_label": "Value Pick",
+            "llm_reasoning": "lightweight with great capacity"
+          },
+          {
+            "product_id": "0b487109-f813-59fe-95be-b674816820fe",
+            "title": "Solid School Backpack",
+            "brand": "Savana",
+            "price": 817.0,
+            "original_price": 817.0,
+            "currency": "INR",
+            "image_url": "https://m-us-mob-ailooks-prod.glance-cdn.com/catalog/images/2026/08/13/67fcd9dc67ceb311ae64d8fdf8b567f93d919ac8.jpg",
+            "deeplink_url": "https://www.savana.com/details/solid-school-backpack-1893232",
+            "in_stock": true,
+            "category": [
+              "Accessories/Backpack"
+            ],
+            "gender": "UNISEX",
+            "vton_enabled": true,
+            "product_label": "Solid Choice",
+            "llm_reasoning": "classic design, reliable brand"
+          },
+          {
+            "product_id": "91267493-fccb-53cf-bd81-913aa66380f6",
+            "title": "Patched School Backpack",
+            "brand": "Savana",
+            "price": 1011.0,
+            "original_price": 1011.0,
+            "currency": "INR",
+            "image_url": "https://m-us-mob-ailooks-prod.glance-cdn.com/catalog/images/2026/08/13/b09bcf2d699d77d268ce627c63d88cb1d080cbd0.jpg",
+            "deeplink_url": "https://www.savana.com/details/patched-school-backpack-1887692",
+            "in_stock": true,
+            "category": [
+              "Accessories/Backpack"
+            ],
+            "gender": "UNISEX",
+            "vton_enabled": true,
+            "product_label": "Trendy Style",
+            "llm_reasoning": "patched design for personality"
+          },
+          {
+            "product_id": "31755b71-12ee-54e8-9929-6f6aa246b249",
+            "title": "Skybags Unisex Manga Anime Black School Backpack - 27L",
+            "brand": "Skybags",
+            "price": 1470.0,
+            "original_price": 1470.0,
+            "currency": "INR",
+            "image_url": "https://m-us-mob-ailooks-prod.glance-cdn.com/catalog/images/2026/08/13/63ca4d3b2313a6e9e3446c189e190c97c34bbd2a.jpg",
+            "deeplink_url": "https://www.myntra.com/backpacks/skybags/skybags-unisex-manga-anime-black-school-backpack-with-3-compartments--front-pocket---27l/39487174/buy",
+            "in_stock": true,
+            "category": [
+              "Accessories/Backpack"
+            ],
+            "gender": "UNISEX",
+            "vton_enabled": true,
+            "product_label": "Anime Fun",
+            "llm_reasoning": "manga print, 3 compartments"
+          },
+          {
+            "product_id": "33e37428-32e3-527f-b156-b4fb53b47c10",
+            "title": "Skybags Unisex Manga Anime Teal School Backpack with 3 Compartments & Front Pocke",
+            "brand": "Skybags",
+            "price": 1470.0,
+            "original_price": 1470.0,
+            "currency": "INR",
+            "image_url": "https://m-us-mob-ailooks-prod.glance-cdn.com/catalog/images/2026/08/04/76e9143a8715e0f45201d6d0dc01817f0654b1c6.jpg",
+            "deeplink_url": "https://www.myntra.com/backpacks/skybags/skybags-unisex-manga-anime-teal-school-backpack-with-3-compartments--front-pocket---27l/39487175/buy",
+            "in_stock": true,
+            "category": [
+              "Accessories/Backpack"
+            ],
+            "gender": "UNISEX",
+            "vton_enabled": true,
+            "product_label": "Colorful Option",
+            "llm_reasoning": "teal anime design, front pocket"
+          },
+          {
+            "product_id": "dcc6b46a-5d92-5690-853a-6717267fd726",
+            "title": "Skybags Unisex Kenshi Stealth Black School Backpack with 3 Compartments & Rain Cover - 34L",
+            "brand": "Skybags",
+            "price": 2016.0,
+            "original_price": 2016.0,
+            "currency": "INR",
+            "image_url": "https://m-us-mob-ailooks-prod.glance-cdn.com/catalog/images/2026/08/04/7f1efe4750c2fcb15cab81dab6654a88b58c4279.jpg",
+            "deeplink_url": "https://www.myntra.com/backpacks/skybags/skybags-unisex-kenshi-stealth-black-school-backpack-with-3-compartments--rain-cover---34l/39487183/buy",
+            "in_stock": true,
+            "category": [
+              "Accessories/Backpack"
+            ],
+            "gender": "UNISEX",
+            "vton_enabled": true,
+            "product_label": "Premium Feature",
+            "llm_reasoning": "rain cover, 34L capacity"
+          },
+          {
+            "product_id": "f766f734-ead0-55ad-bccc-7fcb6862dfc7",
+            "title": "Skybags Unisex Sizzler Pro Green School Backpack with Insulated Tiffin Pouch",
+            "brand": "Skybags",
+            "price": 2688.0,
+            "original_price": 2688.0,
+            "currency": "INR",
+            "image_url": "https://m-us-mob-ailooks-prod.glance-cdn.com/catalog/images/2026/08/12/6cc8c7ce881a20f7ddc1243c0699bb0ca77dbd5c.jpg",
+            "deeplink_url": "https://www.myntra.com/backpacks/skybags/skybags-unisex-sizzler-pro-green-school-backpack-with-insulated-tiffin-pouch---39l/39487195/buy",
+            "in_stock": true,
+            "category": [
+              "Accessories/Backpack"
+            ],
+            "gender": "UNISEX",
+            "vton_enabled": true,
+            "product_label": "Tiffin Ready",
+            "llm_reasoning": "insulated pouch included"
+          },
+          {
+            "product_id": "3c6ae584-961e-5ef6-af1e-2bf4e05d26d1",
+            "title": "Solid School Backpack",
+            "brand": "Savana",
+            "price": 1090.0,
+            "original_price": 1090.0,
+            "currency": "INR",
+            "image_url": "https://m-us-mob-ailooks-prod.glance-cdn.com/catalog/images/2026/08/13/48fe0a5c18520f45e68cadfcae17d9113036bf89.jpg",
+            "deeplink_url": "https://www.savana.com/details/solid-school-backpack-1911392",
+            "in_stock": true,
+            "category": [
+              "Accessories/Backpack"
+            ],
+            "gender": "KIDS",
+            "vton_enabled": true,
+            "product_label": "Classic Solid",
+            "llm_reasoning": "timeless Savana quality"
+          },
+          {
+            "product_id": "d18f5165-9548-5b38-83d9-f1dc0d91cb2f",
+            "title": "VAYA PRODYGY Unisex Purple Colourblocked School Bag 26L",
+            "brand": "Vaya",
+            "price": 3141.0,
+            "original_price": 3141.0,
+            "currency": "INR",
+            "image_url": "https://m-us-mob-ailooks-prod.glance-cdn.com/catalog/images/2026/08/03/3da5d416cb94e2486d2f7daf6582e3f34f482a0c.jpg",
+            "deeplink_url": "https://www.myntra.com/backpacks/vaya/vaya-prodygy-unisex-purple-colourblocked-teenagers-school-bag-26l/36269850/buy",
+            "in_stock": true,
+            "category": [
+              "Accessories/Backpack"
+            ],
+            "gender": "KIDS",
+            "vton_enabled": true,
+            "product_label": "Bold Look",
+            "llm_reasoning": "purple colourblock, 26L"
+          }
+        ]
+      },
+      {
+        "type": "suggestions",
+        "chips": [
+          "Show me more under ₹1000",
+          "Same styles in different colors",
+          "Find matching pencil cases",
+          "Show me more like this"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "system",
+    "subtype": "transition",
+    "text": "completion"
+  },
+  {
+    "type": "insight",
+    "subtype": "llm_skills_used",
+    "label": "LLM used skills (2)",
+    "ts": 1787127677061,
+    "detail": "fashion, travel"
+  },
+  {
+    "type": "turn_complete",
+    "turn_id": "152e2846-1801-4147-9992-a12c42a09e2b",
+    "input_tokens": 67354,
+    "output_tokens": 735,
+    "reasoning_tokens": 0,
+    "reasoning_estimated": false,
+    "cache_read_tokens": 31680,
+    "latency_ms": 14045,
+    "agent_steps": 2,
+    "tool_call_count": 2,
+    "skills_loaded": [
+      "default",
+      "fashion",
+      "travel"
+    ]
+  },
+  {
+    "type": "[DONE]"
+  }
+]

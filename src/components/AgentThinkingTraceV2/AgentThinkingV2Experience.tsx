@@ -51,6 +51,7 @@ type ExperiencePhase = 'intro' | 'thinking' | 'compressing' | 'handoff' | 'final
 const SOURCE_LABEL: Record<string, string> = {
   phoenix: 'Real Agent Harness trace, mapped live',
   cached_phoenix: 'Real Agent Harness trace (cached spans)',
+  harness_stream: 'Real captured harness stream',
   fixture: 'Presentation fixture — not Phoenix output',
 };
 
@@ -275,7 +276,22 @@ export default function AgentThinkingV2Experience() {
               showPassValue &&
               ThinkingRenderer &&
               currentPass && (
-                <div key={currentPass.id} className="atv2-pass">
+                <div
+                  // Same stable-key contract as Level2ScenarioExperience.tsx —
+                  // sources/route persist and update in place instead of
+                  // remounting on every sub-beat/map stage.
+                  key={
+                    currentPass.valueType === 'sources' || currentPass.valueType === 'route'
+                      ? `${currentPass.valueType}-canvas`
+                      : currentPass.id
+                  }
+                  className="atv2-pass"
+                  data-active-hold={
+                    runtime.timingMode === 'actual' && runtime.passPhase === 'hold' && currentPass.payload
+                      ? currentPass.valueType ?? 'generic'
+                      : undefined
+                  }
+                >
                   <ThinkingRenderer
                     pass={currentPass}
                     scenario={scenario}
@@ -310,6 +326,84 @@ export default function AgentThinkingV2Experience() {
               </div>
               <div className="atv2-dev-row"><span>Phase</span><b>{phase}</b></div>
               <div className="atv2-dev-row"><span>Final renderer</span><b>{finalFamily}</b></div>
+              {/* Timing mode — WHEN passes appear, never what they show.
+                  Demo = curated cadence; Actual = the same passes on the real
+                  Phoenix clock (see level2/runtime/schedule.ts). Disabled for
+                  fixtures — real timing is never fabricated. */}
+              <div className="atv2-dev-row" style={{ alignItems: 'center' }}>
+                <span>Timing</span>
+                <b>
+                  <button
+                    onClick={() => runtime.setTimingMode('demo')}
+                    style={{
+                      background: runtime.requestedTimingMode === 'demo' ? 'rgba(120,220,170,0.25)' : 'transparent',
+                      color: 'inherit',
+                      border: '1px solid rgba(255,255,255,0.25)',
+                      borderRadius: 4,
+                      padding: '2px 8px',
+                      marginRight: 6,
+                      cursor: 'pointer',
+                      font: 'inherit',
+                    }}
+                  >
+                    Demo
+                  </button>
+                  <button
+                    onClick={() => runtime.setTimingMode('actual')}
+                    disabled={!runtime.actualTimingAvailable}
+                    title={runtime.actualTimingAvailable ? 'Replay on the real Phoenix clock' : 'Actual timing unavailable for fixture'}
+                    style={{
+                      background: runtime.requestedTimingMode === 'actual' ? 'rgba(120,220,170,0.25)' : 'transparent',
+                      color: 'inherit',
+                      border: '1px solid rgba(255,255,255,0.25)',
+                      borderRadius: 4,
+                      padding: '2px 8px',
+                      cursor: runtime.actualTimingAvailable ? 'pointer' : 'not-allowed',
+                      opacity: runtime.actualTimingAvailable ? 1 : 0.4,
+                      font: 'inherit',
+                    }}
+                  >
+                    Actual
+                  </button>
+                </b>
+              </div>
+              {runtime.timingMode === 'actual' && (
+                <>
+                  <div className="atv2-dev-row">
+                    <span>Max idle gap</span>
+                    <b>
+                      {[0, 5000, 10000, 20000].map((ms) => (
+                        <button
+                          key={ms}
+                          onClick={() => runtime.setMaxIdleGapMs(ms)}
+                          style={{
+                            background: runtime.maxIdleGapMs === ms ? 'rgba(120,220,170,0.25)' : 'transparent',
+                            color: 'inherit',
+                            border: '1px solid rgba(255,255,255,0.25)',
+                            borderRadius: 4,
+                            padding: '2px 6px',
+                            marginLeft: 4,
+                            cursor: 'pointer',
+                            font: 'inherit',
+                          }}
+                        >
+                          {ms ? `${ms / 1000}s` : 'Off'}
+                        </button>
+                      ))}
+                    </b>
+                  </div>
+                  <div className="atv2-dev-row">
+                    <span>Trace / elapsed</span>
+                    <b>
+                      {runtime.traceDurationMs != null ? `${(runtime.traceDurationMs / 1000).toFixed(1)}s` : '—'} ·{' '}
+                      {(runtime.elapsed / 1000).toFixed(1)}s
+                    </b>
+                  </div>
+                </>
+              )}
+              {!runtime.actualTimingAvailable && (
+                <div className="atv2-dev-keys">Actual timing unavailable{scenario?.source === 'fixture' ? ' for fixture' : ''}</div>
+              )}
               <div className="atv2-dev-keys">Space play/pause · R refresh · F jump to final</div>
             </div>
             <ScenarioTypeSelector
@@ -319,6 +413,14 @@ export default function AgentThinkingV2Experience() {
               availability={source.availability}
               source={scenario ? SOURCE_LABEL[scenario.source] : undefined}
               isLoading={source.status === 'loading'}
+              sourceMode={source.sourceMode}
+              onSelectSourceMode={source.selectSourceMode}
+              harnessStreamCaptures={source.harnessStreamCaptures}
+              selectedHarnessCaptureId={source.selectedHarnessCaptureId}
+              onSelectHarnessCapture={source.selectHarnessCapture}
+              elapsedMs={scenario ? runtime.elapsed : undefined}
+              totalMs={runtime.totalDuration}
+              timingModeLabel={runtime.timingMode === 'actual' ? 'Real' : 'Demo'}
             />
           </>
         )}

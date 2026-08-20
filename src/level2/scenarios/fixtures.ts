@@ -47,8 +47,13 @@ function v(id: string, narration: string, valueType: ThinkingValueType, payload:
 
 /** Entity builder. `image` is deliberately omitted on every place-like fixture
  *  — that is the real corpus condition (see PHOENIX_SCENARIO_ARCHETYPES.md),
- *  and the renderers must be correct without one. */
-function e(id: string, title: string, rest: Partial<NormalizedEntity> = {}): NormalizedEntity {
+ *  and the renderers must be correct without one.
+ *
+ *  Exported (along with `scenario`, `rankingScenario`, `listScenario` below)
+ *  so the dedicated Memory Retrieval Dev Mode pool (see
+ *  scenarios/memoryRetrievalScenarios.ts) can build fixtures the same way
+ *  this file does, rather than growing a second authoring convention. */
+export function e(id: string, title: string, rest: Partial<NormalizedEntity> = {}): NormalizedEntity {
   return { id, type: 'generic', title, ...rest };
 }
 
@@ -60,7 +65,7 @@ function discovered(id: string, narration: string, entities: NormalizedEntity[])
   });
 }
 
-function scenario(
+export function scenario(
   id: string,
   archetype: ScenarioArchetype,
   domain: string,
@@ -148,7 +153,7 @@ const TEXT_ONLY: Level2Scenario[] = [
    These are clearly-labelled fixtures everywhere they appear; they are never
    presented as Phoenix output. ──────────────────────────────────────────── */
 
-function rankingScenario(
+export function rankingScenario(
   id: string,
   domain: string,
   prompt: string,
@@ -650,7 +655,7 @@ const STRUCTURED: Level2Scenario[] = [
    derived from the same array the canvas renders, and no fixture can
    reintroduce the duplicate "Found N…" + "N worth checking" copy. */
 
-function listScenario(
+export function listScenario(
   id: string,
   domain: string,
   prompt: string,

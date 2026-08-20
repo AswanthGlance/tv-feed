@@ -5,9 +5,11 @@ import type {
   CountPayload,
   EntityPreviewPayload,
   GenericPayload,
+  IntentPayload,
   MemorySignalsPayload,
   RoutePayload,
   SourcesPayload,
+  SynthesisStructurePayload,
   TextPayload,
   TimelinePayload,
 } from '../../../level2/types/pass';
@@ -62,6 +64,55 @@ export function TextValue({ payload }: ThinkingRendererProps<TextPayload>) {
         </li>
       ))}
     </ul>
+  );
+}
+
+/** The acknowledgement beat — "I understood what you're asking," never a
+ *  repeat of the prompt. See userValue/intentChips.ts for where the chips
+ *  come from. Small, centered, easy to scan — never a card row. */
+export function IntentSummaryValue({ payload }: ThinkingRendererProps<IntentPayload>) {
+  if (!payload.chips.length) return null;
+  return (
+    <div className="att-l2v-intent">
+      {payload.chips.map((chip, i) => (
+        <span key={chip} className="att-l2v-intent-chip att-l2v-stagger" style={stagger(i)}>
+          {chip}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+/** The SYNTHESIS beat's visual (see harnessStream/synthesisBeat.ts) — real
+ *  section/dimension labels, revealed one at a time while the model is
+ *  genuinely composing the answer. Paced to the pass's own HOLD window
+ *  (real or demo — schedule.ts already resolved which), never a fixed
+ *  ~130ms stagger that would dump every label in the first second of a
+ *  15-second real hold. Labels only, by contract of the payload itself —
+ *  this component never has access to the answer's actual content. */
+export function SynthesisStructureValue({ payload, pass, runtime }: ThinkingRendererProps<SynthesisStructurePayload>) {
+  if (!payload.sections.length) return null;
+
+  const scheduled = runtime.schedule.find((s) => s.pass.id === pass.id);
+  const holdMs = scheduled ? Math.max(0, scheduled.holdEnd - scheduled.enterEnd) : 0;
+  // Spread reveals across the real hold, leaving headroom at the end so the
+  // last label isn't still arriving as the pass exits. Clamped to a range
+  // that reads as deliberate pacing on TV, never a flicker and never a
+  // multi-second dead pause between labels.
+  const perItemMs = holdMs > 0 ? Math.min(1800, Math.max(260, (holdMs * 0.75) / payload.sections.length)) : 220;
+
+  return (
+    <div className="att-l2v-synthesis">
+      {payload.sections.map((section, i) => (
+        <span
+          key={section}
+          className="att-l2v-synthesis-chip att-l2v-stagger"
+          style={{ '--i': i, animationDelay: `${i * perItemMs + 120}ms` } as React.CSSProperties}
+        >
+          {section}
+        </span>
+      ))}
+    </div>
   );
 }
 
@@ -253,7 +304,13 @@ export function SourcesValue({ payload }: ThinkingRendererProps<SourcesPayload>)
       <div className="att-l2v-source-strip">
         {shown.map((source, i) => (
           <span
-            key={`${source.label}-${i}`}
+            // Stable identity (real domain, or the label when a source has
+            // none — maps-kind sources) — not the array index. Sources
+            // accumulate across cumulative research sub-beats (see
+            // subBeats.ts); an index key would remount every existing chip
+            // each time a new one is appended, instead of just mounting the
+            // new one.
+            key={source.domain ?? source.label}
             className={`att-l2v-source att-l2v-source--${source.kind} att-l2v-stagger`}
             style={stagger(i)}
           >

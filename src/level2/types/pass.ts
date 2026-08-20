@@ -42,7 +42,9 @@ export type ThinkingValueType =
   | 'timeline'
   | 'cluster'
   | 'generic'
-  | 'memory_signals';
+  | 'memory_signals'
+  | 'intent'
+  | 'synthesis_structure';
 
 /* ── Value payloads — presentation-neutral data only. No JSX, no class names,
    no colors, no pixel sizes. A renderer decides how any of this looks. ──── */
@@ -252,6 +254,22 @@ export interface GenericPayload {
   detail?: string;
 }
 
+/** The acknowledgement beat's visual — 2-5 short chips extracted from the
+ *  real prompt (see userValue/intentChips.ts), never a paraphrase of the
+ *  whole request. "I understood what you're asking," not a result. */
+export interface IntentPayload {
+  chips: string[];
+}
+
+/** The SYNTHESIS beat's visual (see harnessStream/synthesisBeat.ts) — real
+ *  section/dimension LABELS from the classified final response, revealed
+ *  progressively while the model is genuinely composing the answer. Never
+ *  the section's actual content — labels only, so nothing is revealed
+ *  early. */
+export interface SynthesisStructurePayload {
+  sections: string[];
+}
+
 /** Recalled personal context — see types/memory.ts. Never the raw memory
  *  payload: `signals` is already filtered for relevance and capped for TV
  *  display by the time it reaches a renderer. */
@@ -270,7 +288,9 @@ export type ThinkingPayload =
   | TimelinePayload
   | ClusterPayload
   | GenericPayload
-  | MemorySignalsPayload;
+  | MemorySignalsPayload
+  | IntentPayload
+  | SynthesisStructurePayload;
 
 /** Maps a valueType to the payload a pass of that type carries. Used by the
  *  renderer contract so a renderer registered for 'route' receives a
@@ -287,6 +307,8 @@ export interface ThinkingPayloadMap {
   cluster: ClusterPayload;
   generic: GenericPayload;
   memory_signals: MemorySignalsPayload;
+  intent: IntentPayload;
+  synthesis_structure: SynthesisStructurePayload;
 }
 
 /** Developer-mode provenance for a discovery/candidate pass: how the visible
@@ -337,6 +359,15 @@ export interface ThinkingPass {
   enterDuration: number;
   holdDuration: number;
   exitDuration: number;
+
+  /** REAL trace timing for this pass, in ms relative to trace start — the
+   *  interval spanned by the pass's mapped semantic events (earliest mapped
+   *  event start → latest mapped event completion). Present only when the
+   *  scenario came from a real Phoenix trace and the pass maps to at least
+   *  one timed event; NEVER fabricated for fixtures or synthetic passes.
+   *  Demo playback ignores it entirely — it exists for the dev-mode
+   *  "Actual Trace Timing" scheduler (see runtime/schedule.ts). */
+  traceTiming?: { start: number; end: number };
 }
 
 export function passDuration(pass: ThinkingPass): number {

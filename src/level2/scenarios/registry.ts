@@ -3,8 +3,11 @@ import type { PhoenixSpan } from '../../types/phoenix';
 import { cacheGet, cacheKeys, cacheSet, purgeStaleCacheVersions } from '../cache';
 import { CORPUS_INDEX } from './corpusIndex';
 import { FIXTURE_SCENARIOS } from './fixtures';
+import { MEMORY_RETRIEVAL_SCENARIOS } from './memoryRetrievalScenarios';
+import { HARNESS_STREAM_SCENARIOS } from './harnessStreamScenarios';
 import { buildScenarioFromTrace } from './fromTrace';
 import { SCENARIO_ARCHETYPES, type ScenarioArchetype } from '../types/archetype';
+import { MEMORY_RETRIEVAL_KIND, type DevScenarioKind } from '../types/devScenario';
 import { emptyPools, type Level2Scenario, type ScenarioPools, type ScenarioSource } from '../types/scenario';
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -17,6 +20,10 @@ import { emptyPools, type Level2Scenario, type ScenarioPools, type ScenarioSourc
 
      phoenix          a real trace fetched live and mapped now
      cached_phoenix   a real trace whose spans/scenario are already cached
+     harness_stream   a real captured harness turn-event stream, classified
+                       by the same classifier as every other source (see
+                       src/level2/harnessStream/) — real agent output, not
+                       hand-authored, but not live-fetchable either
      fixture          a hand-authored scenario, always marked as such
 
    Fixtures are a real fallback, never a silent substitute: the source travels
@@ -56,9 +63,35 @@ function fixturePools(): ScenarioPools {
   return pools;
 }
 
+function harnessStreamPools(): ScenarioPools {
+  const pools = emptyPools();
+  for (const scenario of HARNESS_STREAM_SCENARIOS) pools[scenario.archetype].push(scenario);
+  return pools;
+}
+
+export interface HarnessStreamCapture {
+  id: string;
+  label: string;
+  archetype: ScenarioArchetype;
+}
+
+/** The 10 named captures, in file order — what Dev Mode's Harness Stream
+ *  sub-selector lists (Q01 School Backpacks … Q10 Wensi Tofu), never a
+ *  generic archetype picker. */
+export const HARNESS_STREAM_CAPTURES: HarnessStreamCapture[] = HARNESS_STREAM_SCENARIOS.map((s) => ({
+  id: String(s.metadata?.captureId ?? s.id),
+  label: String(s.metadata?.captureLabel ?? s.id),
+  archetype: s.archetype,
+}));
+
 export class Level2ScenarioRegistry {
   private readonly fixtures = fixturePools();
-  private readonly recent = new Map<ScenarioArchetype, string[]>();
+  private readonly harnessStream = harnessStreamPools();
+  /** Keyed by DevScenarioKind rather than ScenarioArchetype so the Memory
+   *  Retrieval Dev Mode pool (see memoryRetrievalScenarios.ts) gets the same
+   *  "don't immediately repeat" behaviour as every real archetype, without a
+   *  second recency mechanism. */
+  private readonly recent = new Map<DevScenarioKind, string[]>();
   /** Scenarios already built this session, keyed by trace id. */
   private readonly built = new Map<string, Level2Scenario>();
 
@@ -85,14 +118,14 @@ export class Level2ScenarioRegistry {
     };
   }
 
-  private remember(archetype: ScenarioArchetype, id: string) {
-    const list = this.recent.get(archetype) ?? [];
+  private remember(kind: DevScenarioKind, id: string) {
+    const list = this.recent.get(kind) ?? [];
     const next = [id, ...list.filter((x) => x !== id)].slice(0, RECENT_MEMORY);
-    this.recent.set(archetype, next);
+    this.recent.set(kind, next);
   }
 
-  private isRecent(archetype: ScenarioArchetype, id: string): boolean {
-    return (this.recent.get(archetype) ?? []).includes(id);
+  private isRecent(kind: DevScenarioKind, id: string): boolean {
+    return (this.recent.get(kind) ?? []).includes(id);
   }
 
   /** Candidate trace ids for an archetype, freshest-unseen first. Falls back
@@ -114,6 +147,13 @@ export class Level2ScenarioRegistry {
 
   private pickFixture(archetype: ScenarioArchetype): Level2Scenario | undefined {
     const pool = this.fixtures[archetype];
+    if (!pool.length) return undefined;
+    const unseen = pool.filter((s) => !this.isRecent(archetype, s.id));
+    return (unseen.length ? unseen : pool)[0];
+  }
+
+  private pickHarnessStream(archetype: ScenarioArchetype): Level2Scenario | undefined {
+    const pool = this.harnessStream[archetype];
     if (!pool.length) return undefined;
     const unseen = pool.filter((s) => !this.isRecent(archetype, s.id));
     return (unseen.length ? unseen : pool)[0];
@@ -178,10 +218,43 @@ export class Level2ScenarioRegistry {
       if (!refs.length) fallbackNotes.push(`No real trace in the corpus classified as ${archetype}.`);
     }
 
+    if (options.preferSource !== 'fixture') {
+      const harnessScenario = this.pickHarnessStream(archetype);
+      if (harnessScenario) {
+        this.remember(archetype, harnessScenario.id);
+        return { scenario: harnessScenario, fallbackNotes, usedFallback: true };
+      }
+    }
+
     const fixture = this.pickFixture(archetype);
     if (!fixture) return undefined;
     this.remember(archetype, fixture.id);
     return { scenario: fixture, fallbackNotes, usedFallback: options.preferSource !== 'fixture' };
+  }
+
+  /** Dev Mode's dedicated Memory Retrieval demo. Deliberately NOT routed
+   *  through `select()`'s Phoenix-first path — see memoryRetrievalScenarios.ts
+   *  for why (real corpus hits are one repeated fact from a single user, and
+   *  no full trace id from that survey was persisted to refetch). Cycles the
+   *  curated pool with the same "don't immediately repeat" behaviour Refresh
+   *  gives every real archetype. */
+  selectMemoryRetrieval(): ScenarioSelection | undefined {
+    if (!MEMORY_RETRIEVAL_SCENARIOS.length) return undefined;
+    const unseen = MEMORY_RETRIEVAL_SCENARIOS.filter((s) => !this.isRecent(MEMORY_RETRIEVAL_KIND, s.id));
+    const scenario = (unseen.length ? unseen : MEMORY_RETRIEVAL_SCENARIOS)[0];
+    this.remember(MEMORY_RETRIEVAL_KIND, scenario.id);
+    return { scenario, fallbackNotes: [], usedFallback: false };
+  }
+
+  /** Dev Mode's Harness Stream source: a direct pick by capture id (e.g.
+   *  "q07"), not "give me *a* candidate_ranking example" — this is what lets
+   *  the named 10-item list (see HARNESS_STREAM_CAPTURES) reach an exact
+   *  real capture, mirroring selectMemoryRetrieval()'s dedicated-pool
+   *  precedent rather than routing through the archetype-keyed select(). */
+  selectHarnessStreamExample(id: string): ScenarioSelection | undefined {
+    const scenario = HARNESS_STREAM_SCENARIOS.find((s) => s.metadata?.captureId === id);
+    if (!scenario) return undefined;
+    return { scenario, fallbackNotes: [], usedFallback: false };
   }
 }
 

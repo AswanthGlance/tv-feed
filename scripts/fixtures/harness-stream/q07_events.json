@@ -1,0 +1,461 @@
+[
+  {
+    "type": "turn_started"
+  },
+  {
+    "type": "insight",
+    "subtype": "guardrail_passed",
+    "label": "Guardrail passed",
+    "ts": 1787127825590,
+    "detail": "nsfw check ✓"
+  },
+  {
+    "type": "insight",
+    "subtype": "skills_selected",
+    "label": "Skills selected (1)",
+    "ts": 1787127825592,
+    "detail": "food (0.84)"
+  },
+  {
+    "type": "insight",
+    "subtype": "skills_loaded",
+    "label": "Skills loaded (2)",
+    "ts": 1787127825594,
+    "detail": "default, food"
+  },
+  {
+    "type": "insight",
+    "subtype": "context_built",
+    "label": "Context built",
+    "ts": 1787127825595,
+    "detail": "stm=no · 0 msgs"
+  },
+  {
+    "type": "insight",
+    "subtype": "llm_start",
+    "label": "LLM started",
+    "ts": 1787127825597
+  },
+  {
+    "type": "insight",
+    "subtype": "tools_loaded",
+    "label": "Tools loaded (12)",
+    "detail": "GetRoute, GetWeather, MemoryRead, MemoryWrite, NearbyPlaces, PlaceDetails, PlaceReviews, PlaceSearch, Task, TodoWrite, WebFetch, WebSearch",
+    "ts": 1787127825598
+  },
+  {
+    "type": "system",
+    "subtype": "transition",
+    "text": "user_query"
+  },
+  {
+    "type": "insight",
+    "subtype": "llm_thinking",
+    "label": "LLM thinking…",
+    "ts": 1787127827211
+  },
+  {
+    "type": "stream_request_start"
+  },
+  {
+    "type": "text_interim",
+    "text": "Searching for top-rated Lucknowi Biryani restaurants near Bengaluru with family-friendly ambiance.",
+    "step_id": 1,
+    "names": [
+      "PlaceSearch"
+    ],
+    "tools": [
+      {
+        "tool_name": "PlaceSearch",
+        "user_facing_tool_label": "Finding places",
+        "icon": "https://tv.glance-cdn.com/public/AI-team-assets/harness_assets/tool-icons/MapPin.png"
+      }
+    ]
+  },
+  {
+    "type": "insight",
+    "subtype": "tool_selected",
+    "label": "Tool → PlaceSearch",
+    "ts": 1787127831544,
+    "detail": "Lucknowi Biryani restaurants near me"
+  },
+  {
+    "type": "tool_use",
+    "name": "PlaceSearch",
+    "input": {
+      "latitude": 12.9352,
+      "longitude": 77.6245,
+      "max_results": 10,
+      "query": "Lucknowi Biryani restaurants near me"
+    },
+    "tool_use_id": "34cbb0c8-484c-4433-b047-67d6049838b4"
+  },
+  {
+    "type": "insight",
+    "subtype": "tool_done",
+    "label": "Tool done: PlaceSearch",
+    "ts": 1787127832262,
+    "detail": "12717 chars"
+  },
+  {
+    "type": "tool_result",
+    "name": "PlaceSearch",
+    "text": "{\"query\": \"Lucknowi Biryani restaurants near me\", \"total_results\": 10, \"places\": [{\"place_id\": \"ChIJ3cq6Rk4UrjsRUMS70QMMs0s\", \"name\": \"Luckhnow Street\", \"types\": [\"north_indian_restaurant\"], \"rating\": 3.9, \"user_rating_count\": 3731, \"price_display\": \"₹200–400 per person\", \"open_now\": true, \"phone\": \"097315 53030\", \"latitude\": 12.9337999, \"longitude\": 77.6192725, \"photo_url\": \"https://m-us-mob-ailooks-uat.glance-cdn.com/photo/lucknowstreet.jpg\", \"travel_time_text\": \"2 min\", \"travel_distance_text\": \"0.7 km\"}, {\"place_id\": \"ChIJkYL5WAAVrjsRbiB5uuoqaAA\", \"name\": \"Lucknow Street\", \"types\": [\"indian_restaurant\"], \"rating\": 4.5, \"user_rating_count\": 49, \"price_display\": \"₹400–600 per person\", \"open_now\": true, \"phone\": \"097395 43030\", \"latitude\": 12.9602657, \"longitude\": 77.6459914, \"photo_url\": \"https://m-us-mob-ailooks-uat.glance-cdn.com/photo/lucknowstreetindira.jpg\", \"travel_time_text\": \"12 min\", \"travel_distance_text\": \"5.0 km\"}, {\"place_id\": \"ChIJHW8IO-4VrjsRoJ7edhT4kdA\", \"name\": \"Aromas of Biryani, Jayanagar\", \"types\": [\"indian_restaurant\"], \"rating\": 4.4, \"user_rating_count\": 3010, \"price_display\": \"₹200–600 per person\", \"open_now\": true, \"phone\": \"096064 51100\", \"latitude\": 12.9252739, \"longitude\": 77.5858629, \"photo_url\": \"https://m-us-mob-ailooks-uat.glance-cdn.com/photo/aromasofbiryani.jpg\", \"travel_time_text\": \"23 min\", \"travel_distance_text\": \"7.3 km\"}, {\"place_id\": \"ChIJ4SOBNhwVrjsRJf8wyc6izjk\", \"name\": \"RNR Biryani - Jayanagar\", \"types\": [\"indian_restaurant\"], \"rating\": 4.3, \"user_rating_count\": 6879, \"price_display\": \"₹200–600 per person\", \"open_now\": true, \"phone\": \"097427 21949\", \"latitude\": 12.9284561, \"longitude\": 77.5826222, \"photo_url\": \"https://m-us-mob-ailooks-uat.glance-cdn.com/photo/rnrbiryani.jpg\", \"travel_time_text\": \"21 min\", \"travel_distance_text\": \"6.5 km\"}], \"source\": \"google_places_api_new.text_search\"}",
+    "tool_use_id": "34cbb0c8-484c-4433-b047-67d6049838b4",
+    "is_error": false,
+    "error_reason": null
+  },
+  {
+    "type": "insight",
+    "subtype": "agent_turn",
+    "label": "Agent turn 2",
+    "ts": 1787127832269,
+    "detail": "continuing after tool results"
+  },
+  {
+    "type": "insight",
+    "subtype": "llm_thinking",
+    "label": "LLM thinking…",
+    "ts": 1787127832272
+  },
+  {
+    "type": "stream_request_start"
+  },
+  {
+    "type": "text_interim",
+    "text": "Now I need to fetch detailed reviews and specifics on spice levels and family ambiance for the top candidates.",
+    "step_id": 2,
+    "names": [
+      "PlaceDetails"
+    ],
+    "tools": [
+      {
+        "tool_name": "PlaceDetails",
+        "user_facing_tool_label": "Finding places",
+        "icon": "https://tv.glance-cdn.com/public/AI-team-assets/harness_assets/tool-icons/MapPin.png"
+      }
+    ]
+  },
+  {
+    "type": "insight",
+    "subtype": "tool_selected",
+    "label": "Tool → PlaceDetails",
+    "ts": 1787127836961,
+    "detail": "ChIJkYL5WAAVrjsRbiB5uuoqaAA"
+  },
+  {
+    "type": "tool_use",
+    "name": "PlaceDetails",
+    "input": {
+      "place_id": "ChIJkYL5WAAVrjsRbiB5uuoqaAA"
+    },
+    "tool_use_id": "8d84acc7-0e1a-4e27-a2c1-5c0406972979"
+  },
+  {
+    "type": "insight",
+    "subtype": "tool_selected",
+    "label": "Tool → PlaceDetails",
+    "ts": 1787127836961,
+    "detail": "ChIJHW8IO-4VrjsRoJ7edhT4kdA"
+  },
+  {
+    "type": "tool_use",
+    "name": "PlaceDetails",
+    "input": {
+      "place_id": "ChIJHW8IO-4VrjsRoJ7edhT4kdA"
+    },
+    "tool_use_id": "44f8bdbb-56eb-45d5-b1fb-10cfaf6473ea"
+  },
+  {
+    "type": "insight",
+    "subtype": "tool_selected",
+    "label": "Tool → PlaceDetails",
+    "ts": 1787127836962,
+    "detail": "ChIJ4SOBNhwVrjsRJf8wyc6izjk"
+  },
+  {
+    "type": "tool_use",
+    "name": "PlaceDetails",
+    "input": {
+      "place_id": "ChIJ4SOBNhwVrjsRJf8wyc6izjk"
+    },
+    "tool_use_id": "63517abf-0a6e-48b3-b0c8-29590b577ba6"
+  },
+  {
+    "type": "insight",
+    "subtype": "tool_selected",
+    "label": "Tool → PlaceDetails",
+    "ts": 1787127836962,
+    "detail": "ChIJ3cq6Rk4UrjsRUMS70QMMs0s"
+  },
+  {
+    "type": "tool_use",
+    "name": "PlaceDetails",
+    "input": {
+      "place_id": "ChIJ3cq6Rk4UrjsRUMS70QMMs0s"
+    },
+    "tool_use_id": "7d31e392-67ea-4f41-89a9-96b168560917"
+  },
+  {
+    "type": "insight",
+    "subtype": "parallel_tools",
+    "label": "Running 4 tools in parallel",
+    "ts": 1787127836964,
+    "detail": "PlaceDetails x4"
+  },
+  {
+    "type": "parallel_batch",
+    "count": 4,
+    "names": [
+      "PlaceDetails",
+      "PlaceDetails",
+      "PlaceDetails",
+      "PlaceDetails"
+    ]
+  },
+  {
+    "type": "insight",
+    "subtype": "tool_done",
+    "label": "Tool done: PlaceDetails",
+    "ts": 1787127837571,
+    "detail": "4142 chars"
+  },
+  {
+    "type": "tool_result",
+    "name": "PlaceDetails",
+    "text": "{\"place_id\": \"ChIJkYL5WAAVrjsRbiB5uuoqaAA\", \"name\": \"Lucknow Street\", \"rating\": 4.5, \"user_rating_count\": 49, \"price_display\": \"₹400–600 per person\", \"open_now\": true, \"opening_hours\": [\"Friday: 12:30 – 11:00 PM\"], \"reviews\": [{\"rating\": 5, \"text\": \"Amazing food and ambience, extremely friendly staff.\"}]}",
+    "tool_use_id": "8d84acc7-0e1a-4e27-a2c1-5c0406972979",
+    "is_error": false,
+    "error_reason": null
+  },
+  {
+    "type": "insight",
+    "subtype": "tool_done",
+    "label": "Tool done: PlaceDetails",
+    "ts": 1787127837575,
+    "detail": "5658 chars"
+  },
+  {
+    "type": "tool_result",
+    "name": "PlaceDetails",
+    "text": "{\"place_id\": \"ChIJHW8IO-4VrjsRoJ7edhT4kdA\", \"name\": \"Aromas of Biryani, Jayanagar\", \"rating\": 4.4, \"user_rating_count\": 3010, \"price_display\": \"₹200–600 per person\", \"open_now\": true, \"opening_hours\": [\"Friday: 11:15 AM – 11:00 PM\"], \"reviews\": [{\"rating\": 5, \"text\": \"Loved their biriyani which has tremendous taste, spicy is mid level, comfortable to dine with friends and family.\"}]}",
+    "tool_use_id": "44f8bdbb-56eb-45d5-b1fb-10cfaf6473ea",
+    "is_error": false,
+    "error_reason": null
+  },
+  {
+    "type": "insight",
+    "subtype": "tool_done",
+    "label": "Tool done: PlaceDetails",
+    "ts": 1787127837577,
+    "detail": "6097 chars"
+  },
+  {
+    "type": "tool_result",
+    "name": "PlaceDetails",
+    "text": "{\"place_id\": \"ChIJ4SOBNhwVrjsRJf8wyc6izjk\", \"name\": \"RNR Biryani - Jayanagar\", \"rating\": 4.3, \"user_rating_count\": 6879, \"price_display\": \"₹200–600 per person\", \"open_now\": true, \"opening_hours\": [\"Friday: 11:00 AM – 11:30 PM\"], \"reviews\": [{\"rating\": 5, \"text\": \"RNR is my go to for donne biryani, great vegetarian options and lovely ambience.\"}]}",
+    "tool_use_id": "63517abf-0a6e-48b3-b0c8-29590b577ba6",
+    "is_error": false,
+    "error_reason": null
+  },
+  {
+    "type": "insight",
+    "subtype": "tool_done",
+    "label": "Tool done: PlaceDetails",
+    "ts": 1787127837579,
+    "detail": "6655 chars"
+  },
+  {
+    "type": "tool_result",
+    "name": "PlaceDetails",
+    "text": "{\"place_id\": \"ChIJ3cq6Rk4UrjsRUMS70QMMs0s\", \"name\": \"Luckhnow Street\", \"rating\": 3.9, \"user_rating_count\": 3731, \"price_display\": \"₹200–400 per person\", \"open_now\": true, \"opening_hours\": [\"Friday: 11:00 AM – 11:00 PM\"], \"editorial_summary\": \"Informal restaurant specialising in kebabs, biryani & other plentiful homestyle cuisine.\", \"reviews\": [{\"rating\": 5, \"text\": \"Great food, great service and a fantastic family restaurant!\"}]}",
+    "tool_use_id": "7d31e392-67ea-4f41-89a9-96b168560917",
+    "is_error": false,
+    "error_reason": null
+  },
+  {
+    "type": "insight",
+    "subtype": "agent_turn",
+    "label": "Agent turn 3",
+    "ts": 1787127837582,
+    "detail": "continuing after tool results"
+  },
+  {
+    "type": "insight",
+    "subtype": "llm_thinking",
+    "label": "LLM thinking…",
+    "ts": 1787127837585
+  },
+  {
+    "type": "stream_request_start"
+  },
+  {
+    "type": "insight",
+    "subtype": "token_usage",
+    "label": "Tokens — in: 32,074 · out: 1,001 · cached: 27,456",
+    "ts": 1787127847240,
+    "detail": "step 3"
+  },
+  {
+    "type": "system",
+    "subtype": "usage",
+    "input_tokens": 32074,
+    "output_tokens": 1001,
+    "reasoning_tokens": 0,
+    "reasoning_estimated": false,
+    "cache_read_tokens": 27456,
+    "text": "Tokens — in: 32,074 (cache: 27,456) · out: 1,001"
+  },
+  {
+    "type": "text_final",
+    "blocks": [
+      {
+        "type": "place_card",
+        "summary": "Since you're looking for mild, aromatic Lucknowi Biryani perfect for families, here are the top-rated spots near you that balance authentic flavors with a comfortable dining experience.",
+        "sections": [
+          {
+            "title": "",
+            "cards": [
+              {
+                "title": "Lucknow Street, Indiranagar",
+                "visual": {
+                  "assets": [
+                    {
+                      "url": "https://m-us-mob-ailooks-uat.glance-cdn.com/photo/lucknowstreetindira.jpg"
+                    }
+                  ],
+                  "place_id": "ChIJkYL5WAAVrjsRbiB5uuoqaAA"
+                },
+                "badge": "Top Pick",
+                "rating": "4.5★ · 49 reviews",
+                "price": "₹400–600 per person",
+                "why": "Authentic Lucknowi flavors with mild spice, rose water aroma, and a family-friendly upscale ambiance.",
+                "hours": "Open till 11:00 PM",
+                "cta": {
+                  "label": "Open on Maps",
+                  "url": "https://maps.google.com/?cid=29320585217122414"
+                },
+                "phone": {
+                  "num": "097395 43030",
+                  "tel": "tel:09739543030"
+                }
+              },
+              {
+                "title": "Aromas of Biryani, Jayanagar",
+                "visual": {
+                  "assets": [
+                    {
+                      "url": "https://m-us-mob-ailooks-uat.glance-cdn.com/photo/aromasofbiryani.jpg"
+                    }
+                  ],
+                  "place_id": "ChIJHW8IO-4VrjsRoJ7edhT4kdA"
+                },
+                "badge": "Family Favorite",
+                "rating": "4.4★ · 3k reviews",
+                "price": "₹200–600 per person",
+                "why": "Mild spice level, generous potatoes, subtle rose water notes, and spacious AC seating for families.",
+                "hours": "Open till 11:00 PM",
+                "cta": {
+                  "label": "Open on Maps",
+                  "url": "https://maps.google.com/?cid=15029066198289391264"
+                },
+                "phone": {
+                  "num": "096064 51100",
+                  "tel": "tel:09606451100"
+                }
+              },
+              {
+                "title": "Luckhnow Street, Koramangala",
+                "visual": {
+                  "assets": [
+                    {
+                      "url": "https://m-us-mob-ailooks-uat.glance-cdn.com/photo/lucknowstreet.jpg"
+                    }
+                  ],
+                  "place_id": "ChIJ3cq6Rk4UrjsRUMS70QMMs0s"
+                },
+                "badge": "Authentic Flavors",
+                "rating": "3.9★ · 3.7k reviews",
+                "price": "₹200–400 per person",
+                "why": "Classic Lucknowi style with tender meat, mild spice, and a casual family vibe at great value.",
+                "hours": "Open till 11:00 PM",
+                "cta": {
+                  "label": "Open on Maps",
+                  "url": "https://maps.google.com/?cid=5454716784218981456"
+                },
+                "phone": {
+                  "num": "097315 53030",
+                  "tel": "tel:09731553030"
+                }
+              },
+              {
+                "title": "RNR Biryani, Jayanagar",
+                "visual": {
+                  "assets": [
+                    {
+                      "url": "https://m-us-mob-ailooks-uat.glance-cdn.com/photo/rnrbiryani.jpg"
+                    }
+                  ],
+                  "place_id": "ChIJ4SOBNhwVrjsRJf8wyc6izjk"
+                },
+                "badge": "Donne Style",
+                "rating": "4.3★ · 6.9k reviews",
+                "price": "₹200–600 per person",
+                "why": "Traditional Donne Biryani with aromatic spices, potatoes, and a warm family atmosphere.",
+                "hours": "Open till 11:30 PM",
+                "cta": {
+                  "label": "Open on Maps",
+                  "url": "https://maps.google.com/?cid=4165445714386681637"
+                },
+                "phone": {
+                  "num": "097427 21949",
+                  "tel": "tel:09742721949"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "suggestions",
+        "chips": [
+          "Get directions to Lucknow Street",
+          "Check reviews for Aromas of Biryani",
+          "Find vegetarian biryani options",
+          "See weather for this evening"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "system",
+    "subtype": "transition",
+    "text": "completion"
+  },
+  {
+    "type": "insight",
+    "subtype": "llm_skills_used",
+    "label": "LLM used skills (1)",
+    "ts": 1787127847473,
+    "detail": "food"
+  },
+  {
+    "type": "turn_complete",
+    "turn_id": "c87453ca-5670-4e44-a595-1e940278fdcd",
+    "input_tokens": 84536,
+    "output_tokens": 1415,
+    "reasoning_tokens": 52,
+    "reasoning_estimated": true,
+    "cache_read_tokens": 76032,
+    "latency_ms": 23581,
+    "agent_steps": 3,
+    "tool_call_count": 5,
+    "skills_loaded": [
+      "default",
+      "food"
+    ]
+  },
+  {
+    "type": "[DONE]"
+  }
+]

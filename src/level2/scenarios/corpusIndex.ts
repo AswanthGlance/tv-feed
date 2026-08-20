@@ -11,23 +11,32 @@ import type { CorpusIndex } from './corpusIndexTypes';
 
 export const CORPUS_INDEX: CorpusIndex = {
   "version": 1,
-  "generatedAt": "2026-08-13T11:25:52.903Z",
+  "generatedAt": "2026-08-14T11:13:40.676Z",
   "project": "aitv-mewtwo-harness",
-  "tracesInspected": 800,
+  "tracesInspected": 923,
   "pools": {
     "text_only": [
       {
-        "traceId": "a2c207c1a446443ecae8e6bcbc9a69a1",
-        "prompt": "Book escape room slots now",
-        "domain": "events",
+        "traceId": "4f2500e23a06177fb9fa8d0c7b9974f1",
+        "prompt": "Everything else was",
+        "domain": "fashion",
         "confidence": "medium",
         "entityCount": 0,
         "hasImages": false,
         "outputShape": "prose"
       },
       {
-        "traceId": "0bbc9a75509e725ddb9e0c240abc6df2",
-        "prompt": "See reviews for Sphere Lounge",
+        "traceId": "0599a6b58fa25d80f809566a08b7f33e",
+        "prompt": "Try on this Wrap Coats Simplicity S8990 H5 | 6-14 Or U5 | 16-24 Sewing Pattern For Jacket (Product id cd54e2fc-9e7c-54ba-b40d-95178a57a7cf)",
+        "domain": "fashion",
+        "confidence": "medium",
+        "entityCount": 0,
+        "hasImages": false,
+        "outputShape": "prose"
+      },
+      {
+        "traceId": "1ec8191093cdf40c0efbc9dddfa101a8",
+        "prompt": "Gun",
         "domain": "none",
         "confidence": "medium",
         "entityCount": 0,
@@ -35,8 +44,26 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "prose"
       },
       {
-        "traceId": "70e7eaf306e139a491c021cfccd672b2",
-        "prompt": "Continue the card's promise of an engaging night out with friends. find top-rated storytelling nights near me showing tonight or this weekend. include venue name, locality, show timings, ratings, price per person, and what each venue is known for. return a concise shortlist that makes choosing one spot easy.",
+        "traceId": "02e3911ba3f30c315e4e7a84826155fd",
+        "prompt": "Weapon",
+        "domain": "fashion",
+        "confidence": "medium",
+        "entityCount": 0,
+        "hasImages": false,
+        "outputShape": "prose"
+      },
+      {
+        "traceId": "0c114e7578e8f6118fc1f4525239b864",
+        "prompt": "Call Victory Point Cafe for event schedule",
+        "domain": "none",
+        "confidence": "medium",
+        "entityCount": 0,
+        "hasImages": false,
+        "outputShape": "prose"
+      },
+      {
+        "traceId": "e68d957cbb07b0cc480b36c554671c63",
+        "prompt": "Find RPG events at Victory Point Cafe",
         "domain": "local_experiences",
         "confidence": "medium",
         "entityCount": 0,
@@ -44,26 +71,17 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "prose"
       },
       {
-        "traceId": "252bf4da95aa5ca46e9372de2fda421f",
-        "prompt": "Check TAN COFFEE specialty drinks",
-        "domain": "none",
+        "traceId": "730d91c3e63d3570489b637a39fe50be",
+        "prompt": "Find RPG events at Gamelandia",
+        "domain": "local_experiences",
         "confidence": "medium",
         "entityCount": 0,
         "hasImages": false,
         "outputShape": "prose"
       },
       {
-        "traceId": "88c9168ac89120882c108ac4b1f21a0a",
-        "prompt": "Continue the card's promise of experiencing authentic matcha ceremonial drinks. Find the highest-rated specialty cafes near me that serve ceremonial grade matcha. Include ratings, locality, matcha origin, preparation method, price range, and what each cafe is known for. Return a concise shortlist that helps me choose where to try authentic matcha ceremonies.",
-        "domain": "food",
-        "confidence": "medium",
-        "entityCount": 0,
-        "hasImages": false,
-        "outputShape": "prose"
-      },
-      {
-        "traceId": "5be86d3342fc9be76dc78b4a0f101393",
-        "prompt": "Book Signature Serengeti camp",
+        "traceId": "ff8b35c542f9795c6cce695ec56b9666",
+        "prompt": "Ask a new question",
         "domain": "travel",
         "confidence": "medium",
         "entityCount": 0,
@@ -71,8 +89,44 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "prose"
       },
       {
-        "traceId": "9594abd810284ee2d0817896e0be38bb",
-        "prompt": "home made hair mask",
+        "traceId": "7f1bdbdbac6cd99737bcfd4d9cb59e11",
+        "prompt": "Family-friendly activities near Alwar",
+        "domain": "travel",
+        "confidence": "medium",
+        "entityCount": 0,
+        "hasImages": false,
+        "outputShape": "prose"
+      },
+      {
+        "traceId": "e03846d2404904b42264f351422bf2e7",
+        "prompt": "Best hotels near Kankwari Fort",
+        "domain": "travel",
+        "confidence": "medium",
+        "entityCount": 0,
+        "hasImages": false,
+        "outputShape": "prose"
+      },
+      {
+        "traceId": "f329ec78fc6a52d93b01ddea39f8fdc2",
+        "prompt": "Ask a new question",
+        "domain": "travel",
+        "confidence": "medium",
+        "entityCount": 0,
+        "hasImages": false,
+        "outputShape": "prose"
+      },
+      {
+        "traceId": "7f35f122fcc93e7b84aa314faf9faa86",
+        "prompt": "History tours in Sariska",
+        "domain": "travel",
+        "confidence": "medium",
+        "entityCount": 0,
+        "hasImages": false,
+        "outputShape": "prose"
+      },
+      {
+        "traceId": "201aa0272a8f8082a604d9676886255e",
+        "prompt": "Try on this Wendal Heel-Natural (Product id 21a2a06f-5684-52ce-9a3e-fed0292c3fb7)",
         "domain": "fashion",
         "confidence": "medium",
         "entityCount": 0,
@@ -80,26 +134,17 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "prose"
       },
       {
-        "traceId": "62f9d56ecb36252af97c43cb1118a077",
-        "prompt": "Display practical home upgrades. Include robot vacuums, espresso machines, coffee makers, air fryers, air purifiers, countertop ice makers, organizers, storage solutions. Show products only.",
-        "domain": "generic_shopping",
+        "traceId": "6c3f4fefab674355453fa3b4688a01a3",
+        "prompt": "Try on this The Boot Jean — Curvy Fit (Product id d4243f36-ace1-5d87-9cbb-8249743ca2ec)",
+        "domain": "none",
         "confidence": "medium",
         "entityCount": 0,
         "hasImages": false,
         "outputShape": "prose"
       },
       {
-        "traceId": "edea60604d52495bbb41663e51d570c5",
-        "prompt": "Show me more living room furniture pieces",
-        "domain": "home_decor",
-        "confidence": "medium",
-        "entityCount": 0,
-        "hasImages": false,
-        "outputShape": "prose"
-      },
-      {
-        "traceId": "40097186d696aff8192645af438a7185",
-        "prompt": "What backpacks are trending now",
+        "traceId": "e11918318a71b93f2717eb33d53a7231",
+        "prompt": "Try on this Xti Men's Urban Casual Sneakers - Blue (Product id 47666a16-9092-5437-85c8-29328962e95d)",
         "domain": "fashion",
         "confidence": "medium",
         "entityCount": 0,
@@ -107,44 +152,26 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "prose"
       },
       {
-        "traceId": "9de872d8c5281d4bddfa307280bcc389",
-        "prompt": "Furniture and décor to style my home",
-        "domain": "home_decor",
+        "traceId": "88ea497e48622cff676f9f0dd2858148",
+        "prompt": "Check weather for Costa Rica this weekend",
+        "domain": "weather_planner",
         "confidence": "medium",
         "entityCount": 0,
         "hasImages": false,
         "outputShape": "prose"
       },
       {
-        "traceId": "3f8a9c482ca3069bada5022087dc30fa",
-        "prompt": "Furniture and décor to style my home",
-        "domain": "home_decor",
+        "traceId": "f93de470888ce71104b48af94e22d09d",
+        "prompt": "Show me these under $20",
+        "domain": "fashion",
         "confidence": "medium",
         "entityCount": 0,
         "hasImages": false,
         "outputShape": "prose"
       },
       {
-        "traceId": "294892d6128e5182eeb853037c70a8a7",
-        "prompt": "Check weekend availability for Mystery Rooms",
-        "domain": "local_experiences",
-        "confidence": "medium",
-        "entityCount": 0,
-        "hasImages": false,
-        "outputShape": "prose"
-      },
-      {
-        "traceId": "ca69e4114a545ca7684544692c3b17c3",
-        "prompt": "Find the highest-rated interactive detective mystery nights near me that offer live role-playing experiences. Include venue name, locality, available time slots this weekend, rating, price per person, and group size limits. Return a shortlist of top venues with booking links so I can secure a spot for my group. Prioritize venues with recent positive reviews and flexible booking options.",
-        "domain": "local_experiences",
-        "confidence": "medium",
-        "entityCount": 0,
-        "hasImages": false,
-        "outputShape": "prose"
-      },
-      {
-        "traceId": "3c051c1a291d027b729f34a5bbdc785a",
-        "prompt": "hello",
+        "traceId": "6e8f12962961a2e2ed569c057c7627db",
+        "prompt": "Make this recipe vegetarian-friendly",
         "domain": "food",
         "confidence": "medium",
         "entityCount": 0,
@@ -152,7 +179,7 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "prose"
       },
       {
-        "traceId": "e47e57596430eb1fd5eedfd6e74e56ec",
+        "traceId": "657c134176868833593fad5d0e60fe27",
         "prompt": "Furniture and décor to style my home",
         "domain": "home_decor",
         "confidence": "medium",
@@ -161,8 +188,26 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "prose"
       },
       {
-        "traceId": "e5aa65bb72b21de8cb5cc2f88bd34099",
-        "prompt": "Check Mystery Rooms weekend availability",
+        "traceId": "6001f8709452e85bc878978379798907",
+        "prompt": "Check weather for Periyar this week",
+        "domain": "weather_planner",
+        "confidence": "medium",
+        "entityCount": 0,
+        "hasImages": false,
+        "outputShape": "prose"
+      },
+      {
+        "traceId": "a4aacc965057763175f6d9a2396c3dac",
+        "prompt": "Nature camps in Periyar",
+        "domain": "travel",
+        "confidence": "medium",
+        "entityCount": 0,
+        "hasImages": false,
+        "outputShape": "prose"
+      },
+      {
+        "traceId": "08166c7035a9c94721f4c660a6463277",
+        "prompt": "show me products like t shirt",
         "domain": "events",
         "confidence": "medium",
         "entityCount": 0,
@@ -170,80 +215,8 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "prose"
       },
       {
-        "traceId": "4cfbc26e34e186756cc64cffa6043875",
-        "prompt": "PS5's Kata Sejalka, Milk",
-        "domain": "none",
-        "confidence": "medium",
-        "entityCount": 0,
-        "hasImages": false,
-        "outputShape": "prose"
-      },
-      {
-        "traceId": "daf718aed1e098909ca5c4eda58d89fa",
-        "prompt": "Continue the card's promise of authentic Malabar flavors worth seeking out. Find the highest-rated Thalassery Biryani places near me that serve it fresh. Include ratings, locality, opening hours, price range, and what each place is known for. Return a concise shortlist that makes choosing one stop easy.",
-        "domain": "none",
-        "confidence": "medium",
-        "entityCount": 0,
-        "hasImages": false,
-        "outputShape": "prose"
-      },
-      {
-        "traceId": "4e74fd49cc8a891c0acc195ae0c1fad8",
-        "prompt": "Find the highest-rated interactive detective mystery nights near me that offer live role-playing experiences. include venue name, locality, available time slots this weekend, rating, price per person, and group size limits. return a shortlist of top venues with booking links so i can secure a spot for my group. prioritize venues with recent positive reviews and flexible booking options.",
-        "domain": "local_experiences",
-        "confidence": "medium",
-        "entityCount": 0,
-        "hasImages": false,
-        "outputShape": "prose"
-      },
-      {
-        "traceId": "247b235a8831c6c65e1ef1edcb5d34a2",
-        "prompt": "Book VR escape room slots",
-        "domain": "events",
-        "confidence": "medium",
-        "entityCount": 0,
-        "hasImages": false,
-        "outputShape": "prose"
-      },
-      {
-        "traceId": "2c13533903ed287f36b14ae6dc2bbb63",
-        "prompt": "Find the highest-rated VR mystery escape rooms near me that offer immersive virtual reality puzzle experiences. Include venue name, locality, available time slots this weekend, rating, price per person, and group size limits. Return a shortlist of top venues with booking links so I can secure a spot for my group. Prioritize venues with recent positive reviews and flexible booking options.",
-        "domain": "local_experiences",
-        "confidence": "medium",
-        "entityCount": 0,
-        "hasImages": false,
-        "outputShape": "prose"
-      },
-      {
-        "traceId": "1d8b71b46fad52e30f3c37798e929d57",
-        "prompt": "singer kasa buna home ma he",
-        "domain": "events",
-        "confidence": "medium",
-        "entityCount": 0,
-        "hasImages": false,
-        "outputShape": "prose"
-      },
-      {
-        "traceId": "38e39d5f8cdbd3b21c6ba776f09c2479",
-        "prompt": "something new for 15 August in English",
-        "domain": "events",
-        "confidence": "medium",
-        "entityCount": 0,
-        "hasImages": false,
-        "outputShape": "prose"
-      },
-      {
-        "traceId": "0d7a35bf7d2ea6dcc8a97e25b06825e3",
-        "prompt": "new one in English",
-        "domain": "sports",
-        "confidence": "medium",
-        "entityCount": 0,
-        "hasImages": false,
-        "outputShape": "prose"
-      },
-      {
-        "traceId": "4e51f4d01a4111832530f5fb05da7290",
-        "prompt": "thoro big",
+        "traceId": "5e207555789c667dec53309b04d50609",
+        "prompt": "Try on this Lace Dress (Product id 24f9fb5c-8878-5f4d-86ad-6870b813aeef)",
         "domain": "fashion",
         "confidence": "medium",
         "entityCount": 0,
@@ -251,8 +224,53 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "prose"
       },
       {
-        "traceId": "e064ba42a0adfc0eb8bc8400bac13c0f",
-        "prompt": "Give me one poyme for 15 August in hindi",
+        "traceId": "8e66ec2141b80538d7d9ae3b19a3e840",
+        "prompt": "Krishna festival dates",
+        "domain": "events",
+        "confidence": "medium",
+        "entityCount": 0,
+        "hasImages": false,
+        "outputShape": "prose"
+      },
+      {
+        "traceId": "56a7f0122181292f62bdaf546439b076",
+        "prompt": "Check availability for this weekend",
+        "domain": "local_experiences",
+        "confidence": "medium",
+        "entityCount": 0,
+        "hasImages": false,
+        "outputShape": "prose"
+      },
+      {
+        "traceId": "ebfef18d6a1843f46fbf4cb309648bcc",
+        "prompt": "Find best Chikankari shops in Chowk",
+        "domain": "home_decor",
+        "confidence": "medium",
+        "entityCount": 0,
+        "hasImages": false,
+        "outputShape": "prose"
+      },
+      {
+        "traceId": "da75dcc5f448d15789609fa967392df0",
+        "prompt": "Check weather for Delhi this weekend",
+        "domain": "weather_planner",
+        "confidence": "medium",
+        "entityCount": 0,
+        "hasImages": false,
+        "outputShape": "prose"
+      },
+      {
+        "traceId": "a48fcfcad198fc5b98ff854136dc9d0a",
+        "prompt": "ioahsdoiasd",
+        "domain": "fashion",
+        "confidence": "medium",
+        "entityCount": 0,
+        "hasImages": false,
+        "outputShape": "prose"
+      },
+      {
+        "traceId": "87a09d2de3b974e5860ebb0e454c499a",
+        "prompt": "Rama asked me what had become of Hari.",
         "domain": "none",
         "confidence": "medium",
         "entityCount": 0,
@@ -260,9 +278,99 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "prose"
       },
       {
-        "traceId": "c864f712e2a3db9f8cb6bb0bf78ce413",
-        "prompt": "Check reviews for The Modak restaurant",
-        "domain": "food",
+        "traceId": "49366f6f1cb4bc6756ed88b39fc7f8e7",
+        "prompt": "Qqqqqqqqqqqqqqq",
+        "domain": "fashion",
+        "confidence": "medium",
+        "entityCount": 0,
+        "hasImages": false,
+        "outputShape": "prose"
+      },
+      {
+        "traceId": "bbf3d3493d7a5cedac25875891713b26",
+        "prompt": "Father replied that there might not be another that year.",
+        "domain": "none",
+        "confidence": "medium",
+        "entityCount": 0,
+        "hasImages": false,
+        "outputShape": "prose"
+      },
+      {
+        "traceId": "8a6ea581f1cc668e64b78d99bdfa7029",
+        "prompt": "He asked his father when the next letter would come.",
+        "domain": "none",
+        "confidence": "medium",
+        "entityCount": 0,
+        "hasImages": false,
+        "outputShape": "prose"
+      },
+      {
+        "traceId": "7d69b88004c0b55b234937653878918b",
+        "prompt": "Rama replied that he could not do so.",
+        "domain": "none",
+        "confidence": "medium",
+        "entityCount": 0,
+        "hasImages": false,
+        "outputShape": "prose"
+      },
+      {
+        "traceId": "108cc275c1a899239ed68726bcd21228",
+        "prompt": "Tamar replied, that he could not do so.",
+        "domain": "none",
+        "confidence": "medium",
+        "entityCount": 0,
+        "hasImages": false,
+        "outputShape": "prose"
+      },
+      {
+        "traceId": "7b21ebe21b344680c38c92ab670670b1",
+        "prompt": "Instead of force, it is F o e s",
+        "domain": "none",
+        "confidence": "medium",
+        "entityCount": 0,
+        "hasImages": false,
+        "outputShape": "prose"
+      },
+      {
+        "traceId": "6d8f92c3a7b56b4dc5d0975223891518",
+        "prompt": "Following an indirect speech, he said alas, ars, foe s are too strong.",
+        "domain": "none",
+        "confidence": "medium",
+        "entityCount": 0,
+        "hasImages": false,
+        "outputShape": "prose"
+      },
+      {
+        "traceId": "42c8819ccdd863c47cb894d0b01c2b90",
+        "prompt": "He said alash or force or too strong.",
+        "domain": "none",
+        "confidence": "medium",
+        "entityCount": 0,
+        "hasImages": false,
+        "outputShape": "prose"
+      },
+      {
+        "traceId": "797fd41ba3365ff6582b38e6be3930fd",
+        "prompt": "He said to me, what a lazy boy I am, how badly I had done my work.",
+        "domain": "none",
+        "confidence": "medium",
+        "entityCount": 0,
+        "hasImages": false,
+        "outputShape": "prose"
+      },
+      {
+        "traceId": "07c4b1427f6464213b7490ef56debaaf",
+        "prompt": "Write the answer without using word very. And instead of she, it is he.",
+        "domain": "none",
+        "confidence": "medium",
+        "entityCount": 0,
+        "hasImages": false,
+        "outputShape": "prose"
+      },
+      {
+        "traceId": "606b8919560cdeba833c06c4018b3c14",
+        "prompt": "She said, What a lazy boy you are. How badly you have done your work.",
+        "domain": "none",
         "confidence": "medium",
         "entityCount": 0,
         "hasImages": false,
@@ -271,8 +379,8 @@ export const CORPUS_INDEX: CorpusIndex = {
     ],
     "candidate_ranking": [
       {
-        "traceId": "6e4bc646e2cd3c68407833d53994134e",
-        "prompt": "Continue the card's promise of an authentic market food discovery experience. Find top-rated market food tasting walks and guided market tours near me for groups. Include market name, tour duration, number of tastings, group size, ratings, price per person, and what makes each market special. Return a shortlist that helps a group choose the best market experience.",
+        "traceId": "f9c2dc15c69f83fefda269f6dc6766e1",
+        "prompt": "Continue the card's promise of discovering a unique liquid-filled mango sweet with a 220-year-old secret. Find the highest-rated places near me serving authentic Jalbhara with mango filling. Include ratings, locality, price range, opening hours, and what makes each shop special. Return a concise shortlist that helps me choose where to taste this GI-tagged delight.",
         "domain": "food",
         "confidence": "high",
         "entityCount": 4,
@@ -280,35 +388,8 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "place_card"
       },
       {
-        "traceId": "db99b6f0713c9f23a3047a0e6fa0e2ca",
-        "prompt": "Continue the card's promise of an open-air rooftop experience with live music and great food. Find the best-rated rooftop bars and restaurants near me that have live music tonight. Include venue name, locality, live music schedule, price range, and what makes each spot special. Return a shortlist that helps me choose the perfect rooftop evening.",
-        "domain": "food",
-        "confidence": "high",
-        "entityCount": 5,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "75e374bb1ed62e60c674e48a47bf95b1",
-        "prompt": "Continue the card's promise of an immersive dining experience where your table becomes a detective agency. Find top-rated café mystery experiences near me that combine dining with puzzle-solving. Include venue name, locality, theme description, group size, price per person, and booking availability. Return a curated list that helps me choose the perfect mystery dinner for tonight or this weekend.",
-        "domain": "local_experiences",
-        "confidence": "high",
-        "entityCount": 5,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "c6743372ce7054048bf914af4bc0c1ed",
-        "prompt": "Continue the card's promise of an open-air rooftop experience with live music and great food. Find the best-rated rooftop bars and restaurants near me that have live music tonight. Include venue name, locality, live music schedule, price range, and what makes each spot special. Return a shortlist that helps me choose the perfect rooftop evening.",
-        "domain": "food",
-        "confidence": "high",
-        "entityCount": 5,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "ec0377d1f001b4b9c0bcf833a2329a1e",
-        "prompt": "Continue the card's promise of a laugh-out-loud live comedy experience. Find the best-rated comedy clubs and live shows near me that have shows tonight. Include venue name, locality, show times, comedian lineup, price range, and what makes each show special. Return a shortlist that helps me choose the perfect comedy night.",
+        "traceId": "ad8747e532b31215e3fb4d74d8205565",
+        "prompt": "Continue the card's promise of a relaxed, sweet baking date night for couples. Find top-rated artisan baking and pastry classes for couples near me this weekend. Include venue, locality, date/time, rating, price per couple, and what baked goods are covered. Return a shortlist of the best options that allow booking for this week or next.",
         "domain": "local_experiences",
         "confidence": "high",
         "entityCount": 4,
@@ -316,287 +397,134 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "place_card"
       },
       {
-        "traceId": "4c6931a40f5e1253e646ec22987f3e7a",
-        "prompt": "Continue the card's promise of an engaging night out with friends. Find top-rated storytelling nights near me showing tonight or this weekend. Include venue name, locality, show timings, ratings, price per person, and what each venue is known for. Return a concise shortlist that makes choosing one spot easy.",
+        "traceId": "beb7640625a3a2e0c49bdb2cb5d79b41",
+        "prompt": "Continue the card's promise of an intimate listening session with emotionally rich songwriting. Find top-rated acoustic indie listening sessions and intimate live music events near me this week. Include venue, locality, date/time, rating, price band, and the artists performing. Return a concise shortlist that helps me choose the most authentic acoustic experience.",
         "domain": "local_experiences",
         "confidence": "high",
         "entityCount": 4,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "3e0ad803bfc1bac53b16ff91a2e7547d",
-        "prompt": "Continue the card's promise of an intimate immersive jazz experience. Find the best-rated jazz clubs and live music venues near me that have jazz shows tonight. Include venue name, locality, show times, price range, and what makes each jazz experience special. Return a shortlist that helps me choose the perfect jazz night.",
-        "domain": "local_experiences",
-        "confidence": "high",
-        "entityCount": 4,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "19023060eb28098d1a8f75e7a26804d7",
-        "prompt": "Continue the card's promise of an expressive night out with friends. Find top-rated open mic venues near me showing tonight or this weekend. Include venue name, locality, show timings, ratings, price per person, and what each venue is known for. Return a concise shortlist that makes choosing one spot easy.",
-        "domain": "local_experiences",
-        "confidence": "high",
-        "entityCount": 5,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "1cd69da70b9de5e042880fb82ed92af5",
-        "prompt": "Continue the card's promise of a laugh-out-loud live comedy experience. find the best-rated comedy clubs and live shows near me that have shows tonight. include venue name, locality, show times, comedian lineup, price range, and what makes each show special. return a shortlist that helps me choose the perfect comedy night.",
-        "domain": "local_experiences",
-        "confidence": "high",
-        "entityCount": 5,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "8f2cb678b4263ce93ee16dbc9465897b",
-        "prompt": "Continue the card's promise of a hilarious night out with friends. Find top-rated stand-up comedy clubs near me showing tonight or this weekend. Include venue name, locality, show timings, ratings, price per person, and what each club is known for. Return a concise shortlist that makes choosing one spot easy.",
-        "domain": "local_experiences",
-        "confidence": "high",
-        "entityCount": 4,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "f56702fc554b6d8e0913ddbcc3d72837",
-        "prompt": "Continue the card's promise of an engaging night out with friends. Find top-rated storytelling nights near me showing tonight or this weekend. Include venue name, locality, show timings, ratings, price per person, and what each venue is known for. Return a concise shortlist that makes choosing one spot easy.",
-        "domain": "local_experiences",
-        "confidence": "high",
-        "entityCount": 2,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "63c80d67124fb21f13895201974bbf08",
-        "prompt": "Highest-rated places serving lucknowi awadhi biryani near me, ranked by rating",
-        "domain": "food",
-        "confidence": "high",
-        "entityCount": 5,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "e023809106059d93268f85a1b23c2dcf",
-        "prompt": "Continue the card's promise of a laugh-out-loud live comedy experience. Find the best-rated comedy clubs and live shows near me that have shows tonight. Include venue name, locality, show times, comedian lineup, price range, and what makes each show special. Return a shortlist that helps me choose the perfect comedy night.",
-        "domain": "local_experiences",
-        "confidence": "high",
-        "entityCount": 3,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "a07064e98a8510467f3b4e66f138ec59",
-        "prompt": "Continue the card's promise of an open-air rooftop experience with live music and great food. Find the best-rated rooftop bars and restaurants near me that have live music tonight. Include venue name, locality, live music schedule, price range, and what makes each spot special. Return a shortlist that helps me choose the perfect rooftop evening.",
-        "domain": "food",
-        "confidence": "high",
-        "entityCount": 5,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "26c5b6a9ba48cb97ae62ea7f0f9464b6",
-        "prompt": "Continue the card's promise of an intimate immersive jazz experience. Find the best-rated jazz clubs and live music venues near me that have jazz shows tonight. Include venue name, locality, show times, price range, and what makes each jazz experience special. Return a shortlist that helps me choose the perfect jazz night.",
-        "domain": "local_experiences",
-        "confidence": "high",
-        "entityCount": 3,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "410b3c5526e31865a5489b2027e718eb",
-        "prompt": "Continue the card's promise of an intimate immersive jazz experience. Find the best-rated jazz clubs and live music venues near me that have jazz shows tonight. Include venue name, locality, show times, price range, and what makes each jazz experience special. Return a shortlist that helps me choose the perfect jazz night.",
-        "domain": "local_experiences",
-        "confidence": "high",
-        "entityCount": 5,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "a239dc85c661b5c3f94c0f8481f1bcb2",
-        "prompt": "Continue the card's promise of a laugh-out-loud live comedy experience. Find the best-rated comedy clubs and live shows near me that have shows tonight. Include venue name, locality, show times, comedian lineup, price range, and what makes each show special. Return a shortlist that helps me choose the perfect comedy night.",
-        "domain": "local_experiences",
-        "confidence": "high",
-        "entityCount": 4,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "43e35fdb06bf74015618b2bf5783f9d4",
-        "prompt": "Continue the card's promise of fiery, aromatic biryani with perfectly layered rice. Find the highest-rated places near me serving authentic Hyderabadi biryani. Include ratings, locality, price range, opening hours, and what each place is known for. Return a concise shortlist that makes choosing one stop easy.",
-        "domain": "food",
-        "confidence": "high",
-        "entityCount": 5,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "afa2edd43b1c600567aff915860ed8b3",
-        "prompt": "Continue the card's promise of an open-air rooftop experience with live music and great food. Find the best-rated rooftop bars and restaurants near me that have live music tonight. Include venue name, locality, live music schedule, price range, and what makes each spot special. Return a shortlist that helps me choose the perfect rooftop evening.",
-        "domain": "food",
-        "confidence": "high",
-        "entityCount": 4,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "1a3e0ffd73f33eff1437b8475a3933d2",
-        "prompt": "Continue the card's promise of authentic Neapolitan pizza with proper wood-fired char. Find the highest-rated Neapolitan pizza restaurants near me serving authentic wood-fired pizza. Include ratings, locality, price range, opening hours, and what each place is known for. Return a concise shortlist that makes choosing one stop easy.",
-        "domain": "food",
-        "confidence": "high",
-        "entityCount": 5,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "68025a452718870abd42d79d03c0661a",
-        "prompt": "Continue the card's promise of finding the best arancini experience near you. Find the highest-rated arancini places near me that serve authentic balls. Include ratings, locality, price range, opening hours, and what each place is known for. Return a concise shortlist that makes choosing one stop easy.",
-        "domain": "food",
-        "confidence": "high",
-        "entityCount": 5,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "65aa41354c8ce23c760b171bd3a89f20",
-        "prompt": "Continue the card's promise of discovering unique sustainable fashion and artisan crafts. Find the best sustainable fashion pop-up markets and artisan fairs near me this weekend. Include venue, locality, timing, rating, price range, and what makes each market special. Return a concise shortlist that helps the viewer choose the perfect weekend outing.",
-        "domain": "local_experiences",
-        "confidence": "high",
-        "entityCount": 3,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "191960d2aee60606e9d9fcef06527069",
-        "prompt": "Continue the card's promise of subtle, aromatic biryani with delicate flavors. Find the highest-rated places near me serving authentic Lucknowi biryani. Include ratings, locality, price range, opening hours, and what each place is known for. Return a concise shortlist that makes choosing one stop easy.",
-        "domain": "food",
-        "confidence": "high",
-        "entityCount": 4,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "2c78ee24a37413723e21e6e1b684f3e2",
-        "prompt": "Continue the card's promise of an immersive jazz evening worth seeking out. Find the top-rated live jazz venues and bars near me that host jazz nights this week. Include venue name, locality, show timings, rating, price band, and what makes each spot special. Return a concise shortlist that helps the viewer choose the perfect jazz night.",
-        "domain": "local_experiences",
-        "confidence": "high",
-        "entityCount": 4,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "9c21f8c9c88d46fff37708512cf172ee",
-        "prompt": "Continue the card's promise of authentic Taiwanese taro latte experiences. Find the highest-rated specialty cafes near me serving premium taro lattes. Include ratings, locality, price range, taro preparation details, and signature drinks. Return a concise shortlist that helps choose the best taro experience nearby.",
-        "domain": "food",
-        "confidence": "high",
-        "entityCount": 5,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "f8c366ead8df64f22ac5971f7397ed67",
-        "prompt": "Continue the card's promise of an intimate, storytelling supper club experience with unique themes. Find top-rated secret supper clubs and pop-up dining experiences near me for this week. Include venue, locality, date/time, rating, price band, and the unique theme or story each offers. Return a concise shortlist that helps the viewer choose the most compelling experience.",
-        "domain": "food",
-        "confidence": "high",
-        "entityCount": 4,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "0b1c3d6f8f94f3d06b9a5255a2c3a7b2",
-        "prompt": "Continue the card's promise of this viral croissant-waffle hybrid with buttery layers and sweet toppings. Find the highest-rated places near me serving authentic croffles. Include ratings, locality, price range, opening hours, and what each place is known for. Return a concise shortlist that makes choosing one stop easy.",
-        "domain": "food",
-        "confidence": "high",
-        "entityCount": 4,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "7a7b739c30f65b66efb563e34158c752",
-        "prompt": "Continue the card's promise of finding the best pain au chocolat experience. Find the highest-rated bakeries near me serving authentic pain au chocolat with buttery layers. Include ratings, locality, price range, opening hours, and what each bakery is known for. Return a concise shortlist that makes choosing the perfect spot easy.",
-        "domain": "food",
-        "confidence": "high",
-        "entityCount": 5,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "82f6da1d57b89d6f97b70de261cd68f0",
-        "prompt": "Continue the card's promise of finding the best savory croissant experience. Find the highest-rated bakeries near me serving savory croissants like paneer bhurji or vegetable fillings. Include ratings, locality, price range, opening hours, and what each bakery is known for. Return a concise shortlist that makes choosing the perfect spot easy.",
-        "domain": "food",
-        "confidence": "high",
-        "entityCount": 4,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "8ecd2588495e8777703730d4325e7bc2",
-        "prompt": "Continue the card's promise of a transformative spiritual journey to Varanasi and the Kashi Vishwanath Temple. Plan a complete pilgrimage to Varanasi including temple darshan, ghat rituals, accommodation, and timing. Include best time to visit, temple opening hours, accommodation areas near the ghats, local transportation, and what to wear. Return a practical itinerary with costs, seasonal consid…",
-        "domain": "travel",
-        "confidence": "high",
-        "entityCount": 11,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "679def7d3e25ade808663b9bcb6f0b54",
-        "prompt": "Create a complete safari plan for the Serengeti that delivers the ultimate wildlife photography experience. Include the best months to visit for the Great Migration and Big Five sightings. Provide a 5-7 day itinerary with key locations, accommodation recommendations, and photography tips. Explain how to get there including flight options and internal transfers. Return a practical plan with costs,…",
-        "domain": "travel",
-        "confidence": "high",
-        "entityCount": 21,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "4e983b5944457e74c88745996eae21ed",
-        "prompt": "Create a complete safari plan for the Masai Mara that delivers the ultimate wildlife photography experience. Include the best months to visit for the Great Migration river crossings and predator action. Provide a 5-7 day itinerary with key locations, accommodation recommendations, and photography tips. Explain how to get there including flight options to Nairobi and internal transfers to the Mara…",
-        "domain": "travel",
-        "confidence": "high",
-        "entityCount": 10,
         "hasImages": false,
         "outputShape": "card_template"
       },
       {
-        "traceId": "b2df28956a90639442b9ac03cf3f1e4c",
-        "prompt": "Continue the card's promise of a quick, filling late-night Hakka noodle fix. Find the highest-rated places near me serving vegetarian Hakka noodles right now. Include ratings, locality, opening hours, price range, and what each place is known for. Return a concise shortlist that makes choosing one stop easy. Prioritize places open late tonight.",
-        "domain": "food",
+        "traceId": "90f234624c3ed86e409373a0e8e15501",
+        "prompt": "Continue the card's promise of a 90-minute Indo-jazz journey blending Indian classical with global jazz. Find top-rated Indo-jazz fusion concerts and live music events near me this week. Include venue, locality, date/time, rating, price band, and what makes each performance special. Return a concise shortlist that helps me choose the best fusion experience.",
+        "domain": "local_experiences",
         "confidence": "high",
         "entityCount": 4,
         "hasImages": false,
         "outputShape": "place_card"
       },
       {
-        "traceId": "ad52dee4963580dbccd35331dab041cf",
-        "prompt": "Continue the card's promise of a complete one-day nature and wildlife experience for the whole family. Find top-rated nature parks and eco-parks near me that offer wildlife, planetarium shows, and boating. Include venue name, locality, opening hours, entry fees, combo ticket details, and what makes each place special for families. Return a concise shortlist that helps the viewer choose the best f…",
+        "traceId": "629b1fc9feff9f4e83558693bf532757",
+        "prompt": "Continue the card's promise of outdoor family adventure and nature discovery. Find the top-rated family nature parks and outdoor adventure centers near me that offer safe, educational experiences. Include venue name, locality, opening hours, entry fees, available activities, and what makes each park family-friendly. Return a curated list that helps families choose the perfect outdoor outing.",
         "domain": "food",
         "confidence": "high",
-        "entityCount": 4,
+        "entityCount": 5,
         "hasImages": false,
         "outputShape": "place_card"
       },
       {
-        "traceId": "292f4b6d6288158e2d18ab79c2cac73c",
-        "prompt": "Continue the card's promise of finding Dubai's viral kunafa dessert near you. Find the highest-rated places near me serving authentic kunafa with pistachio cream. Include ratings, locality, price range, opening hours, and what each place is known for. Return a concise shortlist that makes choosing one stop easy.",
-        "domain": "food",
-        "confidence": "high",
-        "entityCount": 4,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "673f09cfad198bd08a583bdac10df127",
-        "prompt": "Create a complete 4-day trip plan for Santorini, Greece. Include the best time to visit, flight options from major hubs, top-rated hotels with caldera views, the best viewpoints for photos, and a day-by-day itinerary covering Oia, Fira, and hidden beaches. Mention how to avoid crowds, transportation tips, approximate costs, and what to book in advance. Format as a practical itinerary with timing …",
+        "traceId": "35b45789d548b8d03e433b03fb85d337",
+        "prompt": "Check SF Native Tours availability",
         "domain": "travel",
         "confidence": "high",
-        "entityCount": 16,
+        "entityCount": 3,
+        "hasImages": false,
+        "outputShape": "card_template"
+      },
+      {
+        "traceId": "7c67a676b0de38d3c02f66751c870cd8",
+        "prompt": "Find dessert cafes near Hazratganj",
+        "domain": "food",
+        "confidence": "high",
+        "entityCount": 5,
         "hasImages": false,
         "outputShape": "place_card"
       },
       {
-        "traceId": "9181dc6079f5bc740c86be266e7fb155",
-        "prompt": "Create a complete 5-day trip plan for Bodrum, Turkey. Include the best time to visit, flight options from major hubs, top-rated luxury hotels and beach clubs, Michelin-starred restaurants, and a day-by-day itinerary covering the marina, ancient ruins, and hidden coves. Mention transportation tips, approximate costs, and what to book in advance. Format as a practical itinerary with timing and book…",
+        "traceId": "495eed0a791e702349531e2e8655da8b",
+        "prompt": "Continue the card's promise of a relaxed, sweet baking date night for couples. Find top-rated artisan baking and pastry classes for couples near me this weekend. Include venue, locality, date/time, rating, price per couple, and what baked goods are covered. Return a shortlist of the best options that allow booking for this week or next.",
+        "domain": "local_experiences",
+        "confidence": "high",
+        "entityCount": 3,
+        "hasImages": false,
+        "outputShape": "place_card"
+      },
+      {
+        "traceId": "c0f6dca63b8f15938f4adcad57cbce00",
+        "prompt": "Continue the card's promise of discovering modern vintage Italian fine dining with Michelangelo-inspired interiors. Find the highest-rated Italian fine-dining restaurants near me that serve hand-rolled pasta and offer a sophisticated dining experience. Include ratings, price range per person, locality, opening hours, signature dishes, and what makes each place unique. Return a curated shortlist t…",
+        "domain": "food",
+        "confidence": "high",
+        "entityCount": 4,
+        "hasImages": false,
+        "outputShape": "place_card"
+      },
+      {
+        "traceId": "d0c920dc1240cc3c0c8a87f5a7939fe0",
+        "prompt": "Continue the card's promise of India's artisan sourdough bread movement. Find the highest-rated bakery cafes near me serving fresh sourdough loaves and artisan breads. Include ratings, locality, price range, opening hours, and what each place is known for. Return a concise shortlist of top-rated bakeries with their sourdough varieties and baking schedules.",
+        "domain": "food",
+        "confidence": "high",
+        "entityCount": 5,
+        "hasImages": false,
+        "outputShape": "place_card"
+      },
+      {
+        "traceId": "4f2ba2e1c5ef60baae16a5d015108be6",
+        "prompt": "Continue the card's promise of an authentic, cultural cooking experience for couples. Find top-rated Indian regional cooking workshops for couples near me this weekend. Include venue, locality, date/time, rating, price per couple, and which regional cuisine is featured. Return a shortlist of the best options that allow booking for this week or next.",
+        "domain": "food",
+        "confidence": "high",
+        "entityCount": 5,
+        "hasImages": false,
+        "outputShape": "place_card"
+      },
+      {
+        "traceId": "a1c947a315204072a4ef589139161d1d",
+        "prompt": "Find gaming venues open late tonight",
+        "domain": "food",
+        "confidence": "high",
+        "entityCount": 4,
+        "hasImages": false,
+        "outputShape": "place_card"
+      },
+      {
+        "traceId": "7a282fede95611c334c36d20d963e684",
+        "prompt": "Continue the card's promise of finding the perfect chocolate-filled pastry. Find the highest-rated bakery cafes near me serving fresh pain au chocolat. Include ratings, locality, opening hours, price range, and what each place is known for. Return a concise shortlist that makes choosing one stop easy.",
+        "domain": "food",
+        "confidence": "high",
+        "entityCount": 5,
+        "hasImages": false,
+        "outputShape": "place_card"
+      },
+      {
+        "traceId": "cb37e7a5321e7620b74603e4a87e33f6",
+        "prompt": "Search for other gaming venues in Bay Area",
+        "domain": "local_experiences",
+        "confidence": "high",
+        "entityCount": 4,
+        "hasImages": false,
+        "outputShape": "card_template"
+      },
+      {
+        "traceId": "9a79cf684335d6b23fd3cd6872a3df45",
+        "prompt": "Continue the card's promise of an immersive themed gaming experience. Find top-rated board game cafes near me that offer themed gaming nights and immersive experiences. Include venue name, location, themed game titles, rating, price per person, and special event details. Return a list of 3-5 venues with their current themed events and booking information.",
+        "domain": "local_experiences",
+        "confidence": "high",
+        "entityCount": 5,
+        "hasImages": false,
+        "outputShape": "place_card"
+      },
+      {
+        "traceId": "3410bc0231527dec9540c406cfe521d9",
+        "prompt": "Continue the card's promise of a fun, social board game night with great food. Find top-rated board game cafes near me with 300+ game libraries. Include ratings, location, game variety, food menu, price range, and opening hours. Return a shortlist that helps choose the perfect spot for tonight or this weekend.",
+        "domain": "food",
+        "confidence": "high",
+        "entityCount": 5,
+        "hasImages": false,
+        "outputShape": "place_card"
+      },
+      {
+        "traceId": "d24aee423a3f2a73f2be89189d8b9d2e",
+        "prompt": "Continue the card's promise of discovering Singapore beyond the Supertrees. Find the top-rated attractions in Singapore including hidden gems locals love. Include must-see landmarks, lesser-known neighborhoods, authentic experiences, and practical timing tips. Return a curated list with ratings, locations, and what makes each place special.",
         "domain": "travel",
         "confidence": "high",
         "entityCount": 11,
@@ -604,109 +532,262 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "place_card"
       },
       {
-        "traceId": "9ffaf72181f0dd539d52f93a285591e0",
-        "prompt": "Continue the card's promise of discovering photogenic medieval stone architecture and sunset views in Visby. Find the top-rated attractions and hidden photography spots in Visby that most visitors miss. Include specific locations, best times for photography, what makes each spot unique, and any lesser-known viewpoints. Return a curated list that helps a shutterbug capture the town's medieval char…",
-        "domain": "events",
+        "traceId": "7648418761404c9f7e27fa94a3f52a59",
+        "prompt": "Continue the card's promise of discovering Bangkok beyond the postcard spots. Find the top-rated attractions in Bangkok including hidden gems locals love. Include must-see landmarks, lesser-known neighborhoods, authentic experiences, and practical timing tips. Return a curated list with ratings, locations, and what makes each place special.",
+        "domain": "local_experiences",
         "confidence": "high",
-        "entityCount": 12,
+        "entityCount": 11,
         "hasImages": false,
         "outputShape": "place_card"
       },
       {
-        "traceId": "037465b9498b399fcc3488fbc0d0d219",
-        "prompt": "Continue the card's promise of discovering photogenic canal reflections and hidden alleyways in Colmar. Find the top-rated attractions and hidden photography spots in Colmar that most visitors miss. Include specific locations, best times for photography, what makes each spot unique, and any lesser-known viewpoints. Return a curated list that helps a shutterbug capture the town's Alsace charm beyo…",
-        "domain": "local_experiences",
+        "traceId": "e4bf50f3ff3d92eb50ab1193877a7648",
+        "prompt": "Continue the card's promise of building confidence and teamwork through aerial challenges. Find the highest-rated rope course adventure parks near me that offer family packages. Include ratings, location, difficulty levels, safety measures, ticket prices, and what each park offers. Return a concise shortlist that helps families choose the best rope course for their skill levels.",
+        "domain": "food",
+        "confidence": "high",
+        "entityCount": 3,
+        "hasImages": false,
+        "outputShape": "place_card"
+      },
+      {
+        "traceId": "388d27d63d45b41a7ae7bdaae14b9295",
+        "prompt": "Continue the card's promise of aerial adventure above the Himalayas. Find paragliding, bungee jumping, or white water rafting destinations in India with similar adrenaline intensity. Include location, best season, difficulty level, price range, and what makes each spot unique. Return a curated list with ratings and key differentiators so the viewer can choose their next thrill.",
+        "domain": "travel",
         "confidence": "high",
         "entityCount": 6,
         "hasImages": false,
         "outputShape": "place_card"
       },
       {
-        "traceId": "dd22516221f5cb4c3329143b8b52df12",
-        "prompt": "Continue the card's promise of discovering photogenic medieval streets and hidden corners in Rothenburg ob der Tauber. Find the top-rated attractions and hidden photography spots in Rothenburg ob der Tauber that most visitors miss. Include specific locations, best times for photography, what makes each spot unique, and any lesser-known viewpoints. Return a curated list that helps a shutterbug cap…",
-        "domain": "events",
+        "traceId": "a5daecfd4d6b646ffcdac56f215d2126",
+        "prompt": "Continue the card's promise of a transformative pilgrimage experience at Tirupati Balaji Temple. Build a complete 3-day Tirupati itinerary focused on darshan and Brahmotsavam festival participation. Include temple darshan timings, accommodation options in Tirupati or Tirumala, festival schedules, and how to reach Tirupati by train or flight. Return a day-by-day plan with practical logistics and c…",
+        "domain": "travel",
         "confidence": "high",
-        "entityCount": 10,
+        "entityCount": 17,
+        "hasImages": false,
+        "outputShape": "place_card"
+      },
+      {
+        "traceId": "6a6f6dba6c22597d61c71944d0d4120d",
+        "prompt": "Plan a complete 7-10 day safari itinerary for the Okavango Delta that includes mokoro safari experiences, recommended luxury camps or lodges, flight transfer options from major airports, and the optimal months to visit for photography. Include specific activities like boat cruises and walking safaris, accommodation recommendations with price ranges, and practical tips for wildlife photography in …",
+        "domain": "travel",
+        "confidence": "high",
+        "entityCount": 7,
+        "hasImages": false,
+        "outputShape": "place_card"
+      },
+      {
+        "traceId": "792fedff6a2cc1b82547215b2521ff96",
+        "prompt": "Plan a complete 7-10 day safari itinerary for the Serengeti that includes the best migration viewing areas, recommended luxury camps or lodges, flight transfer options from major airports, and the optimal months to visit for photography. Include specific dates for migration crossings, accommodation recommendations with price ranges, and practical tips for wildlife photography in the Serengeti. Wh…",
+        "domain": "travel",
+        "confidence": "high",
+        "entityCount": 5,
+        "hasImages": false,
+        "outputShape": "place_card"
+      },
+      {
+        "traceId": "c8db79e93cf02e182ad0d5bd817bbcde",
+        "prompt": "Continue the card's promise of a serene yoga and meditation experience at Rishikesh. Build a complete 4-day Rishikesh itinerary focused on yoga, Ganga Aarti, and spiritual practices. Include top yoga ashrams, Ganga Aarti timings, accommodation options, and how to reach Rishikesh by train or bus. Return a day-by-day plan with practical logistics and cultural context.",
+        "domain": "travel",
+        "confidence": "high",
+        "entityCount": 20,
+        "hasImages": false,
+        "outputShape": "place_card"
+      },
+      {
+        "traceId": "b9e99b9f2c24d4a2a128d48c32c698e1",
+        "prompt": "Continue the card's promise of a transformative dawn experience at Kashi Vishwanath Temple. Build a complete 3-day Varanasi itinerary focused on spiritual darshan and Ganga Aarti. Include best temples to visit, Ganga Aarti timings, accommodation areas near the ghats, and how to reach Varanasi by train or flight. Return a day-by-day plan with practical logistics and cultural context.",
+        "domain": "travel",
+        "confidence": "high",
+        "entityCount": 13,
+        "hasImages": false,
+        "outputShape": "place_card"
+      },
+      {
+        "traceId": "2356976ab472ed9fce382e05896690e4",
+        "prompt": "Continue the card's promise of discovering Chanderi's living heritage where history meets everyday craft. Find the highest-rated attractions and hidden gems in Chanderi beyond the main fort. Include medieval monuments, Jain temples, stepwells, handloom weaving centers, and local craft experiences. Return a curated list with ratings, what makes each special, and what visitors typically miss.",
+        "domain": "local_experiences",
+        "confidence": "high",
+        "entityCount": 8,
+        "hasImages": false,
+        "outputShape": "place_card"
+      },
+      {
+        "traceId": "565aacaa99716b6843db12b83299c7d4",
+        "prompt": "Continue the card's promise of a spiritual pilgrimage to Lourdes and the Basilica. Plan a complete pilgrimage to Lourdes including grotto visits, mass attendance, and healing water rituals. Include best time to visit, accommodation near the sanctuary, mass schedules, travel tips, and spiritual practices. Return a practical itinerary with timing, logistics, and what to expect at each sacred site.",
+        "domain": "travel",
+        "confidence": "high",
+        "entityCount": 9,
+        "hasImages": false,
+        "outputShape": "place_card"
+      },
+      {
+        "traceId": "c9fd50cd07a1355838832c823355d77f",
+        "prompt": "Continue the card's promise of a spiritual journey to Varanasi and the Kashi Vishwanath Temple. Plan a complete pilgrimage to Varanasi including temple darshan, Ganga Aarti, and spiritual activities. Include best time to visit, accommodation near the ghats, temple timings, travel tips, and cultural etiquette. Return a practical itinerary with timing, logistics, and what to expect at each spiritua…",
+        "domain": "travel",
+        "confidence": "high",
+        "entityCount": 12,
+        "hasImages": false,
+        "outputShape": "place_card"
+      },
+      {
+        "traceId": "c3c87ea13801cc52bb770da6c8601e92",
+        "prompt": "Continue the card's promise of Chongqing's viral motorbike alleys and cyberpunk atmosphere. Build a complete Chongqing trip plan covering itinerary, best time to visit, and how to get there. Include top-rated attractions, stay recommendations, flight options from major hubs, and seasonal timing. Return a practical 5-day itinerary with daily highlights, budget estimates, and booking tips.",
+        "domain": "travel",
+        "confidence": "high",
+        "entityCount": 11,
+        "hasImages": false,
+        "outputShape": "place_card"
+      },
+      {
+        "traceId": "b59743cf1232972c4a238cb6dbb661eb",
+        "prompt": "Continue the card's promise of Baku's futuristic Flame Towers and medieval Old City contrast. Build a complete Baku trip plan covering itinerary, best time to visit, and how to get there. Include top-rated attractions, stay recommendations, flight options from major hubs, and seasonal timing. Return a practical 5-day itinerary with daily highlights, budget estimates, and booking tips.",
+        "domain": "travel",
+        "confidence": "high",
+        "entityCount": 12,
+        "hasImages": false,
+        "outputShape": "place_card"
+      },
+      {
+        "traceId": "00475f0dfcef8eb2d5b43ce8ab67f5bd",
+        "prompt": "Continue the card's promise of a transformative pilgrimage to Mount Kailash. Plan a complete journey to Mount Kailash including the 52km kora circumambulation. Include best travel season, permit requirements, physical preparation needed, accommodation options in Darchen, and typical costs. Return a practical itinerary with timing, logistics, and what to expect at each stage of the journey.",
+        "domain": "travel",
+        "confidence": "high",
+        "entityCount": 7,
+        "hasImages": false,
+        "outputShape": "card_template"
+      },
+      {
+        "traceId": "5229a84c05b244766b03492f397339e5",
+        "prompt": "Continue the card's promise of Lisbon's iconic yellow trams and Alfama charm. Build a complete Lisbon trip plan covering itinerary, best time to visit, and how to get there. Include top-rated attractions, stay recommendations, flight options from major hubs, and seasonal timing. Return a practical 5-day itinerary with daily highlights, budget estimates, and booking tips.",
+        "domain": "travel",
+        "confidence": "high",
+        "entityCount": 19,
+        "hasImages": false,
+        "outputShape": "place_card"
+      },
+      {
+        "traceId": "1434ce0fbccdf3324efd98183cc187c7",
+        "prompt": "Continue the card's promise of discovering Varanasi beyond the famous ghats. Find the highest-rated spiritual attractions and hidden gems in Varanasi. Include lesser-known temples, quiet meditation spots, local ritual timings, and what makes each place special. Return a curated list with ratings, best visiting times, and what visitors typically miss.",
+        "domain": "travel",
+        "confidence": "high",
+        "entityCount": 8,
+        "hasImages": false,
+        "outputShape": "place_card"
+      },
+      {
+        "traceId": "1ebc74d8dd5e14579ee5866009bbe479",
+        "prompt": "Continue the card's promise of ultra-luxury overwater living with unique amenities like retractable roofs and waterslides. Find similar ultra-luxury island resorts with distinctive features and overwater villas. Include property names, location, price range per night, unique amenities, and what sets each apart. Return a curated list of 5-7 properties with clear differentiators and approximate cos…",
+        "domain": "travel",
+        "confidence": "high",
+        "entityCount": 6,
+        "hasImages": false,
+        "outputShape": "place_card"
+      },
+      {
+        "traceId": "aa6afcc2384f2f6054ee7e93dec48580",
+        "prompt": "Continue the card's promise of discovering Tirupati beyond the main temple. Find the highest-rated spiritual attractions and hidden gems in Tirupati. Include lesser-known temples, quiet meditation spots, local traditions, and hidden viewpoints. Return a curated list with ratings, best visiting times, and what visitors typically miss.",
+        "domain": "travel",
+        "confidence": "high",
+        "entityCount": 11,
+        "hasImages": false,
+        "outputShape": "place_card"
+      },
+      {
+        "traceId": "34e4cea67b655c996463f6d32554c63e",
+        "prompt": "Continue the card's promise of discovering Interlaken beyond the famous Jungfrau views. Find the top-rated attractions in Interlaken including hidden hiking trails, local lakeside spots, and lesser-known viewpoints. Include ratings, travel times, seasonal access information, and what makes each location special. Return a curated list that balances iconic spots with authentic local experiences for…",
+        "domain": "local_experiences",
+        "confidence": "high",
+        "entityCount": 8,
+        "hasImages": false,
+        "outputShape": "place_card"
+      },
+      {
+        "traceId": "72ca40c3c1534c53adbdb10cc25cd046",
+        "prompt": "Continue the card's promise of discovering Haridwar beyond Har Ki Pauri. Find the highest-rated spiritual attractions and hidden gems in Haridwar. Include lesser-known temples, quiet meditation spots, local ashrams, and ritual timings. Return a curated list with ratings, best visiting times, and what visitors typically miss.",
+        "domain": "travel",
+        "confidence": "high",
+        "entityCount": 8,
+        "hasImages": false,
+        "outputShape": "place_card"
+      },
+      {
+        "traceId": "ace21e777dc980d7c7e29a0b3747c493",
+        "prompt": "Continue the card's promise of an ultra-luxury African rail experience. Find similar luxury train journeys across Africa with premium accommodations. Include journey duration, route highlights, suite types, dining options, and price ranges. Return a comparison of 3-5 African luxury train trips that offer the same level of service and scenery. Focus on journeys through diverse landscapes with butl…",
+        "domain": "travel",
+        "confidence": "high",
+        "entityCount": 6,
+        "hasImages": false,
+        "outputShape": "place_card"
+      },
+      {
+        "traceId": "d3e5bbf67bb49cde9a7d9bdb2ea07f44",
+        "prompt": "Continue the card's promise of an ultra-luxury world cruise experience. Find similar luxury cruise journeys around the world with multiple destinations. Include journey duration, number of countries visited, key destinations, onboard amenities, and price ranges. Return a comparison of 3-5 world cruises that offer the same level of luxury and exploration. Focus on journeys that feature overnights …",
+        "domain": "travel",
+        "confidence": "high",
+        "entityCount": 4,
+        "hasImages": false,
+        "outputShape": "card_template"
+      },
+      {
+        "traceId": "0b2ef64de4c920d1804705d5d530e853",
+        "prompt": "Continue the card's promise of discovering hidden photographic gems in Scanno. Find the top-rated attractions and hidden spots in Scanno that photographers love. Include the best photo locations, walking routes, and what most visitors miss. Return a curated list with ratings and specific photography tips for each spot.",
+        "domain": "travel",
+        "confidence": "high",
+        "entityCount": 6,
         "hasImages": false,
         "outputShape": "place_card"
       }
     ],
     "single_entity": [
       {
-        "traceId": "5f2155696a04da1ed529d430401852e0",
-        "prompt": "Create a comprehensive 5-7 day Pindari Glacier Trek itinerary for an adventure traveler. Include: 1. DAILY ITINERARY (5-7 days): - Day 1: Kathgodam to Bageshwar (travel details, distance, time) - Day 2: Bageshwar to Loharkhet (trek distance, altitude gain, camping location) - Day 3: Loharkhet to Khaliya Top (trek distance, altitude gain, camping location) - Day 4: Khaliya Top to Pindari Glacier b…",
-        "domain": "none",
+        "traceId": "e4a19bbddfa07fde0ec5bcf7d0a8eae8",
+        "prompt": "Find a rug to match this lighting",
+        "domain": "home_decor",
         "confidence": "medium",
         "entityCount": 1,
         "hasImages": false,
-        "outputShape": "card_template"
+        "outputShape": "product_ids"
       },
       {
-        "traceId": "3fb1640b2c34c6458c36e83189878a2b",
-        "prompt": "Continue the card's promise of an ultra-luxury island wellness retreat in Thailand. Provide a complete stay plan for Six Senses Yao Noi on Koh Yao Noi island. Include what the property is like, wellness programmes included, best time to book, and how to get there from Phuket Airport. Return details on villa types, daily inclusions, seasonal recommendations, and transfer options.",
-        "domain": "travel",
+        "traceId": "f4ea10aeaaba1536b859075b6dff5128",
+        "prompt": "Home Decor Rugs: user wants a living room area rug; search area rug.",
+        "domain": "home_decor",
         "confidence": "medium",
         "entityCount": 1,
         "hasImages": false,
-        "outputShape": "place_card"
+        "outputShape": "product_ids"
       },
       {
-        "traceId": "a12d37cd7d75d5eff112339c8ccf21f7",
-        "prompt": "Get directions to House of mithaas",
-        "domain": "food",
+        "traceId": "90851f33aa5df19185fc89a0ce90de7a",
+        "prompt": "Try on this Ajile by Pantaloons Men Black Backpack (Product id 89427eaa-75f7-5899-9f9d-b491ce68fbdf)",
+        "domain": "fashion",
         "confidence": "medium",
         "entityCount": 1,
         "hasImages": false,
-        "outputShape": "card_template"
+        "outputShape": "product_ids"
       },
       {
-        "traceId": "7a3f78f7b7431efa42626795800893b7",
-        "prompt": "Open mic events in Chandigarh",
-        "domain": "events",
+        "traceId": "610f4bfc1dd0abec0191222c9fe62c84",
+        "prompt": "Skip the try on and show me something else for product id c8fc31ae-6603-57fb-b559-ca966d6e279f",
+        "domain": "fashion",
         "confidence": "medium",
         "entityCount": 1,
         "hasImages": false,
-        "outputShape": "place_card"
+        "outputShape": "product_ids"
       },
       {
-        "traceId": "0c51ac9f5a394ca9d52d08c5e09d1804",
-        "prompt": "Plan a route to Lalbagh from home",
-        "domain": "travel",
+        "traceId": "b10656819307631afa0ae7382a104338",
+        "prompt": "Home Decor Furniture: user wants living room seating; search sofa.",
+        "domain": "home_decor",
         "confidence": "medium",
         "entityCount": 1,
         "hasImages": false,
-        "outputShape": "place_card"
+        "outputShape": "product_ids"
       },
       {
-        "traceId": "3ee92bac3ddf9889398c2e0cf3400303",
-        "prompt": "Find the highest-rated haunted asylum escape rooms near me that offer the full 60-minute immersive experience. Include venue name, locality, available time slots this weekend, rating, price per person, and group size limits. Return a shortlist of top venues with booking links so I can secure a spot for my group. Prioritize venues with recent positive reviews and flexible booking options.",
-        "domain": "local_experiences",
-        "confidence": "medium",
-        "entityCount": 1,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "447d2893ab2645a2ec181af58e036ca9",
-        "prompt": "Find the highest-rated haunted asylum escape rooms near me that offer the full 60-minute immersive experience. include venue name, locality, available time slots this weekend, rating, price per person, and group size limits. return a shortlist of top venues with booking links so i can secure a spot for my group. prioritize venues with recent positive reviews and flexible booking options.",
-        "domain": "local_experiences",
-        "confidence": "medium",
-        "entityCount": 1,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "6f2cde21cb104a209ba8da6f2de7af3f",
-        "prompt": "Find the highest-rated interactive detective mystery nights near me that offer live role-playing experiences. Include venue name, locality, available time slots this weekend, rating, price per person, and group size limits. Return a shortlist of top venues with booking links so I can secure a spot for my group. Prioritize venues with recent positive reviews and flexible booking options.",
-        "domain": "local_experiences",
-        "confidence": "medium",
-        "entityCount": 1,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "df53bff65348cc05bed94326fad00589",
-        "prompt": "Continue the card's promise of a cozy board game cafe with comfort food. find top-rated board game cafes near me that serve food and have 300+ games. include ratings, location, price range, game variety, and food menu highlights. return a shortlist with booking options and what makes each spot unique.",
+        "traceId": "c5af0cf75cbd7256792a41f7104c040b",
+        "prompt": "Check opening hours for Totoro Ramen",
         "domain": "food",
         "confidence": "medium",
         "entityCount": 1,
@@ -714,19 +795,73 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "place_card"
       },
       {
-        "traceId": "ae1a81ef433981505560132f09287807",
-        "prompt": "Find the highest-rated interactive detective mystery nights near me that offer live role-playing experiences. Include venue name, locality, available time slots this weekend, rating, price per person, and group size limits. Return a shortlist of top venues with booking links so I can secure a spot for my group. Prioritize venues with recent positive reviews and flexible booking options.",
-        "domain": "local_experiences",
+        "traceId": "b80250beb28d782e1e6f868faf2617cd",
+        "prompt": "Check availability for next month",
+        "domain": "travel",
         "confidence": "medium",
         "entityCount": 1,
         "hasImages": false,
         "outputShape": "place_card"
+      },
+      {
+        "traceId": "2ed629e9747f59ffb714bba20b4b3a09",
+        "prompt": "Book hotel with caldera view",
+        "domain": "travel",
+        "confidence": "medium",
+        "entityCount": 1,
+        "hasImages": false,
+        "outputShape": "place_card"
+      },
+      {
+        "traceId": "69f9b63e848e6276a5a1b09d26f3e360",
+        "prompt": "Book Heritage Villa with Private Pool",
+        "domain": "travel",
+        "confidence": "medium",
+        "entityCount": 1,
+        "hasImages": false,
+        "outputShape": "place_card"
+      },
+      {
+        "traceId": "6eb0381087b769b50d0e98064d515029",
+        "prompt": "Show me the orange Desigual option",
+        "domain": "fashion",
+        "confidence": "medium",
+        "entityCount": 1,
+        "hasImages": false,
+        "outputShape": "product_ids"
       }
     ],
     "comparison": [
       {
-        "traceId": "54e92fc9b52b054e68eab32faba16a3d",
-        "prompt": "Continue the card's promise of thrilling white water rafting on the sacred Ganga. Find similar white water rafting destinations in India that offer Grade II to IV rapids. Include river names, difficulty levels, best seasons, safety standards, and what makes each location unique. Return a comparison that helps the viewer choose their next river adventure.",
+        "traceId": "5e42eb4cf2701ab4d7c1915f489d811b",
+        "prompt": "Continue the card's promise of a hands-on pasta-making experience for couples. Find top-rated Italian pasta making workshops and cooking classes near me this weekend. Include venue name, locality, date/time options, rating, price per couple, and what techniques are taught. Return a concise comparison that helps choose the best workshop for a first-time experience.",
+        "domain": "food",
+        "confidence": "high",
+        "entityCount": 3,
+        "hasImages": false,
+        "outputShape": "card_template"
+      },
+      {
+        "traceId": "d2ad0353ef3f77e869a348200427ffa0",
+        "prompt": "Continue the card's promise of discovering live outdoor music experiences near you. Find top-rated outdoor music festivals and live performance venues near me this weekend. Include venue names, localities, performance dates, ratings, price bands, and what makes each event special. Return a concise comparison to help choose the best outdoor music experience.",
+        "domain": "local_experiences",
+        "confidence": "high",
+        "entityCount": 3,
+        "hasImages": false,
+        "outputShape": "card_template"
+      },
+      {
+        "traceId": "eb402bf8476601e2319a07874a0fd231",
+        "prompt": "Continue the card's promise of an electrifying multi-sport challenge worth joining. Find top-rated community triathlon and duathlon events near me this weekend. Include venue, locality, date/time, rating, price band, and what makes each event special. Return a concise comparison that helps the viewer choose the perfect endurance challenge. Solo and relay options welcome for all fitness levels.",
+        "domain": "local_experiences",
+        "confidence": "high",
+        "entityCount": 2,
+        "hasImages": false,
+        "outputShape": "card_template"
+      },
+      {
+        "traceId": "0cdc693c05340ff87eba0f30ddc687d0",
+        "prompt": "Continue the card's promise of thrilling white water rafting on the sacred ganga. find similar white water rafting destinations in india that offer grade ii to iv rapids. include river names, difficulty levels, best seasons, safety standards, and what makes each location unique. return a comparison that helps the viewer choose their next river adventure.",
         "domain": "travel",
         "confidence": "high",
         "entityCount": 5,
@@ -734,88 +869,16 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "place_card"
       },
       {
-        "traceId": "b0769ada53be070f34ce89f2cce1c307",
-        "prompt": "Continue the card's promise of a silent, transformative paragliding experience over the Himalayas. Find similar paragliding destinations in India that offer mountain views and safe beginner experiences. Include locations, altitude details, best seasons, difficulty levels, and what makes each spot unique. Return a comparison that helps the viewer choose their next aerial adventure.",
+        "traceId": "43818878e8607e40e1cb9cf191924f33",
+        "prompt": "Help a solo backpacker prepare for the W Trek in Patagonia, Chile. List essential gear needed for a safe 4-5 day wilderness trek in Torres del Paine. Include: backpack type, tent specs, sleeping bag rating, hiking boots, clothing layers, navigation tools, water treatment. Provide product categories with specific features to look for, suitable for remote wilderness conditions. Mention any gear ren…",
         "domain": "travel",
         "confidence": "high",
-        "entityCount": 4,
+        "entityCount": 9,
         "hasImages": false,
         "outputShape": "card_template"
       },
       {
-        "traceId": "b5463ca8366bb758cd46a18cf458d4e7",
-        "prompt": "Continue the card's promise of a family-friendly tiger safari with historic charm. Find similar wildlife sanctuaries and tiger reserves in India that offer family safaris. Include tiger sighting probability, best visiting months, family amenities, and how each differs in terrain or wildlife. Return a comparison that helps a family choose the right safari for their kids.",
-        "domain": "travel",
-        "confidence": "high",
-        "entityCount": 4,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "5f2b502782d3943bf1216652bd362068",
-        "prompt": "Continue the card's promise of conquering remote high-altitude trails. Find the top-rated trekking guides and operators in Spiti Valley. Include trail difficulty levels, group sizes, accommodation options, and price ranges. Return a comparison that helps choose the best trekking experience. Prioritize operators with experienced guides and safe equipment.",
-        "domain": "travel",
-        "confidence": "high",
-        "entityCount": 4,
-        "hasImages": false,
-        "outputShape": "card_template"
-      },
-      {
-        "traceId": "793f9a2ff7628bba8c1c32a54d1b75ec",
-        "prompt": "Continue the card's promise of white-water adrenaline on the Ganges. Find the top-rated rafting operators in Rishikesh offering Grade III-IV rapids. Include safety ratings, group sizes, equipment quality, and price ranges. Return a comparison that helps choose the best rafting experience. Prioritize operators with strong safety records and experienced guides.",
-        "domain": "travel",
-        "confidence": "high",
-        "entityCount": 5,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "7d044185f6735d87d7d1c1208ed79a0e",
-        "prompt": "Continue the card's promise of white-water adrenaline on the Ganges. Find the top-rated rafting operators in Rishikesh offering Grade III-IV rapids. Include safety ratings, group sizes, equipment quality, and price ranges. Return a comparison that helps choose the best rafting experience. Prioritize operators with strong safety records and experienced guides.",
-        "domain": "travel",
-        "confidence": "high",
-        "entityCount": 5,
-        "hasImages": false,
-        "outputShape": "card_template"
-      },
-      {
-        "traceId": "7d3d275d0c8dceb3b7b62aaa833ab1e2",
-        "prompt": "Continue the card's promise of white-water adrenaline on the Ganges. Find the top-rated rafting operators in Rishikesh offering Grade III-IV rapids. Include safety ratings, group sizes, equipment quality, and price ranges. Return a comparison that helps choose the best rafting experience. Prioritize operators with strong safety records and experienced guides.",
-        "domain": "travel",
-        "confidence": "high",
-        "entityCount": 5,
-        "hasImages": false,
-        "outputShape": "card_template"
-      },
-      {
-        "traceId": "962903294c6c2a0ee2c75d33fc9294c6",
-        "prompt": "Continue the card's promise of conquering remote high-altitude trails. Find the top-rated trekking guides and operators in Spiti Valley. Include trail difficulty levels, group sizes, accommodation options, and price ranges. Return a comparison that helps choose the best trekking experience. Prioritize operators with experienced guides and safe equipment.",
-        "domain": "travel",
-        "confidence": "high",
-        "entityCount": 4,
-        "hasImages": false,
-        "outputShape": "card_template"
-      },
-      {
-        "traceId": "31e0f4a477a8ca947a59a5e80f86e92c",
-        "prompt": "Continue the card's promise of conquering remote high-altitude trails. Find the top-rated trekking guides and operators in Spiti Valley. Include trail difficulty levels, group sizes, accommodation options, and price ranges. Return a comparison that helps choose the best trekking experience. Prioritize operators with experienced guides and safe equipment.",
-        "domain": "travel",
-        "confidence": "high",
-        "entityCount": 4,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "e411d2c3071dcba35cf4884080fbde62",
-        "prompt": "Continue the card's promise of white-water adrenaline on the Ganges. Find the top-rated rafting operators in Rishikesh offering Grade III-IV rapids. Include safety ratings, group sizes, equipment quality, and price ranges. Return a comparison that helps choose the best rafting experience. Prioritize operators with strong safety records and experienced guides.",
-        "domain": "travel",
-        "confidence": "high",
-        "entityCount": 5,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "871f893a8be1951fc8b4721beb460497",
+        "traceId": "9041c7d09448e5c19322eda94075c7c9",
         "prompt": "Continue the card's promise of a lively group street food adventure through local lanes. Find top-rated street food walking tours and tasting walks near me for daytime groups. Include tour duration, number of food stops, group size limits, ratings, price per person, and what makes each tour special. Return a shortlist that helps a group choose the perfect food walk.",
         "domain": "food",
         "confidence": "medium",
@@ -827,8 +890,8 @@ export const CORPUS_INDEX: CorpusIndex = {
     "route_map": [],
     "structured_no_image": [
       {
-        "traceId": "40db15b2273e9a0fefc61b9b7b3d7fbe",
-        "prompt": "Continue the card's promise of a classic North Indian Sunday lunch staple you can make at home. Provide a complete step-by-step recipe for Rajma Chawal. Include ingredient quantities, soaking times, cooking durations, and tips for achieving the right bean texture. Return a clear, easy-to-follow guide suitable for a home cook.",
+        "traceId": "f53fc0a4eaf6f1ce425552a8e3fd4266",
+        "prompt": "Find vegetarian protein alternatives",
         "domain": "food",
         "confidence": "medium",
         "entityCount": 0,
@@ -836,8 +899,8 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "card_template"
       },
       {
-        "traceId": "f6e79f85ff4ef860f096fc45c2118f52",
-        "prompt": "Continue the card's promise of an aromatic, fragrant green curry ready in 30 minutes. Provide the full step-by-step recipe for Thai Green Curry. Include ingredient quantities, cooking steps, curry paste usage, and vegetable tips. Return a clear, beginner-friendly recipe with timing and substitutions.",
+        "traceId": "8c4a3dda105101446da074e6fac64d2a",
+        "prompt": "Continue the card's promise of discovering local flavors through a guided walking tour. Find top-rated guided food walks near me that are perfect for groups. Include venue, locality, timing, rating, price per person, and what makes each tour unique. Return a concise comparison to help choose the best experience.",
         "domain": "food",
         "confidence": "medium",
         "entityCount": 0,
@@ -845,8 +908,8 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "card_template"
       },
       {
-        "traceId": "80462a06d61cf9430d46ad9c3622300b",
-        "prompt": "Continue the card's promise of a classic North Indian Sunday lunch staple you can make at home. Provide a complete step-by-step recipe for Rajma Chawal. Include ingredient quantities, soaking times, cooking durations, and tips for achieving the right bean texture. Return a clear, easy-to-follow guide suitable for a home cook.",
+        "traceId": "f315858b66993fd42f262ad6275e1be5",
+        "prompt": "Continue the card's promise of a traditional harvest celebration with community feasts and folk dances. Find top-rated harvest festivals and food melas near me happening this month or next. Include venue, locality, dates, timing, ticket prices, food offerings, cultural activities, and what makes each festival special. Return a concise comparison that helps the viewer choose the best nearby harves…",
         "domain": "food",
         "confidence": "medium",
         "entityCount": 0,
@@ -854,8 +917,17 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "card_template"
       },
       {
-        "traceId": "956e32e6476b8c3e34d2095d7543c14c",
-        "prompt": "Create a 7-day Asian-inspired meal plan for fitness enthusiasts. Include high-protein breakfasts, lunches, and dinners with Asian ingredients. Specify macros per meal, prep times, and shopping lists for each day. Provide make-ahead tips and storage instructions for meal prep success. Ensure each day balances plant proteins, complex carbs, and healthy fats.",
+        "traceId": "4ec1166273b8d702fbec4944efb75a32",
+        "prompt": "Find best hotels near Old Town",
+        "domain": "none",
+        "confidence": "medium",
+        "entityCount": 0,
+        "hasImages": false,
+        "outputShape": "card_template"
+      },
+      {
+        "traceId": "370f1f2eea3dc4f0b27319b43ac97cb6",
+        "prompt": "Provide a complete step-by-step recipe for making perfect medu vada at home. Include the exact urad dal soaking time, grinding consistency, and frying technique. List the ingredients needed and the shaping method for the classic ring shape. Give tips for achieving the perfect crispy exterior with soft, fluffy interior.",
         "domain": "food",
         "confidence": "medium",
         "entityCount": 0,
@@ -863,8 +935,8 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "card_template"
       },
       {
-        "traceId": "867fedc2d9b68ffd004f4f7934b1583b",
-        "prompt": "Create a 7-day Mediterranean-style meal plan for fitness enthusiasts. Include high-protein breakfasts, lunches, and dinners with Mediterranean ingredients. Specify macros per meal, prep times, and shopping lists for each day. Provide make-ahead tips and storage instructions for meal prep success. Ensure each day balances plant proteins, complex carbs, and healthy fats.",
+        "traceId": "bf49dd72e024146b7f31d88075494d82",
+        "prompt": "Provide a complete step-by-step recipe for making soft, fluffy idlis at home. Include the exact rice-to-dal ratio, fermentation time, and steaming technique. List the ingredients needed and the tools required for perfect idlis. Give tips for troubleshooting common issues like dense or flat idlis.",
         "domain": "food",
         "confidence": "medium",
         "entityCount": 0,
@@ -872,8 +944,8 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "card_template"
       },
       {
-        "traceId": "869542bab09c28f13fded0bb0bc8e206",
-        "prompt": "Continue the card's promise of authentic street-style Masala Vada. Provide a step-by-step recipe for making Masala Vada at home. Include dal preparation, spice grinding, shaping technique, and frying instructions. Return clear instructions with measurements and timing for home cooks.",
+        "traceId": "8117bea4597707934b9aa79eeb41b35b",
+        "prompt": "Provide a complete step-by-step recipe for making crispy rava dosa at home. Include the exact rava-to-rice flour ratio, batter consistency, and tawa temperature. List the ingredients needed and the technique for spreading the batter thinly. Give tips for achieving the perfect lacy, crispy texture every time.",
         "domain": "food",
         "confidence": "medium",
         "entityCount": 0,
@@ -881,8 +953,8 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "card_template"
       },
       {
-        "traceId": "f2623ca0a4767db39ed3735a699dc7e5",
-        "prompt": "Continue the card's promise of a creamy, smoky carbonara made with cashew cream. Provide the full step-by-step recipe for Vegan Pasta Carbonara. Include ingredient quantities, cooking steps, cashew cream preparation, and mushroom tips. Return a clear, beginner-friendly recipe with timing and substitutions.",
+        "traceId": "75758055b2c6de6ba77896a6fe4d0ab4",
+        "prompt": "Continue the card's promise of a warm, one-pot comfort meal perfect for home cooking. Provide the complete step-by-step recipe for Dal Dhokli. Include ingredient quantities, cooking times, spice measurements, and the technique for making dhokli dough. Return a clear recipe format with prep time, cook time, and serving suggestions.",
         "domain": "food",
         "confidence": "medium",
         "entityCount": 0,
@@ -890,8 +962,8 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "card_template"
       },
       {
-        "traceId": "c4ac9e9247ae31a4455a324194498daf",
-        "prompt": "Continue the card's promise of authentic Davanagere-style Benne Dosa. Provide a step-by-step recipe for making Benne Dosa at home. Include batter preparation, butter application technique, and chutney pairings. Return clear instructions with measurements and timing for home cooks.",
+        "traceId": "19a4007f4b48c1ba0f02d774ee2a044d",
+        "prompt": "Continue the card's promise of a quick, healthy vegetable stir fry you can make tonight. Provide a complete step-by-step recipe for ginger garlic vegetable stir fry. Include ingredient list with measurements, cooking steps, and timing for each stage. Return clear instructions suitable for a beginner cook.",
         "domain": "food",
         "confidence": "medium",
         "entityCount": 0,
@@ -899,8 +971,8 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "card_template"
       },
       {
-        "traceId": "4ac5222e2c1ebfa96a1336b5882dd854",
-        "prompt": "Create a 7-day high-protein meal plan for fitness enthusiasts. Include protein-rich breakfasts, lunches, and dinners with global ingredients. Specify macros per meal, prep times, and shopping lists for each day. Provide make-ahead tips and storage instructions for meal prep success. Ensure each day delivers 30g+ protein per meal with complete amino acid profiles.",
+        "traceId": "6d7124818b0a61bafedecd297ba49e72",
+        "prompt": "Continue the card's promise of an indulgent creamy pasta you can make in minutes. Provide a complete step-by-step recipe for creamy garlic pasta. Include ingredient list with measurements, cooking steps, and timing for each stage. Return clear instructions suitable for a beginner cook.",
         "domain": "food",
         "confidence": "medium",
         "entityCount": 0,
@@ -908,8 +980,8 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "card_template"
       },
       {
-        "traceId": "ac6e51c3b4f36b5f9a0c0b3434d68023",
-        "prompt": "Continue the card's promise of a creamy, comforting curry ready in 20 minutes. Provide the full step-by-step recipe for White Bean Curry. Include ingredient quantities, cooking steps, spice tips, and serving suggestions. Return a clear, beginner-friendly recipe with timing and substitutions.",
+        "traceId": "305b260378265c0c1f628d60bfc4265a",
+        "prompt": "Continue the card's promise of a creamy, comforting curry you can make tonight. Provide a complete step-by-step recipe for white bean curry. Include ingredient list with measurements, cooking steps, and timing for each stage. Return clear instructions suitable for a beginner cook.",
         "domain": "food",
         "confidence": "medium",
         "entityCount": 0,
@@ -917,8 +989,8 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "card_template"
       },
       {
-        "traceId": "779716ea02a26b2e1f5bb0be60a1dae7",
-        "prompt": "Continue the card's promise of authentic Chettinad flavors in every bite. Provide a step-by-step recipe for Chettinad Kuzhi Paniyaram. Include batter preparation, tempering ingredients, cooking technique, and serving suggestions. Return clear instructions with measurements and timing for home cooks.",
+        "traceId": "1f56f16967465670e40e9e0861979f04",
+        "prompt": "Continue the card's promise of a muscle-building, high-protein Indian meal plan. Build a 7-day high-protein meal plan using paneer, dal, sprouts, and other vegetarian protein sources. Include daily protein targets, macronutrient breakdowns, shopping lists, and prep instructions for each day. Return a practical weekly plan with 5-6 meals per day that delivers 150g+ protein daily.",
         "domain": "food",
         "confidence": "medium",
         "entityCount": 0,
@@ -926,8 +998,8 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "card_template"
       },
       {
-        "traceId": "31e7bdacd4e0cf68f3837107a959725c",
-        "prompt": "Continue the card's promise of a rich, restaurant-style paneer curry you can make at home. Provide a complete step-by-step recipe for Paneer Butter Masala. Include ingredient quantities, cooking times, spice measurements, and tips for achieving the right gravy consistency. Return a clear, easy-to-follow guide suitable for a home cook.",
+        "traceId": "91013b86b0f326801d90d911583db93c",
+        "prompt": "Continue the card's promise of a complete-protein Indian meal plan using sprouts. Build a 7-day meal plan centered on sprouted moong, chickpeas, and other sprouted legumes. Include daily protein targets, amino acid profiles, shopping lists, and sprouting instructions. Return a practical weekly plan that delivers 150g+ complete protein daily using sprouted ingredients.",
         "domain": "food",
         "confidence": "medium",
         "entityCount": 0,
@@ -935,8 +1007,8 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "card_template"
       },
       {
-        "traceId": "ecb60d9de1c5e8545fb3101ea1d9a6cd",
-        "prompt": "Continue the card's promise of a warming Ethiopian red lentil stew you can make at home. Provide a complete step-by-step recipe for authentic misir wot with red lentils. Include ingredient quantities, berbere spice measurements, cooking times, and tips for achieving the right consistency. Return a clear recipe format with prep time, cook time, and serving suggestions with injera or rice.",
+        "traceId": "dd4120a14d197bd7d6ac49d4e0a1527d",
+        "prompt": "Continue the card's promise of a low-carb, high-protein Indian meal plan. Build a 7-day low-carb meal plan using quinoa, cauliflower rice, dal, and vegetables. Include daily carb counts, protein targets, shopping lists, and prep instructions for each day. Return a practical weekly plan that keeps carbs low while delivering 150g+ protein daily.",
         "domain": "food",
         "confidence": "medium",
         "entityCount": 0,
@@ -944,8 +1016,8 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "card_template"
       },
       {
-        "traceId": "aa347b05ad55578a33c4d2e5ead9bbc3",
-        "prompt": "Continue the card's promise of a flavorful North Indian chickpea curry you can make at home. Provide a complete step-by-step recipe for authentic chana masala with chickpeas. Include ingredient quantities, spice measurements, cooking times, and tips for achieving the right consistency. Return a clear recipe format with prep time, cook time, and serving suggestions with bread or rice options.",
+        "traceId": "9d1674a849753c62e4ecdaf489f4ec71",
+        "prompt": "Continue the card's promise of soft, comforting dumplings stuffed with creamy potato and onion. Provide a complete step-by-step recipe for making Potato Pierogi from scratch. Include dough preparation, filling mixing, shaping techniques, and cooking methods (boiling then frying). Return clear instructions that make it easy for a home cook to recreate this traditional Polish comfort dish.",
         "domain": "food",
         "confidence": "medium",
         "entityCount": 0,
@@ -953,8 +1025,8 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "card_template"
       },
       {
-        "traceId": "69355ceea30541e490c82a1474026b5e",
-        "prompt": "Continue the card's promise of a high-protein breakfast that keeps you full until lunch. Build a 7-day high-protein vegetarian meal plan with Indian kitchen staples. Include recipes with 15g+ protein per serving, prep times, and shopping lists. Provide daily macros and make-ahead tips for busy fitness schedules.",
+        "traceId": "6e80a1bfbc7fe99d8720197a988fa713",
+        "prompt": "Continue the card's promise of a rich, umami-packed noodle soup that warms from the inside out. Provide a complete step-by-step recipe for plant-based Miso Ramen. Include broth preparation, noodle cooking, topping assembly, and timing for each component. Return clear instructions that make it easy for a home cook to recreate this comforting bowl.",
         "domain": "food",
         "confidence": "medium",
         "entityCount": 0,
@@ -962,8 +1034,17 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "card_template"
       },
       {
-        "traceId": "195aec7dc8608a6714174aa3e2c20723",
-        "prompt": "Continue the card's promise of a complete protein one-pot meal for easy meal prep. Build a 7-day one-pot vegetarian meal plan with Indian kitchen staples. Include recipes with 15g+ protein per serving, prep times, and shopping lists. Provide daily macros and make-ahead tips for busy fitness schedules.",
+        "traceId": "95fed419c47461bff679f8410b3f80c8",
+        "prompt": "Continue the card's promise of a luxury beach wellness experience for couples. Find similar luxury beach destinations in India that offer the same wellness retreat feel as Kovalam. Include details about each place's resort options, wellness activities, beach quality, and how it differs from Kovalam. Return a comparison that helps couples choose their perfect wellness beach getaway.",
+        "domain": "none",
+        "confidence": "medium",
+        "entityCount": 0,
+        "hasImages": false,
+        "outputShape": "card_template"
+      },
+      {
+        "traceId": "e08009868b3098b3d517ee3b0fb1fbb2",
+        "prompt": "Continue the card's promise of a deeply spiced, protein-rich lentil stew that feels like a warm hug. Provide a complete step-by-step recipe for Misir Wot, the traditional Ethiopian red lentil stew. Include ingredient quantities, spice blend details, cooking times, and serving suggestions with injera or rice. Return clear instructions that make it easy for a home cook to recreate this comfort clas…",
         "domain": "food",
         "confidence": "medium",
         "entityCount": 0,
@@ -971,7 +1052,34 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "card_template"
       },
       {
-        "traceId": "2ce0b0d2e11a5f6b9599ffa62c0da379",
+        "traceId": "002dd1649661bd42759d2eb789102408",
+        "prompt": "Continue the card's promise of a classic North Indian dry vegetable dish you can make at home. Provide a complete step-by-step recipe for Aloo Gobi. Include ingredient quantities, cooking times, spice measurements, and tips for achieving the right texture. Return a clear, easy-to-follow guide suitable for a home cook.",
+        "domain": "none",
+        "confidence": "medium",
+        "entityCount": 0,
+        "hasImages": false,
+        "outputShape": "card_template"
+      },
+      {
+        "traceId": "389290f257c93a52798bbf3781d0c96f",
+        "prompt": "Continue the card's promise of a plant-based frittata that mimics traditional texture. Provide a complete step-by-step recipe for making vegan frittata at home. Include ingredient quantities, soaking time for mung beans, batter preparation, baking temperature, and cooking time. Return a clear recipe with numbered steps that a beginner can follow.",
+        "domain": "food",
+        "confidence": "medium",
+        "entityCount": 0,
+        "hasImages": false,
+        "outputShape": "card_template"
+      },
+      {
+        "traceId": "b640fb578e913dbf00bea35fdb5cebba",
+        "prompt": "Continue the card's promise of a crispy, protein-packed breakfast that's ready in 25 minutes. Provide a complete step-by-step recipe for making moong dal cheela at home. Include ingredient quantities, soaking time, batter consistency, cooking temperature, and serving suggestions. Return a clear recipe with numbered steps that a beginner can follow.",
+        "domain": "food",
+        "confidence": "medium",
+        "entityCount": 0,
+        "hasImages": false,
+        "outputShape": "card_template"
+      },
+      {
+        "traceId": "6290a1cb65722c32135531e9131b9bb2",
         "prompt": "Continue the card's promise of a hearty Greek layered casserole you can make at home. Provide a complete step-by-step recipe for vegan moussaka with beluga lentils. Include ingredient quantities, layering instructions, baking times, and tips for the cashew béchamel. Return a clear recipe format with prep time, cook time, and serving suggestions.",
         "domain": "food",
         "confidence": "medium",
@@ -980,26 +1088,8 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "card_template"
       },
       {
-        "traceId": "fb7a185e58305f0f992718e4c3ce3535",
-        "prompt": "Find best naan recipes to pair",
-        "domain": "food",
-        "confidence": "medium",
-        "entityCount": 0,
-        "hasImages": false,
-        "outputShape": "card_template"
-      },
-      {
-        "traceId": "abb276cac50849013e905f5602149344",
-        "prompt": "Continue the card's promise of authentic North Indian comfort food. Provide a complete step-by-step recipe for Dal Makhani. Include ingredients list, cooking times, and the charcoal smoking technique. Return clear instructions that a home cook can follow.",
-        "domain": "food",
-        "confidence": "medium",
-        "entityCount": 0,
-        "hasImages": false,
-        "outputShape": "card_template"
-      },
-      {
-        "traceId": "487d0982662ca4146a0d68b646d90d98",
-        "prompt": "Continue the card's promise of awe-inspiring geological wonders for photographers. Find unique natural formations similar to Xiaozhai Tiankeng with dramatic vertical landscapes. Include locations with extreme geological features, sinkholes, or canyon systems for stunning photography. Return a curated list of similar destinations with descriptions of their unique visual characteristics. Focus on p…",
+        "traceId": "a2b002629807b121a3ce5b7a9868a641",
+        "prompt": "Find the right shoes for me for everyday wear",
         "domain": "none",
         "confidence": "medium",
         "entityCount": 0,
@@ -1007,8 +1097,26 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "card_template"
       },
       {
-        "traceId": "bc7029ffed955d7df3de2382f931a3a9",
-        "prompt": "Continue the card's promise of making quick Korean Rice Bowl at home. Provide a complete step-by-step recipe for Korean Rice Bowl (Gyeran Bap). Include ingredients list, rice cooking steps, protein preparation, and seasoning suggestions. Return a clear recipe with timing, tips for achieving the right creamy texture, and plating ideas.",
+        "traceId": "827a5e7464b395700bfcf329aac89c2f",
+        "prompt": "show me tshirts, shirts, bottoms, everyday wear to refresh my summer wardrobe",
+        "domain": "none",
+        "confidence": "medium",
+        "entityCount": 0,
+        "hasImages": false,
+        "outputShape": "card_template"
+      },
+      {
+        "traceId": "6afbd7ec1fb5285f12e8497c77d3a498",
+        "prompt": "Continue the card's promise of a vibrant, large-scale food festival with entertainment and culture. Find top-rated food festivals and pop-up dining events near me happening this week or this weekend. Include venue, locality, date/time, rating, price band, and what makes each festival unique. Return a concise shortlist that helps the viewer choose the most exciting experience.",
+        "domain": "none",
+        "confidence": "medium",
+        "entityCount": 0,
+        "hasImages": false,
+        "outputShape": "card_template"
+      },
+      {
+        "traceId": "760a46002d5a7f0be624299477847d9e",
+        "prompt": "Continue the card's promise of a low-carb indian dinner for weight management. build a 7-day low-carb vegetarian meal plan with indian kitchen staples. include recipes under 200 calories per serving, net carb counts, and shopping lists. provide daily macros and make-ahead tips for fitness-focused schedules.",
         "domain": "food",
         "confidence": "medium",
         "entityCount": 0,
@@ -1016,8 +1124,17 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "card_template"
       },
       {
-        "traceId": "96011871816da76ec43fb924fa6c8c2c",
-        "prompt": "Continue the card's promise of making authentic Mexican Chilaquiles at home. Provide a complete step-by-step recipe for Mexican Chilaquiles using leftover tortillas. Include ingredients list, salsa preparation steps, chip frying technique, and topping suggestions. Return a clear recipe with timing, tips for achieving the right texture, and plating ideas.",
+        "traceId": "0f86399754eebd2c3bbb2c5d2cff3a64",
+        "prompt": "Continue the card's promise of a laugh-out-loud live comedy experience. Find the best-rated comedy clubs and live shows near me that have shows tonight. Include venue name, locality, show times, comedian lineup, price range, and what makes each show special. Return a shortlist that helps me choose the perfect comedy night.",
+        "domain": "none",
+        "confidence": "medium",
+        "entityCount": 0,
+        "hasImages": false,
+        "outputShape": "card_template"
+      },
+      {
+        "traceId": "47e8338e5fc943d0706dd5b428c322b7",
+        "prompt": "Continue the card's promise of a rich, restaurant-style paneer curry you can make at home. Provide a complete step-by-step recipe for Paneer Butter Masala. Include ingredient quantities, cooking times, spice measurements, and tips for achieving the right gravy consistency. Return a clear, easy-to-follow guide suitable for a home cook.",
         "domain": "food",
         "confidence": "medium",
         "entityCount": 0,
@@ -1025,8 +1142,8 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "card_template"
       },
       {
-        "traceId": "ab21a5e298232696234474dc4e776846",
-        "prompt": "Continue the card's promise of making cloud-like Japanese French Toast at home. Provide a complete step-by-step recipe for Japanese French Toast using shokupan bread. Include ingredients list, custard preparation steps, grilling technique, and serving suggestions. Return a clear recipe with timing, tips for achieving the right texture, and plating ideas.",
+        "traceId": "8550ebe03f8f39096914fa15aec8cc07",
+        "prompt": "Make homemade green curry paste",
         "domain": "food",
         "confidence": "medium",
         "entityCount": 0,
@@ -1034,17 +1151,8 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "card_template"
       },
       {
-        "traceId": "5130f12930452d85089c644c49221507",
-        "prompt": "Skin care routine for combination skin",
-        "domain": "fashion",
-        "confidence": "medium",
-        "entityCount": 0,
-        "hasImages": false,
-        "outputShape": "card_template"
-      },
-      {
-        "traceId": "f8721812cb06a7c8f055cdd688f8adfd",
-        "prompt": "Continue the card's promise of restaurant-style North Indian paneer curry. Provide a complete step-by-step recipe for Paneer Butter Masala. Include ingredients list, cooking times, and tips for soft paneer. Return clear instructions that a home cook can follow.",
+        "traceId": "6d75b5a6f23e1434d3a54dc48cee84cb",
+        "prompt": "Continue the card's promise of an aromatic, fragrant green curry ready in 30 minutes. provide the full step-by-step recipe for thai green curry. include ingredient quantities, cooking steps, curry paste usage, and vegetable tips. return a clear, beginner-friendly recipe with timing and substitutions.",
         "domain": "food",
         "confidence": "medium",
         "entityCount": 0,
@@ -1052,17 +1160,26 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "card_template"
       },
       {
-        "traceId": "7a5a9050b77b06cac570dd6240b6c2a1",
-        "prompt": "Quick fixes for dry hair",
-        "domain": "fashion",
+        "traceId": "125aba489063f17b9fd354cbacc13947",
+        "prompt": "Continue the card's promise of exploring India's rich textile heritage and handloom traditions. Find the best heritage textile markets and handloom bazaars near me this weekend. Include venue, locality, timing, rating, price range, and what makes each market special. Return a concise shortlist that helps the viewer choose the perfect cultural outing.",
+        "domain": "events",
         "confidence": "medium",
         "entityCount": 0,
         "hasImages": false,
         "outputShape": "card_template"
       },
       {
-        "traceId": "3aa423ffa695e02fdcd2952b6c1df913",
-        "prompt": "Create a 5-day keto meal plan focused on high-protein, low-carb breakfasts and meals. Include the cottage cheese bake recipe plus 4 other keto-friendly meal prep options. Provide shopping lists, macro breakdowns per meal, and prep instructions for each day. Format as a clear day-by-day plan with ingredient quantities and cooking times.",
+        "traceId": "9440d39847ff67137fb69f524b752f02",
+        "prompt": "aap Hindi mein baat kar sakte ho Mujhse",
+        "domain": "none",
+        "confidence": "medium",
+        "entityCount": 0,
+        "hasImages": false,
+        "outputShape": "card_template"
+      },
+      {
+        "traceId": "b112174493223efdaa037793c7c3667d",
+        "prompt": "Continue the card's promise of an authentic market food discovery experience. Find top-rated market food tasting walks and guided market tours near me for groups. Include market name, tour duration, number of tastings, group size, ratings, price per person, and what makes each market special. Return a shortlist that helps a group choose the best market experience.",
         "domain": "food",
         "confidence": "medium",
         "entityCount": 0,
@@ -1070,17 +1187,53 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "card_template"
       },
       {
-        "traceId": "e1cbe0dca7cb25922ffea90be0aa30f8",
-        "prompt": "My hair has become so dry and tomorrow I have to perform on stage. Give me some ideas to make it look good",
-        "domain": "fashion",
+        "traceId": "aa356fafcbf80043f8815d51649edd95",
+        "prompt": "Continue the card's promise of exploring India's rich textile heritage and handloom traditions. Find the best heritage textile markets and handloom bazaars near me this weekend. Include venue, locality, timing, rating, price range, and what makes each market special. Return a concise shortlist that helps the viewer choose the perfect cultural outing.",
+        "domain": "events",
         "confidence": "medium",
         "entityCount": 0,
         "hasImages": false,
         "outputShape": "card_template"
       },
       {
-        "traceId": "87ad6e345239a73591ad1ecfa94b10d0",
-        "prompt": "Continue the card's promise of authentic north indian home cooking. provide a complete step-by-step recipe for rajma chawal. include ingredients list, soaking times, and cooking steps. return clear instructions that a home cook can follow.",
+        "traceId": "1db919677904bd35ef2bf8c559b9ff97",
+        "prompt": "Continue the card's promise of exploring india's rich textile heritage and handloom traditions. find the best heritage textile markets and handloom bazaars near me this weekend. include venue, locality, timing, rating, price range, and what makes each market special. return a concise shortlist that helps the viewer choose the perfect cultural outing.",
+        "domain": "events",
+        "confidence": "medium",
+        "entityCount": 0,
+        "hasImages": false,
+        "outputShape": "card_template"
+      },
+      {
+        "traceId": "aa54522092f3b119d0015379cdba8be2",
+        "prompt": "What beach accessories are trending",
+        "domain": "generic_shopping",
+        "confidence": "medium",
+        "entityCount": 0,
+        "hasImages": false,
+        "outputShape": "card_template"
+      },
+      {
+        "traceId": "9ad803f2118b73b1335a47e7b69d2673",
+        "prompt": "Continue the card's promise of exploring India's rich textile heritage and handloom traditions. Find the best heritage textile markets and handloom bazaars near me this weekend. Include venue, locality, timing, rating, price range, and what makes each market special. Return a concise shortlist that helps the viewer choose the perfect cultural outing.",
+        "domain": "events",
+        "confidence": "medium",
+        "entityCount": 0,
+        "hasImages": false,
+        "outputShape": "card_template"
+      },
+      {
+        "traceId": "b54ce9853f96ee2550c184ab2d14852e",
+        "prompt": "Continue the card's promise of exploring India's rich textile heritage and handloom traditions. Find the best heritage textile markets and handloom bazaars near me this weekend. Include venue, locality, timing, rating, price range, and what makes each market special. Return a concise shortlist that helps the viewer choose the perfect cultural outing.",
+        "domain": "events",
+        "confidence": "medium",
+        "entityCount": 0,
+        "hasImages": false,
+        "outputShape": "card_template"
+      },
+      {
+        "traceId": "f68d5a107c5dbcc604f232cb38052f6a",
+        "prompt": "Make this vegetarian with variations",
         "domain": "food",
         "confidence": "medium",
         "entityCount": 0,
@@ -1088,99 +1241,9 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "card_template"
       },
       {
-        "traceId": "d4c9fd641620f0cfdc5dcbfac0209806",
-        "prompt": "Continue the card's promise of authentic North Indian comfort food. Provide a complete step-by-step recipe for Dal Makhani. Include ingredients list, cooking times, and the charcoal smoking technique. Return clear instructions that a home cook can follow.",
+        "traceId": "c1e40dd8777aa696204c50a640d585b5",
+        "prompt": "Continue the card's promise of an intimate chef table experience with personal interaction and culinary storytelling. Find top-rated pop-up chef table and intimate dining experiences near me for this week. Include venue, locality, date/time, rating, price band, and the chef's specialty or unique offering. Return a concise shortlist that helps the viewer choose the most compelling chef-led experie…",
         "domain": "food",
-        "confidence": "medium",
-        "entityCount": 0,
-        "hasImages": false,
-        "outputShape": "card_template"
-      },
-      {
-        "traceId": "886269453a30e5f179441448d2866a02",
-        "prompt": "Continue the card's promise of authentic North Indian comfort food. Provide a complete step-by-step recipe for Dal Makhani. Include ingredients list, cooking times, and the charcoal smoking technique. Return clear instructions that a home cook can follow.",
-        "domain": "food",
-        "confidence": "medium",
-        "entityCount": 0,
-        "hasImages": false,
-        "outputShape": "card_template"
-      },
-      {
-        "traceId": "5937217af52c73826d6bcfb32d17e0ed",
-        "prompt": "Continue the card's promise of restaurant-style North Indian paneer curry. Provide a complete step-by-step recipe for Paneer Butter Masala. Include ingredients list, cooking times, and tips for soft paneer. Return clear instructions that a home cook can follow.",
-        "domain": "food",
-        "confidence": "medium",
-        "entityCount": 0,
-        "hasImages": false,
-        "outputShape": "card_template"
-      },
-      {
-        "traceId": "411f83a660fa5f5ebc301d8b7bace7e2",
-        "prompt": "Continue the card's promise of authentic North Indian comfort food. Provide a complete step-by-step recipe for Dal Makhani. Include ingredients list, cooking times, and the charcoal smoking technique. Return clear instructions that a home cook can follow.",
-        "domain": "food",
-        "confidence": "medium",
-        "entityCount": 0,
-        "hasImages": false,
-        "outputShape": "card_template"
-      },
-      {
-        "traceId": "d238c659a6e6532531d9437e1631729c",
-        "prompt": "Best time to visit Lumbini Gardens",
-        "domain": "travel",
-        "confidence": "medium",
-        "entityCount": 0,
-        "hasImages": false,
-        "outputShape": "card_template"
-      },
-      {
-        "traceId": "1d03772f54f501c54ce04dc4373218ef",
-        "prompt": "Continue the card's promise of a quick, fluffy rava idli perfect for busy mornings. provide a complete step-by-step recipe for making rava idli at home. include details on semolina roasting, batter consistency, steaming time, and tempering. return clear instructions with measurements and timing for each step.",
-        "domain": "food",
-        "confidence": "medium",
-        "entityCount": 0,
-        "hasImages": false,
-        "outputShape": "card_template"
-      },
-      {
-        "traceId": "26a2444070c50912b17bf72b221e8079",
-        "prompt": "Continue the card's promise of authentic North Indian comfort food. Provide a complete step-by-step recipe for Dal Makhani. Include ingredients list, cooking times, and the charcoal smoking technique. Return clear instructions that a home cook can follow.",
-        "domain": "food",
-        "confidence": "medium",
-        "entityCount": 0,
-        "hasImages": false,
-        "outputShape": "card_template"
-      },
-      {
-        "traceId": "f2e629006f5909bac759bc90cadd04ca",
-        "prompt": "Continue the card's promise of authentic North Indian comfort food. Provide a complete step-by-step recipe for Dal Makhani. Include ingredients list, cooking times, and the charcoal smoking technique. Return clear instructions that a home cook can follow.",
-        "domain": "food",
-        "confidence": "medium",
-        "entityCount": 0,
-        "hasImages": false,
-        "outputShape": "card_template"
-      },
-      {
-        "traceId": "b5fd485f9c1731d954601f89a7f0a802",
-        "prompt": "Make this vegetarian with tofu",
-        "domain": "food",
-        "confidence": "medium",
-        "entityCount": 0,
-        "hasImages": false,
-        "outputShape": "card_template"
-      },
-      {
-        "traceId": "0dc457326eba557bbc4dc93b482770f3",
-        "prompt": "Continue the card's promise of restaurant-style north indian paneer curry. provide a complete step-by-step recipe for paneer butter masala. include ingredients list, cooking times, and tips for soft paneer. return clear instructions that a home cook can follow.",
-        "domain": "food",
-        "confidence": "medium",
-        "entityCount": 0,
-        "hasImages": false,
-        "outputShape": "card_template"
-      },
-      {
-        "traceId": "04a611779e3c397e1c27b33f88ebea10",
-        "prompt": "Help a solo backpacker prepare for their Queenstown bungy adventure. List essential gear and clothing needed for bungy jumping in Queenstown. Include safety equipment, appropriate footwear, weather-appropriate layers, and any rental options available. Return a practical packing list with where to buy or rent each item locally.",
-        "domain": "travel",
         "confidence": "medium",
         "entityCount": 0,
         "hasImages": false,
@@ -1189,8 +1252,62 @@ export const CORPUS_INDEX: CorpusIndex = {
     ],
     "list": [
       {
-        "traceId": "7831793f096faf4b2d3b9d53ba6c9591",
-        "prompt": "Show me sofas under ₹5000",
+        "traceId": "4f21182da666885c4124cc23191a0697",
+        "prompt": "Continue the card's promise of an exhilarating solo paragliding experience over the Dhauladhar mountains. Provide a complete gear list for paragliding in Bir Billing including safety equipment, clothing, and essential accessories. Include specific items like helmet, harness, reserve parachute, gloves, goggles, and recommended brands for beginners. Return a practical checklist with rental vs purch…",
+        "domain": "travel",
+        "confidence": "high",
+        "entityCount": 10,
+        "hasImages": false,
+        "outputShape": "product_ids"
+      },
+      {
+        "traceId": "7ea071eae281d5a747dc2afd09d92969",
+        "prompt": "More charcuterie boards under $50",
+        "domain": "generic_shopping",
+        "confidence": "high",
+        "entityCount": 5,
+        "hasImages": false,
+        "outputShape": "product_ids"
+      },
+      {
+        "traceId": "760837d3fd8b4ddbd2f6d93c95f2574d",
+        "prompt": "Display products for hosting at home. Include charcuterie boards, serving platters, drink dispensers, BBQ grills, patio lighting, outdoor speakers. Show products only.",
+        "domain": "generic_shopping",
+        "confidence": "high",
+        "entityCount": 30,
+        "hasImages": false,
+        "outputShape": "product_ids"
+      },
+      {
+        "traceId": "2e65908a9932c7f1c2ece2866eb8b8ec",
+        "prompt": "Add a rug to match",
+        "domain": "home_decor",
+        "confidence": "high",
+        "entityCount": 6,
+        "hasImages": false,
+        "outputShape": "product_ids"
+      },
+      {
+        "traceId": "b27e8ea1cb42ff33a7134a9421127ae7",
+        "prompt": "Sunset-lamps",
+        "domain": "home_decor",
+        "confidence": "high",
+        "entityCount": 10,
+        "hasImages": false,
+        "outputShape": "product_ids"
+      },
+      {
+        "traceId": "ebecd3072ab013914f1129bd42e01631",
+        "prompt": "Display products for family fun and shared experiences. Include board games, card games, puzzles, projectors, snack trays, blankets. Show products only.",
+        "domain": "generic_shopping",
+        "confidence": "high",
+        "entityCount": 6,
+        "hasImages": false,
+        "outputShape": "product_ids"
+      },
+      {
+        "traceId": "7fdb7dbce664057766bb18e21b5385ce",
+        "prompt": "Add lighting to match this look",
         "domain": "home_decor",
         "confidence": "high",
         "entityCount": 12,
@@ -1198,53 +1315,62 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "product_ids"
       },
       {
-        "traceId": "86b566d32da01089fcd4bffc63974d1e",
-        "prompt": "Furniture and décor to style my home",
+        "traceId": "f3fd5c1c347c669802e9f0f5124131fe",
+        "prompt": "Show me home decor ideas",
         "domain": "home_decor",
         "confidence": "high",
-        "entityCount": 109,
-        "hasImages": false,
-        "outputShape": "product_ids"
-      },
-      {
-        "traceId": "806af12badbb0e5b00d33df63245a3e1",
-        "prompt": "Show me other options",
-        "domain": "fashion",
-        "confidence": "high",
-        "entityCount": 8,
-        "hasImages": false,
-        "outputShape": "product_ids"
-      },
-      {
-        "traceId": "37774b21d1df00fc36fc16e74430a50f",
-        "prompt": "show backpacks for school for male and female",
-        "domain": "generic_shopping",
-        "confidence": "high",
         "entityCount": 10,
         "hasImages": false,
         "outputShape": "product_ids"
       },
       {
-        "traceId": "1d7d8cca4c57cbe4bbc11b013174cd65",
-        "prompt": "What's trending in sneakers",
-        "domain": "fashion",
+        "traceId": "89d97ccb5d5e7152e4533512cf472378",
+        "prompt": "Home Decor Furniture: user wants a modern media console; search media console.",
+        "domain": "home_decor",
         "confidence": "high",
-        "entityCount": 10,
+        "entityCount": 12,
         "hasImages": false,
         "outputShape": "product_ids"
       },
       {
-        "traceId": "af1a7e31938e74f8c57f756de756727a",
-        "prompt": "show me sneakers",
-        "domain": "fashion",
+        "traceId": "df15142557dce4e54ed9b9d39cd19d20",
+        "prompt": "Check spa availability",
+        "domain": "travel",
         "confidence": "high",
-        "entityCount": 10,
+        "entityCount": 5,
+        "hasImages": false,
+        "outputShape": "place_card"
+      },
+      {
+        "traceId": "f14d3fe91b270adbbf7179c1da88a4e0",
+        "prompt": "Continue the card's promise of adrenaline-fueled adventure in Queenstown's heart. Find the essential gear list for solo backpackers tackling bungee, jet boating, and alpine biking in Queenstown. Include specific items like harnesses, helmets, weather-appropriate layers, and safety equipment needed for each activity. Return a practical shopping list with budget ranges and where to rent vs. buy in …",
+        "domain": "travel",
+        "confidence": "high",
+        "entityCount": 6,
         "hasImages": false,
         "outputShape": "product_ids"
       },
       {
-        "traceId": "d9b91fb35a486b935326ef666451ce12",
-        "prompt": "Try on this Short Sleeve Tee (Product id 064df7cc-5b14-56ce-9e6a-fb79fead445e)",
+        "traceId": "eccf568d7590926b48ac1deec524ffbe",
+        "prompt": "Show me men's outerwear",
+        "domain": "fashion",
+        "confidence": "high",
+        "entityCount": 4,
+        "hasImages": false,
+        "outputShape": "product_ids"
+      },
+      {
+        "traceId": "6982397a787be6be12382ae6a6722dce",
+        "prompt": "More wrap coats under $100",
+        "domain": "fashion",
+        "confidence": "high",
+        "entityCount": 4,
+        "hasImages": false,
+        "outputShape": "product_ids"
+      },
+      {
+        "traceId": "7ed067fe73f760479586decacfb4eead",
+        "prompt": "Try on this Elle Collection Women's Melton Wrap Coat Belted/Wrap (Product id 23d10996-6fbc-5f88-8771-3dca4ac3d539)",
         "domain": "fashion",
         "confidence": "high",
         "entityCount": 5,
@@ -1252,44 +1378,80 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "product_ids"
       },
       {
-        "traceId": "f9ebf8e9c3568993a044d524cf7ca10d",
-        "prompt": "Display products for family fun and shared experiences. Include board games, card games, puzzles, projectors, snack trays, blankets. Show products only.",
+        "traceId": "dbe0f9ba54a6b48a684ae5a5c0684cf4",
+        "prompt": "Show trending outfits right now",
+        "domain": "fashion",
+        "confidence": "high",
+        "entityCount": 9,
+        "hasImages": false,
+        "outputShape": "product_ids"
+      },
+      {
+        "traceId": "cc5f315449248e382fd8e4752ffc74de",
+        "prompt": "Show me similar styles",
+        "domain": "fashion",
+        "confidence": "high",
+        "entityCount": 7,
+        "hasImages": false,
+        "outputShape": "product_ids"
+      },
+      {
+        "traceId": "6bf9dcd109d7c5080c277f6b786a3dea",
+        "prompt": "Hat",
+        "domain": "fashion",
+        "confidence": "high",
+        "entityCount": 9,
+        "hasImages": false,
+        "outputShape": "product_ids"
+      },
+      {
+        "traceId": "2b8487f5ce9e2198c189821ed8debcfa",
+        "prompt": "Show me clear acrylic organizers",
         "domain": "generic_shopping",
         "confidence": "high",
-        "entityCount": 10,
+        "entityCount": 5,
         "hasImages": false,
         "outputShape": "product_ids"
       },
       {
-        "traceId": "1d597d7a971c90a8354d67300d12ef0e",
-        "prompt": "show me red colored sneakers",
-        "domain": "fashion",
+        "traceId": "ac272dffe08c2825f1c7220ef9c732e8",
+        "prompt": "Show me more under $30",
+        "domain": "generic_shopping",
+        "confidence": "high",
+        "entityCount": 3,
+        "hasImages": false,
+        "outputShape": "product_ids"
+      },
+      {
+        "traceId": "a37820aa654bf163e1ba8ecd01613338",
+        "prompt": "Makeup-organizers",
+        "domain": "generic_shopping",
+        "confidence": "high",
+        "entityCount": 5,
+        "hasImages": false,
+        "outputShape": "product_ids"
+      },
+      {
+        "traceId": "6999d9e0ff49dd81daa02718abc29b8a",
+        "prompt": "Continue the card's promise of an adrenaline-fueled solo rafting adventure on the Ganga. Provide a complete gear list for solo river rafting in Rishikesh including safety equipment, clothing, and essentials. Include specific items like life jackets, helmets, quick-dry clothing, water shoes, dry bags, and any recommended brands or rental options. Return a practical checklist organized by priority …",
+        "domain": "travel",
+        "confidence": "high",
+        "entityCount": 15,
+        "hasImages": false,
+        "outputShape": "product_ids"
+      },
+      {
+        "traceId": "1de452f9e059e380dc1ec71605a53cf9",
+        "prompt": "Continue the card's promise of underwater luxury dining and accommodation experiences. Find similar resorts with underwater restaurants, underwater residences, or unique marine experiences. Include property names, location, price range per night, underwater features, and marine life encounters. Return a curated list of 5-7 properties with clear differentiators and approximate costs.",
+        "domain": "food",
         "confidence": "high",
         "entityCount": 6,
         "hasImages": false,
-        "outputShape": "product_ids"
-      },
-      {
-        "traceId": "af8c74293bacfd24a91b6692cf2df6fe",
-        "prompt": "find winter jackets",
-        "domain": "fashion",
-        "confidence": "high",
-        "entityCount": 10,
-        "hasImages": false,
-        "outputShape": "product_ids"
-      },
-      {
-        "traceId": "33d0ab6743c0526848f0b3d009cd698d",
-        "prompt": "Continue the card's promise of discovering Bangkok's hidden gems beyond the tourist trail. Find the highest-rated attractions in Bangkok including both famous landmarks and local favorites. Include Grand Palace, Bang Kachao, and other unique places with ratings, opening hours, and what makes each special. Return a curated list that balances iconic sights with off-the-beaten-path experiences.",
-        "domain": "local_experiences",
-        "confidence": "high",
-        "entityCount": 11,
-        "hasImages": false,
         "outputShape": "place_card"
       },
       {
-        "traceId": "5f162471f95198f2138afbbfd6fe3478",
-        "prompt": "Continue the card's promise of ultimate privacy with private pool villas. Find the highest-rated private pool villa resorts in India similar to Séré Resort Goa. Include property names, location, approximate price range per night, and what makes each unique. Return a curated list of 5-7 properties with their standout features and booking info. Focus on properties with private plunge pools, beach a…",
+        "traceId": "43165bb8007b1fba029f84146ce058d6",
+        "prompt": "Continue the card's promise of secluded barefoot luxury in harmony with nature. Find similar sustainable luxury island resorts with private villas and conservation focus. Include property names, location, price range per night, sustainability practices, and unique features. Return a curated list of 5-7 properties with clear differentiators and approximate costs.",
         "domain": "travel",
         "confidence": "high",
         "entityCount": 6,
@@ -1297,98 +1459,89 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "place_card"
       },
       {
-        "traceId": "80db6e9a920e1dcf7a50e082a0ff6928",
-        "prompt": "Continue the card's promise of a premium jungle safari experience with luxury comfort. Find the highest-rated luxury wildlife resorts in India similar to Oberoi Vindhyavilas. Include property names, location, approximate price range per night, and what makes each unique. Return a curated list of 5-7 properties with their standout features and booking info. Focus on properties with private villas,…",
+        "traceId": "cd7847ad3336e0da3d668d4ca1a1e2db",
+        "prompt": "Help me find mid-range wellness retreats similar to Deep Rest Herbal Walk that offer gentle yoga, nature immersion, and affordable pricing. Look for properties with ratings 4.0+ and prices under $150 per night with flexible accommodation options. Include details about daily practices, accommodation types, meal options, and what makes each retreat unique. Return a curated list of 3-5 options with …",
         "domain": "travel",
         "confidence": "high",
-        "entityCount": 7,
+        "entityCount": 5,
         "hasImages": false,
         "outputShape": "place_card"
       },
       {
-        "traceId": "f5a94e528d8ebc91d12aa5b482711327",
-        "prompt": "Find other remote wilderness trekking routes that prioritize solitude and self-sufficiency over infrastructure. Include trails in different continents that offer true backcountry experiences with minimal facilities and maximum wilderness immersion. Provide details on difficulty, typical duration, required gear, and what makes each route uniquely isolated. Return a curated list of 5-7 wilderness t…",
+        "traceId": "ee21c70c4db8071d63a6fd859af9dfaf",
+        "prompt": "Help me find mid-range wellness retreats similar to Mandala de Masca that offer yoga, nature immersion, and plant-based food. Look for properties in mountain or valley settings with ratings 4.0+ and prices under $200 per night. Include details about daily practices, accommodation types, meal options, and what makes each retreat unique. Return a curated list of 3-5 options with pricing ranges and …",
         "domain": "travel",
         "confidence": "high",
-        "entityCount": 7,
+        "entityCount": 4,
         "hasImages": false,
         "outputShape": "place_card"
       },
       {
-        "traceId": "741f0fde2ce382fc4e63319afd1ca20b",
-        "prompt": "Find other world-class long-distance trekking routes that match the challenge and scale of the Great Himalayan Trail. Include routes that require 2+ months, cross multiple countries or regions, and demand serious high-altitude experience. Provide difficulty ratings, typical duration, permit requirements, and what makes each route uniquely demanding. Return a list of 5-7 extreme trekking challenge…",
+        "traceId": "bff3af05bf4e3912f8aa6b7834797156",
+        "prompt": "Continue the card's promise of a glamorous Mediterranean yacht journey along dramatic cliffs. Find luxury yacht charter routes similar to Amalfi Coast to Capri with the same cliffside glamour and secluded coves. Include route names, duration, key destinations, price ranges, and what makes each route unique. Return a comparison that highlights how each route differs in scenery, pace, and exclusive…",
         "domain": "travel",
         "confidence": "high",
-        "entityCount": 7,
+        "entityCount": 5,
         "hasImages": false,
         "outputShape": "place_card"
       },
       {
-        "traceId": "2f66f05324df8bc2c93ddff7256fa4b3",
-        "prompt": "Continue the card's promise of a transformative high-altitude trek through Kashmir's seven alpine lakes. Build a detailed 7-8 day Kashmir Great Lakes Trek itinerary for a solo backpacker. Include daily distances, altitude profiles, accommodation options, permit requirements, and budget breakdown. Return a day-by-day plan with gear recommendations and safety tips for solo trekkers.",
+        "traceId": "8a843095fb6830fa579f4f71ee069655",
+        "prompt": "Continue the card's promise of an Aegean island-hopping journey with white-washed charm. Find luxury yacht charter routes similar to Mykonos to Santorini with the same Cycladic island beauty and secluded anchorages. Include route names, duration, key islands, price ranges, and what makes each route unique. Return a comparison that highlights how each route differs in island variety, sailing diffi…",
         "domain": "travel",
         "confidence": "high",
-        "entityCount": 16,
+        "entityCount": 8,
         "hasImages": false,
         "outputShape": "card_template"
       },
       {
-        "traceId": "de79a6c3737e0bd6936ebec969903768",
-        "prompt": "show me some delonghi coffee machines",
-        "domain": "generic_shopping",
-        "confidence": "high",
-        "entityCount": 8,
-        "hasImages": false,
-        "outputShape": "product_ids"
-      },
-      {
-        "traceId": "5ee5dae350db10aaa1b2c8e3923b03df",
-        "prompt": "Show me compact air fryers",
-        "domain": "generic_shopping",
-        "confidence": "high",
-        "entityCount": 10,
-        "hasImages": false,
-        "outputShape": "product_ids"
-      },
-      {
-        "traceId": "2ee4d7eb9a82b18a852832d849a5de50",
-        "prompt": "Help a solo backpacker prepare for Iceland ice cave exploration. List essential cold-weather gear and safety equipment needed for ice cave tours. Include thermal layers, crampons, helmets, ice axes, and any specialized rental options. Return a practical packing list with where to buy or rent each item in Iceland.",
+        "traceId": "d31faad87813e37f469c8cf054afba9b",
+        "prompt": "Continue the card's promise of a Caribbean island-hopping journey with pink sands and volcanic peaks. Find luxury yacht charter routes similar to Antigua to St Maarten with the same Leeward Islands charm and secluded anchorages. Include route names, duration, key islands, price ranges, and what makes each route unique. Return a comparison that highlights how each route differs in island variety, …",
         "domain": "travel",
         "confidence": "high",
-        "entityCount": 16,
-        "hasImages": false,
-        "outputShape": "product_ids"
-      },
-      {
-        "traceId": "cbf5a6bd61dbdaf33cab465d0706c693",
-        "prompt": "Search for hair masks under ₹500",
-        "domain": "fashion",
-        "confidence": "high",
-        "entityCount": 2,
-        "hasImages": false,
-        "outputShape": "product_ids"
-      },
-      {
-        "traceId": "18b0dfedb482cdf58b37e6b88c01bc49",
-        "prompt": "show me tshirts, shirts, bottoms, everyday wear to refresh my summer wardrobe",
-        "domain": "fashion",
-        "confidence": "high",
-        "entityCount": 12,
-        "hasImages": false,
-        "outputShape": "product_ids"
-      },
-      {
-        "traceId": "379b38b52565caaa8f14a2902ff9f515",
-        "prompt": "Check weather for weekend comedy nights",
-        "domain": "weather_planner",
-        "confidence": "high",
         "entityCount": 4,
+        "hasImages": false,
+        "outputShape": "card_template"
+      },
+      {
+        "traceId": "446fcfcd29481f2a195ad1c94afc2175",
+        "prompt": "Continue the card's promise of experiencing royal heritage luxury on a floating palace. Find the highest-rated luxury resorts and heritage hotels in India similar to Taj Lake Palace. Include property type, location, price range per night, unique features, and what sets each apart. Return a curated list of 5-7 properties with ratings and distinctive characteristics.",
+        "domain": "travel",
+        "confidence": "high",
+        "entityCount": 9,
         "hasImages": false,
         "outputShape": "place_card"
       },
       {
-        "traceId": "0ce570e76264bf3a34deeae1350c0342",
-        "prompt": "Travel accessories for a summer getaway",
+        "traceId": "829f349450d7123ff8c28d81a6012d34",
+        "prompt": "Continue the card's promise of eco-luxury wellness retreats in India's hill stations. Find the highest-rated luxury resorts and wellness retreats in Kerala, Karnataka, and Tamil Nadu. Include property type, location, price range per night, wellness amenities, and what sets each apart. Return a curated list of 5-7 properties with ratings and distinctive wellness features.",
+        "domain": "travel",
+        "confidence": "high",
+        "entityCount": 6,
+        "hasImages": false,
+        "outputShape": "place_card"
+      },
+      {
+        "traceId": "cfec5b48eef41b3ec731c3607be99aad",
+        "prompt": "Continue the card's promise of a serene Ayurveda retreat on Kerala's backwaters. Find the highest-rated Ayurveda wellness retreats in Kerala similar to Niraamaya. Include property names, location, price range per night, key Ayurveda treatments, and unique waterfront features. Return a curated list with brief comparisons to help choose the right lakeside retreat.",
+        "domain": "travel",
+        "confidence": "high",
+        "entityCount": 8,
+        "hasImages": false,
+        "outputShape": "place_card"
+      },
+      {
+        "traceId": "a20ec017f05f6dbe77503cf2fa5a18b8",
+        "prompt": "Help a solo backpacker prepare for paragliding in Pokhara, Nepal. List essential gear needed for a safe tandem paragliding experience over Phewa Lake. Include: harness type, helmet specs, clothing recommendations, footwear, sunglasses, gloves. Provide product categories with specific features to look for, suitable for first-time flyers. Mention any gear rentals available locally vs. what to bring…",
+        "domain": "travel",
+        "confidence": "high",
+        "entityCount": 6,
+        "hasImages": false,
+        "outputShape": "product_ids"
+      },
+      {
+        "traceId": "7969a1705dda7cf00fb5c8a9caba087d",
+        "prompt": "show me sliipers option for female",
         "domain": "fashion",
         "confidence": "high",
         "entityCount": 5,
@@ -1396,8 +1549,8 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "product_ids"
       },
       {
-        "traceId": "77d718214cc1b8b4262fd4c21ebb7b32",
-        "prompt": "Travel accessories for a summer getaway",
+        "traceId": "1f583e4cd196b390f1580293ab92bf1b",
+        "prompt": "Cloud slippers",
         "domain": "fashion",
         "confidence": "high",
         "entityCount": 5,
@@ -1405,89 +1558,35 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "product_ids"
       },
       {
-        "traceId": "aa1bfce2a552087e0cecffae5bc9c4ec",
-        "prompt": "Travel accessories for a summer getaway",
+        "traceId": "421f8ac69b08d7b96c5f56dc37e29142",
+        "prompt": "Show me men's sneakers for wide-leg",
         "domain": "fashion",
         "confidence": "high",
-        "entityCount": 5,
+        "entityCount": 9,
         "hasImages": false,
         "outputShape": "product_ids"
       },
       {
-        "traceId": "f2efd405883fc6d1da675addea7f1875",
-        "prompt": "Travel accessories for a summer getaway",
+        "traceId": "17c0d0092ede84c1d3dd655b06286850",
+        "prompt": "Find shoes to pair with wide-leg",
         "domain": "fashion",
-        "confidence": "high",
-        "entityCount": 4,
-        "hasImages": false,
-        "outputShape": "product_ids"
-      },
-      {
-        "traceId": "cb3335f5ce9ddf83ae79331ba020100a",
-        "prompt": "Add matching side tables",
-        "domain": "home_decor",
-        "confidence": "high",
-        "entityCount": 12,
-        "hasImages": false,
-        "outputShape": "product_ids"
-      },
-      {
-        "traceId": "085b34966052b9e9bc61e0a0fc171126",
-        "prompt": "Refresh the entire living room",
-        "domain": "home_decor",
-        "confidence": "high",
-        "entityCount": 5,
-        "hasImages": false,
-        "outputShape": "product_ids"
-      },
-      {
-        "traceId": "e4d7ed73779b032063ed16f2fd126394",
-        "prompt": "Show me wall art options",
-        "domain": "home_decor",
-        "confidence": "high",
-        "entityCount": 12,
-        "hasImages": false,
-        "outputShape": "product_ids"
-      },
-      {
-        "traceId": "4f23f2ac6de24857be02595ce94263ca",
-        "prompt": "Living room lighting ideas",
-        "domain": "home_decor",
         "confidence": "high",
         "entityCount": 8,
         "hasImages": false,
         "outputShape": "product_ids"
       },
       {
-        "traceId": "4f36618975f6372b0b07d82185727c56",
-        "prompt": "Same but in black color",
-        "domain": "generic_shopping",
+        "traceId": "9c425c4edcd880fc0a2eda64660b1d1f",
+        "prompt": "show me tshirts, shirts, bottoms, everyday wear to refresh my summer wardrobe",
+        "domain": "fashion",
         "confidence": "high",
-        "entityCount": 10,
+        "entityCount": 8,
         "hasImages": false,
         "outputShape": "product_ids"
       },
       {
-        "traceId": "aa0b9316183fbdcbad930cfcc5dc7ac4",
-        "prompt": "Show me sofas to match these tables",
-        "domain": "home_decor",
-        "confidence": "high",
-        "entityCount": 4,
-        "hasImages": false,
-        "outputShape": "product_ids"
-      },
-      {
-        "traceId": "05150ab3dd91e15fa960516748a450fe",
-        "prompt": "Backpacks with laptop compartments",
-        "domain": "generic_shopping",
-        "confidence": "high",
-        "entityCount": 10,
-        "hasImages": false,
-        "outputShape": "product_ids"
-      },
-      {
-        "traceId": "45d9635ed66c9823858e154c00592db2",
-        "prompt": "More options for girls",
+        "traceId": "2b0cc1400cc714020327f644d1ef4d4d",
+        "prompt": "Skip the try on and show me something else for product id 167e2908-d267-5644-b2e2-b038b2c927d5",
         "domain": "fashion",
         "confidence": "high",
         "entityCount": 10,
@@ -1495,64 +1594,37 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "product_ids"
       },
       {
-        "traceId": "408a7016a29b9d12b62850628fc553d6",
-        "prompt": "show backpacks for school for male and female",
-        "domain": "generic_shopping",
-        "confidence": "high",
-        "entityCount": 10,
-        "hasImages": false,
-        "outputShape": "product_ids"
-      },
-      {
-        "traceId": "82376616ba49ce6df3eae013a2f788be",
-        "prompt": "Show me living room furniture",
-        "domain": "home_decor",
-        "confidence": "high",
-        "entityCount": 12,
-        "hasImages": false,
-        "outputShape": "product_ids"
-      },
-      {
-        "traceId": "16332c4db90358cf9955677dcdf59b88",
-        "prompt": "Show me living room furniture",
-        "domain": "home_decor",
-        "confidence": "high",
-        "entityCount": 12,
-        "hasImages": false,
-        "outputShape": "product_ids"
-      },
-      {
-        "traceId": "eab3d6e59f77c9a996f0559eaadee1e3",
-        "prompt": "Display products for family fun and shared experiences. Include board games, card games, puzzles, projectors, snack trays, blankets. Show products only.",
-        "domain": "generic_shopping",
-        "confidence": "high",
-        "entityCount": 10,
-        "hasImages": false,
-        "outputShape": "product_ids"
-      },
-      {
-        "traceId": "903fe33046dd8cc1dd9057e19ba0ae23",
-        "prompt": "What to pack for Pondicherry trip",
-        "domain": "travel",
-        "confidence": "high",
-        "entityCount": 5,
-        "hasImages": false,
-        "outputShape": "product_ids"
-      },
-      {
-        "traceId": "bf5f464a27f2810ccb6af59ff37e7ef7",
-        "prompt": "Travel accessories for a summer getaway",
+        "traceId": "3062f40210a22a43871d7f56871ffbec",
+        "prompt": "show me tshirts, shirts, bottoms, everyday wear to refresh my summer wardrobe",
         "domain": "fashion",
         "confidence": "high",
-        "entityCount": 5,
+        "entityCount": 10,
+        "hasImages": false,
+        "outputShape": "product_ids"
+      },
+      {
+        "traceId": "74606223272d3cb7942922279449e163",
+        "prompt": "Check out wide-leg styles",
+        "domain": "fashion",
+        "confidence": "high",
+        "entityCount": 8,
         "hasImages": false,
         "outputShape": "product_ids"
       }
     ],
     "summary": [
       {
-        "traceId": "160a6fab668b31f481c208e49d842cb8",
-        "prompt": "Continue the card's promise of authentic Taiwanese taro latte experiences. Find the highest-rated specialty cafes near me serving premium taro lattes. Include ratings, locality, price range, taro preparation details, and signature drinks. Return a concise shortlist that helps choose the best taro experience nearby.",
+        "traceId": "f947abbe3b5439fc60b5020f3874e4b8",
+        "prompt": "Display practical home upgrades. Include robot vacuums, espresso machines, coffee makers, air fryers, air purifiers, countertop ice makers, organizers, storage solutions. Show products only.",
+        "domain": "none",
+        "confidence": "medium",
+        "entityCount": 0,
+        "hasImages": false,
+        "outputShape": "prose"
+      },
+      {
+        "traceId": "817aa15c9fb4c1238035e1848b84b304",
+        "prompt": "Continue the card's promise of discovering cacao pour-overs prepared like specialty coffee. Find the highest-rated cafes near me serving cacao pour-overs and artisanal chocolate beverages. Include ratings, locality, price range, and what makes each cafe's cacao preparation special. Return a shortlist of top-rated spots with details on their chocolate sourcing and brewing methods.",
         "domain": "food",
         "confidence": "medium",
         "entityCount": 0,
@@ -1560,17 +1632,26 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "prose"
       },
       {
-        "traceId": "b7b655d273a25aedcfde94ab8962a98b",
-        "prompt": "Complete the living room set",
-        "domain": "home_decor",
+        "traceId": "3b2f51fd80ad6aa24d0bb5b599e0e9f9",
+        "prompt": "Continue the card's promise of trying India's most popular drink of 2026. Find the highest-rated cafes near me serving authentic matcha bubble tea with ceremonial-grade matcha. Include ratings, locality, price range, and details on their matcha sourcing and preparation. Return a shortlist of top-rated spots with information on their tea quality and bubble texture.",
+        "domain": "food",
         "confidence": "medium",
         "entityCount": 0,
         "hasImages": false,
         "outputShape": "prose"
       },
       {
-        "traceId": "ec2b9458a06fc65b4457955a943358bf",
-        "prompt": "Continue the card's promise of an intimate poetry and storytelling experience perfect for friends. Find the best open mic poetry nights and storytelling events near me for tonight or this weekend. Include venue name, locality, show timing, rating, price range, and what each event is known for. Return a curated list that helps the group choose the perfect creative night out.",
+        "traceId": "522fe01994256350c01de51f308cc80e",
+        "prompt": "Continue the card's promise of high-energy local football action worth joining. Find top-rated community 5-a-side football tournaments and leagues near me this weekend. Include venue, locality, date/time, rating, price band, and what makes each league special. Return a concise comparison that helps the viewer choose the perfect local match. Amateur players and spectators welcome for all skill lev…",
+        "domain": "events",
+        "confidence": "medium",
+        "entityCount": 0,
+        "hasImages": false,
+        "outputShape": "prose"
+      },
+      {
+        "traceId": "bc33d5bb0a172a145fca1d914d326163",
+        "prompt": "Continue the card's promise of an intimate immersive jazz experience. find the best-rated jazz clubs and live music venues near me that have jazz shows tonight. include venue name, locality, show times, price range, and what makes each jazz experience special. return a shortlist that helps me choose the perfect jazz night.",
         "domain": "local_experiences",
         "confidence": "medium",
         "entityCount": 0,
@@ -1578,26 +1659,8 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "prose"
       },
       {
-        "traceId": "c7976d10535ec16bebf87ddb4622d961",
-        "prompt": "Find the highest-rated interactive detective mystery nights near me that offer live role-playing experiences. Include venue name, locality, available time slots this weekend, rating, price per person, and group size limits. Return a shortlist of top venues with booking links so I can secure a spot for my group. Prioritize venues with recent positive reviews and flexible booking options.",
-        "domain": "local_experiences",
-        "confidence": "medium",
-        "entityCount": 0,
-        "hasImages": false,
-        "outputShape": "prose"
-      },
-      {
-        "traceId": "f8ec20397255d8ea1345b81f14a7ceac",
-        "prompt": "Find the highest-rated interactive detective mystery nights near me that offer live role-playing experiences. include venue name, locality, available time slots this weekend, rating, price per person, and group size limits. return a shortlist of top venues with booking links so i can secure a spot for my group. prioritize venues with recent positive reviews and flexible booking options.",
-        "domain": "local_experiences",
-        "confidence": "medium",
-        "entityCount": 0,
-        "hasImages": false,
-        "outputShape": "prose"
-      },
-      {
-        "traceId": "be62fd0bbba6301cb3cac57d5017af07",
-        "prompt": "Find the highest-rated interactive detective mystery nights near me that offer live role-playing experiences. Include venue name, locality, available time slots this weekend, rating, price per person, and group size limits. Return a shortlist of top venues with booking links so I can secure a spot for my group. Prioritize venues with recent positive reviews and flexible booking options.",
+        "traceId": "c00f31ae2ef25eab097fab0edfd8991c",
+        "prompt": "Continue the card's promise of a laugh-out-loud live comedy experience. Find the best-rated comedy clubs and live shows near me that have shows tonight. Include venue name, locality, show times, comedian lineup, price range, and what makes each show special. Return a shortlist that helps me choose the perfect comedy night.",
         "domain": "local_experiences",
         "confidence": "medium",
         "entityCount": 0,
@@ -1607,53 +1670,17 @@ export const CORPUS_INDEX: CorpusIndex = {
     ],
     "hybrid": [
       {
-        "traceId": "3acd968b05fbf3d60fa55138986ae18e",
-        "prompt": "Create a complete weekend trip plan for Munnar that captures the misty tea plantation experience. Include the best time to visit, top-rated attractions like Eravikulam National Park and Mattupetty Dam, and recommended stays in tea estate resorts. Provide day-by-day itinerary with travel times from Kochi, accommodation options across price bands, and local food recommendations. Return a practical …",
-        "domain": "travel",
-        "confidence": "medium",
-        "entityCount": 11,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "4c696d3c0be074fc8fa0e63eb3cd5392",
-        "prompt": "Continue the card's promise of capturing the majestic one-horned rhino in misty Kaziranga mornings. Plan a complete 3-day Kaziranga safari itinerary for wildlife photographers. Include best ranges for rhino photography (Central, Western, Eastern), optimal timing for misty morning shots, accommodation recommendations near the park, and how to reach from major cities. Provide a day-by-day schedule …",
-        "domain": "travel",
+        "traceId": "0d7e4c1f4f8a66e0e3a2fed42582db57",
+        "prompt": "Continue the card's promise of discovering Nuwara Eliya beyond the famous tea estates. Find the top-rated attractions in Nuwara Eliya including hidden waterfalls, colonial sites, and local viewpoints. Include ratings, opening hours, travel times between spots, and what makes each place special. Return a curated list that balances famous spots with lesser-known gems for a complete weekend experien…",
+        "domain": "local_experiences",
         "confidence": "medium",
         "entityCount": 6,
         "hasImages": false,
         "outputShape": "place_card"
       },
       {
-        "traceId": "aa4b489cbbe89fce1be4f0be15624116",
-        "prompt": "Continue the card's promise of a historic coastal drive along Australia's most scenic route. Plan a 2-3 day Great Ocean Road itinerary from Melbourne to the Twelve Apostles. Include daily driving distances, recommended stops, accommodation areas, and wildlife viewing spots. Return a day-by-day plan with timing, costs, and what to book in advance.",
-        "domain": "travel",
-        "confidence": "medium",
-        "entityCount": 11,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "767730f1dd4fbdb0fe4341a05072d4ed",
-        "prompt": "Continue the card's promise of capturing tigers in dramatic rocky terrain at Bandhavgarh. Plan a complete 3-day Bandhavgarh safari itinerary for wildlife photographers. Include best zones for tiger photography (Tala, Magadhi), optimal timing for golden hour shots, accommodation recommendations near the park, and how to reach from major cities. Provide a day-by-day schedule with safari timings, ph…",
-        "domain": "travel",
-        "confidence": "medium",
-        "entityCount": 6,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "e57e57563160ebc266bd911afcb0c093",
-        "prompt": "Continue the card's promise of a hidden 'Telangana Maldives' escape with blue waters. Plan a 2-day Yeleswaram Gattu trip with boating, cruises, and viewpoint visits. Include timing for best water views, travel routes from Hyderabad, accommodation suggestions, and what to pack. Return a practical itinerary with day-by-day activities and logistics.",
-        "domain": "travel",
-        "confidence": "medium",
-        "entityCount": 4,
-        "hasImages": false,
-        "outputShape": "card_template"
-      },
-      {
-        "traceId": "59796a3a13da1054a739d6da518c56a9",
-        "prompt": "Continue the card's promise of a viral monsoon escape to Pachmarhi's waterfalls. Plan a 2-day Pachmarhi trip with waterfall visits, best viewpoints, and stay options. Include timing for misty mornings, travel routes from Bhopal, accommodation suggestions, and what to pack for monsoon. Return a practical itinerary with day-by-day activities and logistics.",
+        "traceId": "b18cb0530e76edd69a84d50a69392d40",
+        "prompt": "Continue the card's promise of a serene weekend escape to Kerala's misty tea country. Build a complete 2-day Munnar trip plan with itinerary, best time to visit, and how to get there. Include top-rated attractions, stay recommendations, travel times from Kochi/Ernakulam, and seasonal tips. Return a practical day-by-day itinerary with accommodation options and transport details.",
         "domain": "travel",
         "confidence": "medium",
         "entityCount": 10,
@@ -1661,17 +1688,8 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "place_card"
       },
       {
-        "traceId": "444581220d597f49bb1b3224d159d58a",
-        "prompt": "Continue the card's promise of a quiet Himalayan valley road trip for couples. Plan a complete Delhi to Jibhi Tirthan Valley drive itinerary with timing and stops. Include Jalori Pass viewpoints, riverside cafes, boutique stay options, and stargazing spots. Return a day-by-day plan with driving times, accommodation recommendations, and what to pack.",
-        "domain": "travel",
-        "confidence": "medium",
-        "entityCount": 13,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "a097433415ce5056728defe11dfeb8a6",
-        "prompt": "Continue the card's promise of a romantic coastal road trip for couples. Plan a complete Mumbai to Goa coastal drive itinerary with timing and stops. Include the best viewpoints, beach stops, local food spots, and accommodation options. Return a day-by-day plan with driving times, scenic highlights, and what to pack for monsoon travel.",
+        "traceId": "9d28a385e7a851550e88c00b2436dab2",
+        "prompt": "Build a complete Bandhavgarh safari plan for wildlife photography. Include best zones for tiger sightings (Tala, Magdhi, Khitauli), optimal timing for dawn shots, and recommended stay areas near Tala. Provide details on permit booking timelines, zone rotation system, and what gear to bring for open-grassland shots. Return a day-by-day itinerary with photography focus, accommodation suggestions, a…",
         "domain": "travel",
         "confidence": "medium",
         "entityCount": 10,
@@ -1679,29 +1697,29 @@ export const CORPUS_INDEX: CorpusIndex = {
         "outputShape": "place_card"
       },
       {
-        "traceId": "2d4da8d1e23a8eb66d289ce6bb070a9d",
-        "prompt": "Continue the card's promise of a secluded Mediterranean beach escape with iconic natural beauty. Build a complete trip plan for Sardinia focusing on Cala Goloritzé and surrounding romantic beaches. Include top-rated stays in Alghero or Golfo di Orosei, beach access details, car rental needs, and ideal travel months. Return a day-by-day itinerary with timing, costs, and booking tips for a couple's…",
+        "traceId": "ee51ea42edb7e0adee73bac09d193b64",
+        "prompt": "Continue the card's promise of experiencing Pachmarhi's viral monsoon waterfalls. Build a practical 2-3 day Pachmarhi trip plan focused on waterfall viewing and hill station experiences. Include best waterfalls to visit, stay recommendations, how to reach, and crowd-avoidance tips. Return a day-by-day itinerary with timing, costs, and booking advice for a first-time monsoon visitor.",
         "domain": "travel",
-        "confidence": "medium",
-        "entityCount": 10,
-        "hasImages": false,
-        "outputShape": "place_card"
-      },
-      {
-        "traceId": "5cff692c5974c07e2eed51eb45728c57",
-        "prompt": "Continue the card's promise of a beautiful lake town experience perfect for multi-generational families. Find similar lake towns near Delhi that offer family-friendly activities and scenic beauty. Include drive times, lake activities, accommodation options, and what makes each place special. Return a comparison that helps families choose the best lake town for their weekend.",
-        "domain": "food",
         "confidence": "medium",
         "entityCount": 8,
         "hasImages": false,
-        "outputShape": "card_template"
+        "outputShape": "place_card"
       },
       {
-        "traceId": "a7ed25a4320cad21554688a57146208d",
-        "prompt": "Create a complete 9-10 day Goechala Trek itinerary for an adventure traveler. Include daily stages with distances, altitude gains, and camping locations. Provide best time to go (March-May, September-November), gear checklist, and how to reach Yuksom from Bagdogra/NJP. Add accommodation options in Yuksom and Sukhiapokhri, plus permit requirements and costs. Return a day-by-day plan with travel lo…",
+        "traceId": "dfdfb622397193e7dc72837afd0da6cf",
+        "prompt": "Continue the card's promise of a moderate 7-day glacier trek through lush Kumaon Himalayas. Build a complete 7-day itinerary for the Pindari Glacier Trek starting from Kathgodam. Include daily trekking distances, altitude gains, accommodation options, best time to go, and how to reach Kathgodam from Delhi. Return a day-by-day plan with stay recommendations, travel logistics, and what to pack for …",
         "domain": "travel",
         "confidence": "medium",
-        "entityCount": 13,
+        "entityCount": 10,
+        "hasImages": false,
+        "outputShape": "place_card"
+      },
+      {
+        "traceId": "b8e3e4b593b32d4c78feab0ba82c2ed1",
+        "prompt": "Continue the card's promise of Mussoorie's family-friendly hill station charm with easy ropeway access. Find similar weekend getaway destinations from Delhi that offer gentle Himalayan foothill experiences suitable for families with children. Include places with similar accessibility (short drives, ropeway access, walkable areas), family-safe attractions, and colonial heritage. Provide a comparis…",
+        "domain": "travel",
+        "confidence": "medium",
+        "entityCount": 6,
         "hasImages": false,
         "outputShape": "place_card"
       }

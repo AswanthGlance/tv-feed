@@ -12,7 +12,7 @@ import { useTracePlayback } from '../../hooks/useTracePlayback';
 import { useExperiencePhase } from '../../hooks/useExperiencePhase';
 import { useLevel2Scenario } from '../../level2/runtime/useLevel2Scenario';
 import { useLevel2Runtime } from '../../level2/runtime/useLevel2Runtime';
-import { SCENARIO_ARCHETYPES } from '../../level2/types/archetype';
+import { DEV_SCENARIO_KINDS } from '../../level2/types/devScenario';
 import { useStageScale } from './useStageScale';
 import { readLevelFromUrl, writeLevelToUrl, type ExperienceLevel } from '../../types/experienceLevel';
 
@@ -119,7 +119,7 @@ export default function AgentExperience() {
           break;
         case 'n':
           if (level === 'level1') explorer.loadNew();
-          else if (level === 'level2') level2Source.refresh();
+          else if (level === 'level2') level2Source.nextExample();
           break;
         case 'arrowleft':
           if (level === 'level1') playback.prevStep();
@@ -143,16 +143,18 @@ export default function AgentExperience() {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [level, playback, explorer, backToThinking, level2Runtime, level2Source]);
 
-  // Shift+A..I selects a scenario archetype directly — a demo shortcut for
-  // the same operation the Scenario Type selector performs.
+  // Shift+A..J selects a scenario type directly — a demo shortcut for the
+  // same operation the Scenario Type selector performs. A..I are the nine
+  // answer-shape archetypes; J is the dedicated Memory Retrieval Dev Mode
+  // demo (see types/devScenario.ts) appended after them.
   useEffect(() => {
     if (level !== 'level2') return;
     const onKeyDown = (e: KeyboardEvent) => {
       if (!e.shiftKey || !e.code.startsWith('Key')) return;
-      const index = 'ABCDEFGHI'.indexOf(e.code.slice(3));
-      if (index < 0 || index >= SCENARIO_ARCHETYPES.length) return;
+      const index = 'ABCDEFGHIJ'.indexOf(e.code.slice(3));
+      if (index < 0 || index >= DEV_SCENARIO_KINDS.length) return;
       e.preventDefault();
-      level2Source.selectArchetype(SCENARIO_ARCHETYPES[index]);
+      level2Source.selectArchetype(DEV_SCENARIO_KINDS[index]);
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
@@ -191,11 +193,13 @@ export default function AgentExperience() {
 
         {devOpen && level === 'level1' && <DemoController playback={playback} />}
 
-        {/* Level 2 has its own diagnostics panel now — the scenario runtime
-            exposes an entirely different set of questions (archetype,
-            classification confidence, what the user-value filter hid) than
-            Level 1's trace inspector. */}
-        {devOpen && level === 'level2' && <Level2Diagnostics source={level2Source} runtime={level2Runtime} />}
+        {/* Level 2's full diagnostics panel (archetype, classification
+            confidence, what the user-value filter hid) is deliberately not
+            mounted — it covered the left side of the stage during a demo.
+            Its questions are still answerable from Level2Diagnostics.tsx
+            directly (e.g. in a local dev build); re-add the line below to
+            bring it back:
+              {devOpen && level === 'level2' && <Level2Diagnostics source={level2Source} runtime={level2Runtime} />} */}
 
         {devOpen && level !== 'level2' && (
           <DevInspector

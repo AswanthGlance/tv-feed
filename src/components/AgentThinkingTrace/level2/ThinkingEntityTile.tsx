@@ -62,8 +62,9 @@ export interface ThinkingTileModel {
    *  the resolver falls through to relevant imagery rather than leaving a
    *  hole, and the frame is reserved either way so nothing shifts on load. */
   image?: string;
-  /** Google Places id, when the entity resolved to one — the highest tier of
-   *  the image resolver and the only one that is the REAL venue's photo. */
+  /** Google Places id, when the entity resolved to one — feeds EnrichedImage's
+   *  live-photo tier when the trace itself carried no `image` (see
+   *  EnrichedImage.tsx). */
   placeId?: string;
   /** The fact the tile carries from discovery — at most one. */
   fact?: string;
@@ -140,15 +141,16 @@ export default function ThinkingEntityTile({
 
       {/* The media frame is ALWAYS rendered once a tile has any image source,
           and its aspect ratio is fixed, so nothing shifts when the photo
-          finally arrives. The resolver is the project's existing four-tier
-          integration — Google Places -> harness photo -> Pexels -> local — so
-          a candidate always has relevant imagery and never a broken glyph. */}
+          finally arrives. The resolver tries the trace's own photo first,
+          then a live Google Places photo when a real place_id exists,
+          falling through to a local placeholder — so a candidate always has
+          relevant imagery and never a broken glyph (see EnrichedImage.tsx). */}
       <div className="att-l2t-media">
         <EnrichedImage
           itemId={tile.id}
           itemTitle={tile.title}
-          placeId={tile.placeId}
           fallbackSrc={tile.image}
+          placeId={tile.placeId}
         />
       </div>
 

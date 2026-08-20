@@ -1,6 +1,6 @@
 import type { PhoenixSpan } from '../types/phoenix';
 import type { ThinkingEvidence } from '../types/thinking';
-import { asString, safeParseJson } from '../utils/safeJson';
+import { asString, extractCandidateObjects, extractFieldsByRegex, normalizeNumber, safeParseJson } from '../utils/safeJson';
 import {
   deepExtractResults,
   deepSafeParse,
@@ -55,29 +55,69 @@ function toolAttr(span: PhoenixSpan, key: 'tool.input' | 'tool.output' | 'tool.n
   return span.attributes?.[key];
 }
 
+/** Confirmed live (see LEVEL2_INSTRUMENTATION_GAPS.md §1): Phoenix caps
+ *  `tool.output` at exactly 2000 characters, which truncates a `places`
+ *  array mid-object on any search returning more than ~2 results with
+ *  photo URLs — the whole array then fails JSON parsing. Recovers every
+ *  place object that completed intact before the cutoff (brace-depth split
+ *  + regex field extraction) instead of losing the whole search result,
+ *  photo_url included — mirrors entityExtraction.ts's Level 2 fallback. */
+function extractPlaceEvidenceFallback(raw: string): ThinkingEvidence[] {
+  return extractCandidateObjects(raw)
+    .map((obj) =>
+      extractFieldsByRegex(obj, [
+        'place_id',
+        'name',
+        'formatted_address',
+        'rating',
+        'user_rating_count',
+        'photo_url',
+        'google_maps_uri',
+        'phone',
+      ])
+    )
+    .filter((f) => f.name)
+    .map((f) => ({
+      id: nextId('place'),
+      type: 'place' as const,
+      placeId: f.place_id,
+      title: f.name,
+      subtitle: f.formatted_address,
+      image: f.photo_url,
+      rating: normalizeNumber(f.rating),
+      reviewCount: normalizeNumber(f.user_rating_count),
+      url: f.google_maps_uri,
+      phone: f.phone,
+    }));
+}
+
 /** Evidence straight from tool.PlaceSearch / tool.NearbyPlaces output —
  *  the raw candidate set, before the LLM curates/ranks it. */
 export function extractPlaceEvidence(toolSpans: PhoenixSpan[]): ThinkingEvidence[] {
   const evidence: ThinkingEvidence[] = [];
   for (const span of toolSpans) {
-    const parsed = safeParseJson<RawPlaceSearchOutput>(toolAttr(span, 'tool.output'));
+    const raw = toolAttr(span, 'tool.output');
+    const parsed = safeParseJson<RawPlaceSearchOutput>(raw);
     const places = parsed?.places;
-    if (!Array.isArray(places)) continue;
-    for (const p of places) {
-      if (!p?.name) continue;
-      evidence.push({
-        id: nextId('place'),
-        type: 'place',
-        placeId: p.place_id,
-        title: p.name,
-        subtitle: p.formatted_address,
-        image: p.photo_url,
-        rating: typeof p.rating === 'number' ? p.rating : undefined,
-        reviewCount: typeof p.user_rating_count === 'number' ? p.user_rating_count : undefined,
-        url: p.google_maps_uri,
-        phone: p.phone,
-        raw: p,
-      });
+    if (Array.isArray(places)) {
+      for (const p of places) {
+        if (!p?.name) continue;
+        evidence.push({
+          id: nextId('place'),
+          type: 'place',
+          placeId: p.place_id,
+          title: p.name,
+          subtitle: p.formatted_address,
+          image: p.photo_url,
+          rating: typeof p.rating === 'number' ? p.rating : undefined,
+          reviewCount: typeof p.user_rating_count === 'number' ? p.user_rating_count : undefined,
+          url: p.google_maps_uri,
+          phone: p.phone,
+          raw: p,
+        });
+      }
+    } else if (typeof raw === 'string' && raw.includes('"places"')) {
+      evidence.push(...extractPlaceEvidenceFallback(raw));
     }
   }
   return evidence;
@@ -268,7 +308,7 @@ export function extractEvidenceForToolSpans(toolSpans: PhoenixSpan[]): ThinkingE
       out.push(...extractReviewEvidence(spans));
     } else if (name === 'WebSearch' || name === 'WebFetch') {
       out.push(...extractWebResultEvidence(spans));
-    } else if (name === 'VTONGenerate') {
+    } else if (name === 'VTONGenerate' || name === 'AIGCImageGenerate') {
       out.push(...extractGeneratedVisualEvidence(spans));
     }
   }

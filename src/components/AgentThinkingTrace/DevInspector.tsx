@@ -7,7 +7,6 @@ import type { ExperienceLevel } from '../../types/experienceLevel';
 import type { AgentMutation, CardImportance } from '../../types/progressiveValue';
 import type { AgentActionType, PassPhase, PassStage } from '../../types/experiencePass';
 import { checkGooglePlacesConfigured } from '../../api/googlePlacesClient';
-import { checkPexelsConfigured } from '../../api/pexelsClient';
 import { resolveLevel1VisualMode } from '../../adapters/level1VisualMode';
 import type { RequestedAttribute } from '../../adapters/cardImportance';
 import type { Level2TraceSourceState } from '../../hooks/useLevel2TraceSource';
@@ -151,7 +150,6 @@ export default function DevInspector({
 }) {
   const [tab, setTab] = useState<Tab>('session');
   const [placesStatus, setPlacesStatus] = useState<{ ok: boolean; error?: string } | undefined>();
-  const [pexelsStatus, setPexelsStatus] = useState<{ ok: boolean; error?: string } | undefined>();
   const tabs = level === 'level2' ? TABS_LEVEL2 : TABS_LEVEL1;
   const activeTab = tabs.some((t) => t.id === tab) ? tab : 'session';
 
@@ -165,7 +163,6 @@ export default function DevInspector({
   useEffect(() => {
     let cancelled = false;
     checkGooglePlacesConfigured().then((r) => { if (!cancelled) setPlacesStatus(r); });
-    checkPexelsConfigured().then((r) => { if (!cancelled) setPexelsStatus(r); });
     return () => { cancelled = true; };
   }, []);
 
@@ -222,16 +219,6 @@ export default function DevInspector({
               {level2Source.compatibility && (
                 <span className="att-badge-source">Level 2 fit: {level2Source.compatibility.score}</span>
               )}
-            </div>
-            <div className="att-dev-status-row" style={{ marginTop: 6 }}>
-              <span
-                className={`att-dev-dot ${placesStatus == null ? 'att-dev-dot--loading' : placesStatus.ok ? 'att-dev-dot--ok' : 'att-dev-dot--error'}`}
-              />
-              <span>Google Places photos: {placesStatus == null ? 'checking…' : placesStatus.ok ? 'auth OK (see GAPS for photo-tier check)' : 'not configured'}</span>
-              <span
-                className={`att-dev-dot ${pexelsStatus == null ? 'att-dev-dot--loading' : pexelsStatus.ok ? 'att-dev-dot--ok' : 'att-dev-dot--error'}`}
-              />
-              <span>Pexels: {pexelsStatus == null ? 'checking…' : pexelsStatus.ok ? 'configured' : 'not configured'}</span>
             </div>
             {level2Source.error && (
               <div style={{ marginTop: 6, fontSize: 11, color: '#e4558a' }}>Discovery error: {level2Source.error}</div>

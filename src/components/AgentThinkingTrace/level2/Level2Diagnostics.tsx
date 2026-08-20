@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ARCHETYPE_LABEL } from '../../../level2/types/archetype';
+import { DEV_SCENARIO_LABEL } from '../../../level2/types/devScenario';
 import { invalidateLevel2Cache, LEVEL2_CACHE_VERSION } from '../../../level2/cache';
 import { PLAYBACK_SPEEDS } from '../../../level2/types/runtime';
 import type { Level2ScenarioState } from '../../../level2/runtime/useLevel2Scenario';
@@ -27,11 +27,12 @@ import type { MemoryContext } from '../../../level2/types/memory';
    Never visible in the leadership view.
    ───────────────────────────────────────────────────────────────────────────── */
 
-type Tab = 'scenario' | 'passes' | 'compare' | 'map' | 'list' | 'filtered' | 'cache';
+type Tab = 'scenario' | 'passes' | 'timing' | 'compare' | 'map' | 'list' | 'filtered' | 'cache';
 
 const TABS: Array<{ id: Tab; label: string }> = [
   { id: 'scenario', label: 'SCENARIO' },
   { id: 'passes', label: 'PASSES' },
+  { id: 'timing', label: 'TIMING' },
   { id: 'compare', label: 'COMPARE' },
   { id: 'map', label: 'MAP' },
   { id: 'list', label: 'LIST' },
@@ -39,9 +40,19 @@ const TABS: Array<{ id: Tab; label: string }> = [
   { id: 'cache', label: 'CACHE' },
 ];
 
+const MAX_IDLE_GAP_OPTIONS: Array<{ label: string; ms: number }> = [
+  { label: 'Off', ms: 0 },
+  { label: '5s', ms: 5000 },
+  { label: '10s', ms: 10000 },
+  { label: '20s', ms: 20000 },
+];
+
+const fmtSec = (ms: number | undefined) => (ms == null ? '—' : `${(ms / 1000).toFixed(1)}s`);
+
 const SOURCE_LABEL: Record<string, string> = {
   phoenix: 'Phoenix — live fetch, mapped now',
   cached_phoenix: 'Phoenix — cached spans',
+  harness_stream: 'Harness Stream — real capture, classified',
   fixture: 'Fixture — hand-authored, NOT Phoenix output',
 };
 
@@ -95,7 +106,7 @@ export default function Level2Diagnostics({
       <div className="att-dev-header">
         <span className="att-dev-title">Level 2 — Scenario Runtime</span>
         <span className="att-dev-sub">
-          {ARCHETYPE_LABEL[source.selectedArchetype]} · {runtime.phase.toUpperCase()}
+          {DEV_SCENARIO_LABEL[source.selectedArchetype]} · {runtime.phase.toUpperCase()}
         </span>
       </div>
 
@@ -141,6 +152,26 @@ export default function Level2Diagnostics({
             {s}×
           </button>
         ))}
+        {/* Timing mode — always visible, not only on the TIMING tab. Demo =
+            curated cadence; Actual = the SAME passes on the real Phoenix
+            clock. Disabled (never fabricated) when the scenario is a fixture
+            or carries no trace timestamps. Full diagnostics: TIMING tab. */}
+        <span style={{ opacity: 0.55, fontSize: 11, alignSelf: 'center', marginLeft: 8 }}>Timing:</span>
+        <button
+          className={`att-playback-btn${runtime.requestedTimingMode === 'demo' ? ' active' : ''}`}
+          onClick={() => runtime.setTimingMode('demo')}
+        >
+          Demo
+        </button>
+        <button
+          className={`att-playback-btn${runtime.requestedTimingMode === 'actual' ? ' active' : ''}`}
+          onClick={() => runtime.setTimingMode('actual')}
+          disabled={!runtime.actualTimingAvailable}
+          title={runtime.actualTimingAvailable ? 'Replay this scenario on the real Phoenix clock' : 'Real timing unavailable for this scenario'}
+          style={runtime.actualTimingAvailable ? undefined : { opacity: 0.4, cursor: 'not-allowed' }}
+        >
+          Real Timing
+        </button>
       </div>
 
       <div className="att-dev-tabs">
@@ -283,6 +314,97 @@ export default function Level2Diagnostics({
               </div>
             ))}
             {!runtime.scenario?.thinkingPasses.length && <div style={{ opacity: 0.5 }}>No passes.</div>}
+          </div>
+        )}
+
+        {tab === 'timing' && (
+          <div>
+            {/* Dev-only control — WHEN passes appear, never what they show.
+                Demo = curated leadership cadence; Actual = the same passes on
+                the real Phoenix clock (see level2/runtime/schedule.ts). */}
+            <div style={{ marginBottom: 10 }}>
+              <div style={{ opacity: 0.7, marginBottom: 6 }}>Timing mode</div>
+              <button
+                className={`att-playback-btn${runtime.requestedTimingMode === 'demo' ? ' active' : ''}`}
+                onClick={() => runtime.setTimingMode('demo')}
+              >
+                Demo Timing
+              </button>
+              <button
+                className={`att-playback-btn${runtime.requestedTimingMode === 'actual' ? ' active' : ''}`}
+                onClick={() => runtime.setTimingMode('actual')}
+                disabled={!runtime.actualTimingAvailable}
+                style={runtime.actualTimingAvailable ? undefined : { opacity: 0.4, cursor: 'not-allowed' }}
+              >
+                Real Timing
+              </button>
+              {!runtime.actualTimingAvailable && (
+                <div style={{ fontSize: 11, opacity: 0.6, marginTop: 4 }}>
+                  Real timing unavailable for this scenario{runtime.scenario?.source === 'fixture' ? ' (fixture — no recorded timestamps)' : ' — no trace timestamps'}.
+                </div>
+              )}
+              {runtime.requestedTimingMode === 'actual' && runtime.timingMode === 'demo' && runtime.actualTimingAvailable === false && (
+                <div style={{ fontSize: 11, color: '#e4a955', marginTop: 4 }}>Falling back to Demo Timing.</div>
+              )}
+            </div>
+
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ opacity: 0.7, marginBottom: 6 }}>Max idle gap (Real Timing safety cap — Off shows true latency)</div>
+              {MAX_IDLE_GAP_OPTIONS.map((opt) => (
+                <button
+                  key={opt.label}
+                  className={`att-playback-btn${runtime.maxIdleGapMs === opt.ms ? ' active' : ''}`}
+                  onClick={() => runtime.setMaxIdleGapMs(opt.ms)}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="att-dev-meta-grid" style={{ marginBottom: 12 }}>
+              <Row label="Timing mode" value={runtime.timingMode === 'actual' ? 'Real' : 'Demo'} />
+              <Row label="Trace duration" value={fmtSec(runtime.traceDurationMs)} />
+              <Row label="Playback timeline" value={fmtSec(runtime.totalDuration)} />
+              <Row
+                label="First visible value"
+                value={fmtSec(runtime.schedule.find((s) => s.pass.visibility === 'canvas_value')?.start)}
+              />
+              <Row
+                label="Final response"
+                value={runtime.timingMode === 'actual' ? fmtSec(runtime.traceDurationMs) : `${fmtSec(runtime.totalDuration)} (curated)`}
+              />
+              <Row label="Current trace time" value={`${fmtSec(runtime.elapsed)} · ${runtime.speed}×`} />
+              <Row label="Current state" value={runtime.currentPass?.narration ?? '—'} />
+              <Row
+                label="State started"
+                value={fmtSec(runtime.schedule[runtime.currentPassIndex]?.start)}
+              />
+              <Row
+                label="Next event"
+                value={fmtSec(runtime.schedule[runtime.currentPassIndex + 1]?.start)}
+              />
+            </div>
+
+            {/* Per-pass windows on the ACTIVE timeline. In actual mode the
+                right-hand interval is the pass's real mapped event span;
+                (interpolated) marks synthetic beats placed between real
+                anchors — real timestamps are never invented for them. */}
+            <div style={{ opacity: 0.7, marginBottom: 6 }}>Pass windows</div>
+            {runtime.schedule.map((s) => (
+              <div key={s.pass.id} style={{ fontSize: 11, marginBottom: 3, opacity: s.index === runtime.currentPassIndex ? 1 : 0.6 }}>
+                <span style={{ display: 'inline-block', minWidth: 110 }}>
+                  {fmtSec(s.start)}–{fmtSec(s.end)}
+                </span>
+                {s.pass.narration}
+                {runtime.timingMode === 'actual' && (
+                  <span style={{ opacity: 0.55 }}>
+                    {s.pass.traceTiming
+                      ? ` · real ${fmtSec(s.pass.traceTiming.start)}–${fmtSec(s.pass.traceTiming.end)}`
+                      : ' · (interpolated)'}
+                  </span>
+                )}
+              </div>
+            ))}
           </div>
         )}
 

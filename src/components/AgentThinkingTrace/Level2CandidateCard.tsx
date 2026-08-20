@@ -14,10 +14,11 @@ import {
 } from '../../adapters/level2Tokens';
 import type { CardImportance, ProgressiveItem } from '../../types/progressiveValue';
 
-/* The four-tier image resolver now lives in level2/EnrichedImage.tsx so the
-   thinking tile and this final card share ONE implementation — see that file
-   for the tier documentation. `EnrichedCardImage` is kept as a thin local
-   alias so this component's call sites read unchanged. */
+/* The image resolver (trace photo -> live Google Places photo -> local
+   placeholder) lives in level2/EnrichedImage.tsx so the thinking tile and
+   this final card share ONE implementation — see that file for the tier
+   documentation. `EnrichedCardImage` is kept as a thin local alias so this
+   component's call sites read unchanged. */
 const EnrichedCardImage = EnrichedImage;
 
 /** Which optional facts a tier is allowed to show, and how many — query-
@@ -180,9 +181,10 @@ export default function Level2CandidateCard({
    *  set during the honest no-promote-signal settle, where there's no real
    *  signal to base a rank on. */
   railTier?: 'secondary' | 'tertiary';
-  /** Dev-diagnostics hook: which of the 4 image-fallback tiers actually
-   *  rendered for this card. Only wired up for the card(s) DevInspector is
-   *  currently showing — cheap to leave undefined everywhere else. */
+  /** Dev-diagnostics hook: which of the 2 image-fallback tiers (trace photo,
+   *  local placeholder) actually rendered for this card. Only wired up for
+   *  the card(s) DevInspector is currently showing — cheap to leave
+   *  undefined everywhere else. */
   onImageTierResolved?: (tier: number) => void;
   /** Registers/deregisters this card's root DOM node for the winner-
    *  promotion FLIP animation (see useWinnerPromotionFlip.ts) — needs the
@@ -252,8 +254,8 @@ export default function Level2CandidateCard({
           itemId={item.id}
           itemTitle={item.title}
           className="att-l2-card-image"
-          placeId={meta.placeId as string | undefined}
           fallbackSrc={item.image}
+          placeId={item.metadata?.placeId}
           onTierResolved={onImageTierResolved}
         />
         {isPromoted && !isResolvedCard && <span className="att-l2-card-promoted-badge">Emerging pick</span>}

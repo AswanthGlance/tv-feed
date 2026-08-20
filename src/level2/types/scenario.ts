@@ -13,7 +13,7 @@ import type { QueryRequirements } from './query';
    one tomorrow without touching any extraction logic.
    ───────────────────────────────────────────────────────────────────────────── */
 
-export type ScenarioSource = 'phoenix' | 'cached_phoenix' | 'fixture';
+export type ScenarioSource = 'phoenix' | 'cached_phoenix' | 'fixture' | 'harness_stream';
 
 export interface Level2Scenario {
   id: string;

@@ -82,3 +82,23 @@ export function buildMemoryContextPass(memoryContext: MemoryContext, domain: str
     ...MEMORY_TIMING,
   };
 }
+
+/* ── RECALL → USE ─────────────────────────────────────────────────────────
+   The pass immediately after memory must read as a continuation of it, not
+   as an unrelated next step — "Keeping your travel preferences in mind" ->
+   "Looking for escapes that fit that", never -> "Checking trending picks".
+   Callers (fromTrace.ts for real traces, memoryRetrievalScenarios.ts for the
+   dedicated Dev Mode demo) overwrite the narration of the first post-memory
+   pass with this line; nothing else about that pass changes. Same domain
+   buckets as the memory line itself, so the two always agree on subject. */
+const FOLLOW_UP_NARRATION: Record<DomainBucket, readonly [string, ...string[]]> = {
+  travel: ['Looking for escapes that fit that', 'Looking for stays that match that'],
+  dining: ['Looking for dinner options around those preferences', 'Looking for places that fit'],
+  shopping: ['Looking for options around what matters to you', 'Looking with that in mind'],
+  entertainment: ['Finding something that matches your usual taste', 'Looking for something that fits that'],
+  general: ['Looking for options that fit', 'Continuing with that in mind'],
+};
+
+export function memoryFollowUpNarration(domain: string | undefined, rng: Rng = STABLE_RNG): string {
+  return phrase(FOLLOW_UP_NARRATION[domainBucket(domain)], rng);
+}

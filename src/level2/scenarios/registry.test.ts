@@ -64,13 +64,17 @@ describe('scenario registry', () => {
     }
   });
 
-  it('falls back to a fixture instead of throwing when Phoenix fails', async () => {
+  it('falls back instead of throwing when Phoenix fails', async () => {
     const client = await import('../../api/phoenixClient');
     const spy = vi.spyOn(client, 'fetchSpansForTrace').mockRejectedValue(new Error('network down'));
 
     const selection = await registry.select('candidate_ranking');
     expect(selection).toBeDefined();
-    expect(selection!.scenario.source).toBe('fixture');
+    // candidate_ranking has real harness_stream captures, which sit ahead of
+    // hand-authored fixtures in the priority chain (phoenix -> cached_phoenix
+    // -> harness_stream -> fixture) — so the fallback lands there, not on a
+    // fixture, but must never be 'phoenix'/'cached_phoenix' once fetching fails.
+    expect(['harness_stream', 'fixture']).toContain(selection!.scenario.source);
     expect(selection!.usedFallback).toBe(true);
     // The failure is recorded, not swallowed — the dev panel shows this trail.
     expect(selection!.fallbackNotes.join(' ')).toContain('network down');

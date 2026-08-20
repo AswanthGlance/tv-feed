@@ -1,5 +1,5 @@
 import type { ProgressiveItem } from '../../types/progressiveValue';
-import type { ScenarioArchetype } from './archetype';
+import type { DevScenarioKind } from './devScenario';
 import type { FinalResponseModel } from './finalResponse';
 import type { Level2Scenario } from './scenario';
 import type { ThinkingPass } from './pass';
@@ -37,7 +37,7 @@ export interface ScheduledThinkingPass {
 
 export interface Level2RuntimeState {
   scenario?: Level2Scenario;
-  selectedArchetype: ScenarioArchetype;
+  selectedArchetype: DevScenarioKind;
 
   phase: Level2RuntimePhase;
 
@@ -62,6 +62,28 @@ export interface Level2RuntimeState {
   totalDuration: number;
   isPlaying: boolean;
   speed: number;
+
+  // ── timing mode (dev-mode control; see runtime/schedule.ts) ───────────
+  /** The mode actually driving the schedule. 'demo' is the curated cadence
+   *  (default, and forced whenever real timing is unavailable); 'actual'
+   *  replays the SAME passes on the real Phoenix clock. */
+  timingMode: 'demo' | 'actual';
+  /** What the developer selected — may be 'actual' while `timingMode` is
+   *  'demo' because this scenario (e.g. a fixture) has no real timing. */
+  requestedTimingMode: 'demo' | 'actual';
+  /** Whether real trace timing exists for this scenario. Fixtures without
+   *  recorded timing never qualify; timing is never fabricated. */
+  actualTimingAvailable: boolean;
+  /** Real end-to-end turn duration in ms, when known. */
+  traceDurationMs?: number;
+  /** Idle-gap compression cap for actual mode; 0 = Off (default — real
+   *  waits play at full length). */
+  maxIdleGapMs: number;
+  /** The absolute timeline the runtime is playing — dev timing diagnostics
+   *  read per-pass windows from here. */
+  schedule: ScheduledThinkingPass[];
+  setTimingMode: (mode: 'demo' | 'actual') => void;
+  setMaxIdleGapMs: (ms: number) => void;
 
   // ── playback controls ─────────────────────────────────────────────────
   play: () => void;

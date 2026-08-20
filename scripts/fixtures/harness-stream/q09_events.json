@@ -1,0 +1,486 @@
+[
+  {
+    "type": "turn_started"
+  },
+  {
+    "type": "insight",
+    "subtype": "guardrail_passed",
+    "label": "Guardrail passed",
+    "ts": 1787127881730,
+    "detail": "nsfw check ✓"
+  },
+  {
+    "type": "insight",
+    "subtype": "query_enriched",
+    "label": "Enrichment skipped — no prior history",
+    "ts": 1787127881732
+  },
+  {
+    "type": "insight",
+    "subtype": "skills_selected",
+    "label": "Skills selected (2)",
+    "ts": 1787127881732,
+    "detail": "fashion (0.82), sports (0.80)"
+  },
+  {
+    "type": "insight",
+    "subtype": "skills_loaded",
+    "label": "Skills loaded (3)",
+    "ts": 1787127881734,
+    "detail": "default, fashion, sports"
+  },
+  {
+    "type": "insight",
+    "subtype": "context_built",
+    "label": "Context built",
+    "ts": 1787127881735,
+    "detail": "stm=no · 0 msgs"
+  },
+  {
+    "type": "insight",
+    "subtype": "llm_start",
+    "label": "LLM started",
+    "ts": 1787127882434
+  },
+  {
+    "type": "insight",
+    "subtype": "tools_loaded",
+    "label": "Tools loaded (24)",
+    "detail": "CricketEvents, CricketMatchDetails, FootballStandings, FootballTeamDetails, FootballTopPerformers, GetUserPersona, GetWeather, MatchScore, MemoryRead, MemoryWrite, NearbyPlaces, PlaceDetails, PlaceSearch, ProductFetch, ProductSearch, SportsEvents, SportsMatchDetails, Task, TodoWrite, USMatchDetails, USSchedule, VTONGenerate, WebFetch, WebSearch",
+    "ts": 1787127882436
+  },
+  {
+    "type": "system",
+    "subtype": "transition",
+    "text": "user_query"
+  },
+  {
+    "type": "system",
+    "subtype": "token_count",
+    "text": "0 / 100,000 tokens (threshold)",
+    "token_count": 0,
+    "threshold": 100000
+  },
+  {
+    "type": "insight",
+    "subtype": "llm_thinking",
+    "label": "LLM thinking…",
+    "ts": 1787127884253
+  },
+  {
+    "type": "stream_request_start"
+  },
+  {
+    "type": "reasoning",
+    "text": "The"
+  },
+  {
+    "type": "reasoning",
+    "text": " user"
+  },
+  {
+    "type": "reasoning",
+    "text": " wants"
+  },
+  {
+    "type": "reasoning",
+    "text": " to"
+  },
+  {
+    "type": "reasoning",
+    "text": " start"
+  },
+  {
+    "type": "reasoning",
+    "text": " something"
+  },
+  {
+    "type": "reasoning",
+    "text": " new"
+  },
+  {
+    "type": "reasoning",
+    "text": " but"
+  },
+  {
+    "type": "reasoning",
+    "text": " hasn"
+  },
+  {
+    "type": "reasoning",
+    "text": "'t"
+  },
+  {
+    "type": "reasoning",
+    "text": " specified"
+  },
+  {
+    "type": "reasoning",
+    "text": " what"
+  },
+  {
+    "type": "reasoning",
+    "text": " -"
+  },
+  {
+    "type": "reasoning",
+    "text": " I"
+  },
+  {
+    "type": "reasoning",
+    "text": " should"
+  },
+  {
+    "type": "reasoning",
+    "text": " offer"
+  },
+  {
+    "type": "reasoning",
+    "text": " some"
+  },
+  {
+    "type": "reasoning",
+    "text": " lifestyle"
+  },
+  {
+    "type": "reasoning",
+    "text": " options"
+  },
+  {
+    "type": "reasoning",
+    "text": " and"
+  },
+  {
+    "type": "reasoning",
+    "text": " ask"
+  },
+  {
+    "type": "reasoning",
+    "text": " them"
+  },
+  {
+    "type": "reasoning",
+    "text": " to"
+  },
+  {
+    "type": "reasoning",
+    "text": " choose"
+  },
+  {
+    "type": "reasoning",
+    "text": "."
+  },
+  {
+    "type": "insight",
+    "subtype": "token_usage",
+    "label": "Tokens — in: 26,676 · out: 110 · reasoning: 31",
+    "ts": 1787127890213,
+    "detail": "step 1"
+  },
+  {
+    "type": "system",
+    "subtype": "usage",
+    "input_tokens": 26676,
+    "output_tokens": 110,
+    "reasoning_tokens": 31,
+    "reasoning_estimated": true,
+    "cache_read_tokens": 0,
+    "text": "Tokens — in: 26,676 · out: 110 (reasoning: ~31)"
+  },
+  {
+    "type": "system",
+    "subtype": "missing_tool_call_recovery",
+    "text": "Committed to acting but attempted no tool — re-driving (attempt 1/1)"
+  },
+  {
+    "type": "system",
+    "subtype": "transition",
+    "text": "missing_tool_call_recovery"
+  },
+  {
+    "type": "system",
+    "subtype": "token_count",
+    "text": "26,676 / 100,000 tokens (threshold)",
+    "token_count": 26676,
+    "threshold": 100000
+  },
+  {
+    "type": "insight",
+    "subtype": "llm_thinking",
+    "label": "LLM thinking…",
+    "ts": 1787127890222
+  },
+  {
+    "type": "stream_request_start"
+  },
+  {
+    "type": "reasoning",
+    "text": "The"
+  },
+  {
+    "type": "reasoning",
+    "text": " user"
+  },
+  {
+    "type": "reasoning",
+    "text": " wants"
+  },
+  {
+    "type": "reasoning",
+    "text": " to"
+  },
+  {
+    "type": "reasoning",
+    "text": " start"
+  },
+  {
+    "type": "reasoning",
+    "text": " something"
+  },
+  {
+    "type": "reasoning",
+    "text": " new"
+  },
+  {
+    "type": "reasoning",
+    "text": ","
+  },
+  {
+    "type": "reasoning",
+    "text": " so"
+  },
+  {
+    "type": "reasoning",
+    "text": " I"
+  },
+  {
+    "type": "reasoning",
+    "text": "'ll"
+  },
+  {
+    "type": "reasoning",
+    "text": " check"
+  },
+  {
+    "type": "reasoning",
+    "text": " for"
+  },
+  {
+    "type": "reasoning",
+    "text": " upcoming"
+  },
+  {
+    "type": "reasoning",
+    "text": " cricket"
+  },
+  {
+    "type": "reasoning",
+    "text": " matches"
+  },
+  {
+    "type": "reasoning",
+    "text": " to"
+  },
+  {
+    "type": "reasoning",
+    "text": " give"
+  },
+  {
+    "type": "reasoning",
+    "text": " them"
+  },
+  {
+    "type": "reasoning",
+    "text": " something"
+  },
+  {
+    "type": "reasoning",
+    "text": " to"
+  },
+  {
+    "type": "reasoning",
+    "text": " watch"
+  },
+  {
+    "type": "reasoning",
+    "text": "."
+  },
+  {
+    "type": "text_interim",
+    "text": "Let me check what cricket matches are coming up next.",
+    "step_id": 2,
+    "names": [
+      "CricketEvents"
+    ],
+    "tools": [
+      {
+        "tool_name": "CricketEvents",
+        "user_facing_tool_label": "CricketEvents",
+        "icon": null
+      }
+    ]
+  },
+  {
+    "type": "insight",
+    "subtype": "tool_selected",
+    "label": "Tool → CricketEvents",
+    "ts": 1787127897105,
+    "detail": "ipl"
+  },
+  {
+    "type": "tool_use",
+    "name": "CricketEvents",
+    "input": {
+      "league": "ipl",
+      "status": "UPCOMING",
+      "limit": 5
+    },
+    "tool_use_id": "9cc6ac37-5987-4e1e-83c5-229925f664aa"
+  },
+  {
+    "type": "insight",
+    "subtype": "token_usage",
+    "label": "Tokens — in: 26,809 · out: 91 · cached: 26,400 · reasoning: 28",
+    "ts": 1787127897108,
+    "detail": "step 1"
+  },
+  {
+    "type": "system",
+    "subtype": "usage",
+    "input_tokens": 26809,
+    "output_tokens": 91,
+    "reasoning_tokens": 28,
+    "reasoning_estimated": true,
+    "cache_read_tokens": 26400,
+    "text": "Tokens — in: 26,809 (cache: 26,400) · out: 91 (reasoning: ~28)"
+  },
+  {
+    "type": "insight",
+    "subtype": "tool_done",
+    "label": "Tool done: CricketEvents",
+    "ts": 1787127897816,
+    "detail": "99 chars"
+  },
+  {
+    "type": "tool_result",
+    "name": "CricketEvents",
+    "text": "{\"type\": \"cricket_events\", \"league_id\": \"IPL_2026\", \"status\": \"UPCOMING\", \"count\": 0, \"events\": []}",
+    "tool_use_id": "9cc6ac37-5987-4e1e-83c5-229925f664aa",
+    "is_error": false,
+    "llm_text": "{\"type\": \"cricket_events\", \"league_id\": \"IPL_2026\", \"status\": \"UPCOMING\", \"count\": 0, \"events\": []}",
+    "error_reason": null
+  },
+  {
+    "type": "insight",
+    "subtype": "agent_turn",
+    "label": "Agent turn 2",
+    "ts": 1787127897820,
+    "detail": "continuing after tool results"
+  },
+  {
+    "type": "system",
+    "subtype": "transition",
+    "text": "tool_call_followup"
+  },
+  {
+    "type": "system",
+    "subtype": "token_count",
+    "text": "53,485 / 100,000 tokens (threshold)",
+    "token_count": 53485,
+    "threshold": 100000
+  },
+  {
+    "type": "insight",
+    "subtype": "llm_thinking",
+    "label": "LLM thinking…",
+    "ts": 1787127897823
+  },
+  {
+    "type": "stream_request_start"
+  },
+  {
+    "type": "insight",
+    "subtype": "token_usage",
+    "label": "Tokens — in: 26,945 · out: 88 · cached: 26,400",
+    "ts": 1787127903338,
+    "detail": "step 2"
+  },
+  {
+    "type": "system",
+    "subtype": "usage",
+    "input_tokens": 26945,
+    "output_tokens": 88,
+    "reasoning_tokens": 0,
+    "reasoning_estimated": false,
+    "cache_read_tokens": 26400,
+    "text": "Tokens — in: 26,945 (cache: 26,400) · out: 88"
+  },
+  {
+    "type": "text_final",
+    "blocks": [
+      {
+        "type": "text",
+        "text": "No upcoming IPL matches right now. Want to check the T20 World Cup or Women's Premier League instead?"
+      },
+      {
+        "type": "suggestions",
+        "chips": [
+          "Check T20 World Cup fixtures",
+          "See Women's Premier League schedule",
+          "Find live cricket scores now",
+          "Look up past match results"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "text_replace",
+    "blocks": [
+      {
+        "type": "text",
+        "text": "No upcoming IPL matches right now. Want to check the T20 World Cup or Women's Premier League instead?"
+      },
+      {
+        "type": "suggestions",
+        "chips": [
+          "Check T20 World Cup fixtures",
+          "See Women's Premier League schedule",
+          "Find live cricket scores now",
+          "Look up past match results"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "system",
+    "subtype": "transition",
+    "text": "completion"
+  },
+  {
+    "type": "insight",
+    "subtype": "llm_skills_used",
+    "label": "LLM used skills (1)",
+    "ts": 1787127903426,
+    "detail": "sports"
+  },
+  {
+    "type": "turn_complete",
+    "turn_id": "c9e4e997-b3a1-4efc-8738-586158d6a4b7",
+    "input_tokens": 80430,
+    "output_tokens": 289,
+    "reasoning_tokens": 59,
+    "reasoning_estimated": true,
+    "cache_read_tokens": 52800,
+    "latency_ms": 23241,
+    "agent_steps": 2,
+    "tool_call_count": 1,
+    "skills_loaded": [
+      "default",
+      "fashion",
+      "sports"
+    ]
+  },
+  {
+    "type": "[DONE]"
+  }
+]

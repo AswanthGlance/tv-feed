@@ -5,9 +5,9 @@ import { useGooglePlaceEnrichment } from '../../hooks/useGooglePlaceEnrichment';
 /* photo_url on tool.PlaceSearch results is a relative path (`/api/photo?...`)
    that belongs to the Agent Harness backend, not Phoenix — there's no known
    absolute host for it from trace data alone (flagged as an instrumentation
-   gap). Google Places (when configured) is tried first via placeId; then
-   the harness's own photo_url; then a local image so a broken/missing URL
-   never breaks the leadership demo. */
+   gap), so it 404s almost always. No external image API here — the harness's
+   own photo_url, then a local image, so a broken/missing URL never breaks
+   the leadership demo. */
 const FALLBACK_IMAGE = '/images/feed/feed_29-travel-goa-coastal-road.jpg';
 
 const GOOD_TRAVEL_THRESHOLD_MIN = 180; // matches the reference copy's "within a 3-hour drive" framing
@@ -37,11 +37,7 @@ export default function EvidenceCard({
   const enrichment = useGooglePlaceEnrichment(evidence.placeId);
 
   if (evidence.type === 'place' || evidence.type === 'image') {
-    const src = !imgFailed && enrichment.photoUrl
-      ? enrichment.photoUrl
-      : !imgFailed && evidence.image
-        ? evidence.image
-        : FALLBACK_IMAGE;
+    const src = !imgFailed && evidence.image ? evidence.image : FALLBACK_IMAGE;
 
     return (
       <div className={`att-evidence-card${highlight ? ' att-evidence-card--highlight' : ''}`}>

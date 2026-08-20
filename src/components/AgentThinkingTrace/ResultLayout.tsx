@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { FocusButton } from '../L1/l1SharedComponents';
 import { DotsIcon, HeartIcon } from '../L1/TravelL1';
-import { useGooglePlaceEnrichment } from '../../hooks/useGooglePlaceEnrichment';
 import type { ResolvedResultContent } from '../../adapters/resultContent';
 
 /* The harness's own photo_url is a relative path with no known absolute
@@ -10,26 +9,21 @@ import type { ResolvedResultContent } from '../../adapters/resultContent';
  * broken URL never leaves the result hero blank. */
 const LOCAL_FALLBACK_IMAGE = '/images/feed/feed_29-travel-goa-coastal-road.jpg';
 
-/** Google Places photo (when a placeId resolves one) -> fallbackSrc (the
- *  harness-provided image, usually unresolvable) -> local static image.
- *  Shared by hero + support images so the fallback chain isn't duplicated
- *  per usage. */
+/** fallbackSrc (the harness-provided image, usually unresolvable) -> local
+ *  static image. No external image API — shared by hero + support images so
+ *  the fallback chain isn't duplicated per usage. */
 function EnrichedImage({
-  placeId,
   fallbackSrc,
   className,
 }: {
-  placeId?: string;
   fallbackSrc?: string;
   className: string;
 }) {
   // Index into the tier we're willing to try from (advances only on an
   // actual load failure, via renderedIndex below — never skips a tier that
-  // hasn't actually failed yet, so a slow-to-resolve Google photo still
-  // gets picked up rather than being raced past).
+  // hasn't actually failed yet).
   const [tier, setTier] = useState(0);
-  const enrichment = useGooglePlaceEnrichment(placeId);
-  const candidates = [enrichment.photoUrl, fallbackSrc, LOCAL_FALLBACK_IMAGE];
+  const candidates = [fallbackSrc, LOCAL_FALLBACK_IMAGE];
 
   let renderedIndex = candidates.length - 1;
   let src: string = LOCAL_FALLBACK_IMAGE;
@@ -92,7 +86,7 @@ export default function ResultLayout({ content }: { content: ResolvedResultConte
     <div className="att-result-carousel">
       <div className="att-result-rail">
         <div className="att-result-hero-card">
-          <EnrichedImage className="att-result-hero-image" placeId={content.heroPlaceId} fallbackSrc={content.heroImage} />
+          <EnrichedImage className="att-result-hero-image" fallbackSrc={content.heroImage} />
 
           <div className="att-result-hero-body">
             <div className="att-result-hero-top">
@@ -124,7 +118,7 @@ export default function ResultLayout({ content }: { content: ResolvedResultConte
 
         {content.supporting.map((item, i) => (
           <div className="att-result-collapsed-card" key={i}>
-            <EnrichedImage className="att-result-collapsed-image" placeId={item.placeId} fallbackSrc={item.image} />
+            <EnrichedImage className="att-result-collapsed-image" fallbackSrc={item.image} />
             <div className="att-result-collapsed-overlay">
               {item.subtitle && <RatingRow text={item.subtitle} />}
               <div className="att-result-collapsed-title">{item.title}</div>

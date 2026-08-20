@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { AgentMutation, ProgressiveItem } from '../../types/progressiveValue';
-import type { ScenarioArchetype } from '../types/archetype';
+import type { DevScenarioKind } from '../types/devScenario';
 import type { EntityPreviewPayload, ThinkingPass } from '../types/pass';
 import type { Level2Scenario } from '../types/scenario';
-import type { Level2RuntimePhase, Level2RuntimeState, ScheduledThinkingPass } from '../types/runtime';
-import { passDuration } from '../types/pass';
+import type { Level2RuntimePhase, Level2RuntimeState } from '../types/runtime';
+import { actualTimingAvailable, schedulePassesForMode, type TimingMode } from './schedule';
 
 /* ─────────────────────────────────────────────────────────────────────────────
    LEVEL 2 — Scenario runtime.
@@ -38,18 +38,30 @@ const CONSOLIDATING_MS = 1450;
    is just the handover beat before it takes the stage. */
 const RESOLVING_MS = 450;
 
-function schedulePasses(passes: ThinkingPass[]): { scheduled: ScheduledThinkingPass[]; total: number } {
-  const scheduled: ScheduledThinkingPass[] = [];
-  let cursor = 0;
-  passes.forEach((pass, index) => {
-    const start = cursor;
-    const enterEnd = start + pass.enterDuration;
-    const holdEnd = enterEnd + pass.holdDuration;
-    const end = holdEnd + pass.exitDuration;
-    scheduled.push({ pass, index, start, enterEnd, holdEnd, end });
-    cursor = end;
-  });
-  return { scheduled, total: cursor };
+/* Pass scheduling lives in schedule.ts so both timing modes are pure,
+   testable functions: demo (the curated cadence, unchanged) and the
+   dev-mode actual-trace clock. */
+
+/** Dev-only preference; survives refresh/scenario switches so a selected
+ *  timing mode keeps applying to whatever trace loads next. */
+const TIMING_MODE_KEY = 'level2.timingMode';
+const MAX_IDLE_GAP_KEY = 'level2.maxIdleGapMs';
+
+function readStored<T>(key: string, parse: (raw: string) => T | undefined): T | undefined {
+  try {
+    const raw = window.localStorage.getItem(key);
+    return raw == null ? undefined : parse(raw);
+  } catch {
+    return undefined;
+  }
+}
+
+function writeStored(key: string, value: string): void {
+  try {
+    window.localStorage.setItem(key, value);
+  } catch {
+    /* private mode etc. — preference just doesn't persist */
+  }
 }
 
 function applyMutation(items: ProgressiveItem[], m: AgentMutation): ProgressiveItem[] {
@@ -116,7 +128,7 @@ function finalWinnerId(scenario: Level2Scenario | undefined): string | undefined
 
 export function useLevel2Runtime(
   scenario: Level2Scenario | undefined,
-  selectedArchetype: ScenarioArchetype,
+  selectedArchetype: DevScenarioKind,
   isLoading: boolean
 ): Level2RuntimeState {
   const [elapsed, setElapsed] = useState(0);
@@ -128,7 +140,33 @@ export function useLevel2Runtime(
   const rafRef = useRef<number | null>(null);
   const lastTickRef = useRef<number | null>(null);
 
-  const { scheduled, total } = useMemo(() => schedulePasses(scenario?.thinkingPasses ?? []), [scenario]);
+  /* ── Timing mode (dev-mode control) ────────────────────────────────────
+     'demo' is the curated leadership cadence and the default. 'actual'
+     reschedules the SAME passes on the real Phoenix clock — nothing about
+     what is shown changes, only when. The preference persists across
+     refresh/scenario switches. */
+  const [timingMode, setTimingModeState] = useState<TimingMode>(
+    () => readStored(TIMING_MODE_KEY, (raw) => (raw === 'actual' ? 'actual' : 'demo')) ?? 'demo'
+  );
+  const [maxIdleGapMs, setMaxIdleGapState] = useState<number>(
+    () => readStored(MAX_IDLE_GAP_KEY, (raw) => (Number.isFinite(Number(raw)) ? Number(raw) : undefined)) ?? 0
+  );
+
+  const traceDurationMs = scenario?.metadata?.traceDurationMs as number | undefined;
+  // Real timing exists for real Phoenix traces (live or cached) and for
+  // Harness Stream captures — never for fixtures, never fabricated. Demo
+  // stays the default for every source, including Harness Stream; Real
+  // Timing is a dev-mode choice the user makes explicitly, and it persists
+  // (via TIMING_MODE_KEY) across scenario switches and R replays exactly
+  // like it always has for Phoenix.
+  const timingAvailable =
+    !!scenario && scenario.source !== 'fixture' && actualTimingAvailable(scenario.thinkingPasses, traceDurationMs);
+  const effectiveTimingMode: TimingMode = timingMode === 'actual' && timingAvailable ? 'actual' : 'demo';
+
+  const { scheduled, total } = useMemo(
+    () => schedulePassesForMode(scenario?.thinkingPasses ?? [], effectiveTimingMode, traceDurationMs, maxIdleGapMs),
+    [scenario, effectiveTimingMode, traceDurationMs, maxIdleGapMs]
+  );
 
   // A new scenario restarts the clock. Keyed on scenario id so re-selecting
   // the same scenario object doesn't reset mid-playback.
@@ -141,6 +179,24 @@ export function useLevel2Runtime(
     setIsPlaying(true);
     setForcedFinal(false);
   }, [scenarioId]);
+
+  // Switching timing mode (or the idle-gap cap) rebuilds the schedule, so
+  // the clock restarts — the same scenario replays under the new timing.
+  const setTimingMode = useCallback((mode: TimingMode) => {
+    setTimingModeState(mode);
+    writeStored(TIMING_MODE_KEY, mode);
+    setElapsed(0);
+    setForcedFinal(false);
+    setIsPlaying(true);
+  }, []);
+
+  const setMaxIdleGapMs = useCallback((ms: number) => {
+    setMaxIdleGapState(ms);
+    writeStored(MAX_IDLE_GAP_KEY, String(ms));
+    setElapsed(0);
+    setForcedFinal(false);
+    setIsPlaying(true);
+  }, []);
 
   useEffect(() => {
     if (!isPlaying || total <= 0) {
@@ -199,7 +255,17 @@ export function useLevel2Runtime(
   const currentScheduled = useMemo(() => {
     if (!scheduled.length) return undefined;
     if (phase !== 'thinking') return scheduled[scheduled.length - 1];
-    return scheduled.find((s) => elapsed >= s.start && elapsed < s.end) ?? scheduled[scheduled.length - 1];
+    // Latest pass that has started. Equivalent to the old window lookup on
+    // the contiguous demo schedule, and on the actual-trace schedule it keeps
+    // the current pass on screen through real idle gaps (and picks the
+    // latest-started of genuinely overlapping parallel passes) rather than
+    // skipping to the last pass.
+    let current = scheduled[0];
+    for (const s of scheduled) {
+      if (elapsed >= s.start) current = s;
+      else break;
+    }
+    return current;
   }, [scheduled, elapsed, phase]);
 
   const revealedPasses = useMemo(() => {
@@ -292,6 +358,14 @@ export function useLevel2Runtime(
     totalDuration: total,
     isPlaying,
     speed,
+    timingMode: effectiveTimingMode,
+    requestedTimingMode: timingMode,
+    actualTimingAvailable: timingAvailable,
+    traceDurationMs,
+    maxIdleGapMs,
+    schedule: scheduled,
+    setTimingMode,
+    setMaxIdleGapMs,
     play,
     pause,
     replay,

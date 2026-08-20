@@ -10,6 +10,7 @@ import { classifyEventVisibility } from './visibility';
 import { isSameCandidate, mergeCandidate, resolveCandidateSet, type ResolvedCandidateSet } from './candidateResolution';
 import { buildRouteMapPasses } from './routeMapPlan';
 import { phrase, STABLE_RNG, type Rng } from './narrationVariety';
+import { GENERIC_FALLBACKS, splitIntoSubBeats } from './subBeats';
 import type { ExtractedRoute } from '../../adapters/entityExtraction';
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -120,8 +121,53 @@ function metaArray<T>(event: SemanticAgentEvent, key: string): T[] | undefined {
  *  "checked N sources" earns a canvas the same way "found N places" does.
  *  Only falls back to a bare count/status line when no resolvable per-source
  *  identity exists (e.g. resultCount metadata with no parseable URLs). */
-function buildResearchPass(bucket: PhaseBucket, index: number, entityTitles: string[], rng: Rng): ThinkingPass | undefined {
+/** Splits a research bucket's real WebSearch/WebFetch calls into sub-beats
+ *  when they genuinely investigated different angles (see subBeats.ts) —
+ *  each beat's canvas shows CUMULATIVE sources (everything read up to and
+ *  including that beat), so the evidence visibly grows beat to beat rather
+ *  than replacing itself. Returns undefined when subBeats.ts finds nothing
+ *  real to distinguish the calls — the caller falls back to one pass. */
+function buildResearchSubBeats(bucket: PhaseBucket, index: number, entityTitles: string[], rng: Rng): ThinkingPass[] | undefined {
+  const beats = splitIntoSubBeats(bucket.events, rng);
+  if (!beats) return undefined;
+
+  const passes: ThinkingPass[] = [];
+  let cumulative: SemanticAgentEvent[] = [];
+  beats.forEach((beat, i) => {
+    cumulative = [...cumulative, ...beat.events];
+    const evidence = extractSourceEvidence(cumulative, entityTitles);
+    passes.push({
+      id: `pass-${index}-research-${i}`,
+      visibility: 'canvas_value',
+      narration: beat.narration,
+      valueType: 'sources',
+      payload: {
+        sources: evidence.sources.map((s) => ({ label: s.label, kind: s.kind, domain: s.domain })),
+        sourceCount: evidence.sourceCount,
+        searchCount: evidence.searchCount,
+      },
+      sourceEventIds: beat.events.map((e) => e.id),
+      sourceSpanIds: beat.events.flatMap((e) => e.sourceSpanIds),
+      confidence: 'high',
+      ...VALUE_TIMING,
+    });
+  });
+  return passes;
+}
+
+function buildResearchPass(
+  bucket: PhaseBucket,
+  index: number,
+  entityTitles: string[],
+  rng: Rng,
+  subBeatsEligible: boolean
+): ThinkingPass | ThinkingPass[] | undefined {
   if (!bucket.events.length) return undefined;
+
+  if (subBeatsEligible) {
+    const subBeats = buildResearchSubBeats(bucket, index, entityTitles, rng);
+    if (subBeats) return subBeats;
+  }
 
   const evidence = extractSourceEvidence(bucket.events, entityTitles);
 
@@ -264,6 +310,24 @@ function buildDiscoverPass(
 
   // The agent searched, the tool output carried nothing usable, and the
   // answer named nothing either. Narrate the work; claim no findings.
+  //
+  // A single real event with its own specific narration (real text_interim,
+  // e.g. "Let me check what cricket matches are coming up next.") says more
+  // than the generic pool below — prefer it. Gated behind harnessSubBeats
+  // (Phoenix events don't carry text_interim, so this never changes
+  // Phoenix's existing generic-pool narration there).
+  if (context.harnessSubBeats && bucket.events.length === 1 && !GENERIC_FALLBACKS.has(bucket.events[0].narration)) {
+    return {
+      id: `pass-${index}-discover`,
+      visibility: 'status',
+      narration: bucket.events[0].narration,
+      sourceEventIds: bucket.events.map((e) => e.id),
+      sourceSpanIds: bucket.events.flatMap((e) => e.sourceSpanIds),
+      confidence: 'high',
+      ...STATUS_TIMING,
+    };
+  }
+
   const lookingAcross = phrase(
     [(n: number) => `Looking across ${n} sources`, (n: number) => `Checking ${n} different sources`, (n: number) => `Scanning ${n} sources`] as const,
     rng
@@ -588,6 +652,16 @@ export interface PassBuildContext {
    *  `Math.random` once, when the scenario is built (see scenarios/fromTrace.ts,
    *  scenarios/fixtures.ts) — never on every render. */
   rng?: Rng;
+  /** Opt-in capability flag, set ONLY by buildScenarioFromHarnessStream.ts:
+   *  a phase bucket with several real tool calls may split into real
+   *  sub-beats (see subBeats.ts) instead of collapsing into one pass. Off by
+   *  default, so Phoenix traces (fromTrace.ts never sets this) and fixtures
+   *  keep their exact existing single-pass-per-phase behavior — this is an
+   *  additive capability, never a change to the generic path's default
+   *  shape. See subBeats.ts's header for why harness-stream events can
+   *  support this and Phoenix spans generally cannot (no per-call
+   *  text_interim/real timestamps on Phoenix spans). */
+  harnessSubBeats?: boolean;
 }
 
 export interface PassBuildResult {
@@ -674,7 +748,7 @@ export function semanticEventsToThinkingPasses(
     let pass: ThinkingPass | ThinkingPass[] | undefined;
     switch (key) {
       case 'research':
-        pass = buildResearchPass(bucket, index, allEntityTitles, rng);
+        pass = buildResearchPass(bucket, index, allEntityTitles, rng, context.harnessSubBeats ?? false);
         break;
       case 'discover':
         pass = buildDiscoverPass(bucket, requirements, index, context, rng, resolved);

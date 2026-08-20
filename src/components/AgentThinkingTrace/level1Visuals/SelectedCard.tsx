@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import type { ThinkingEvidence } from '../../../types/thinking';
-import { useGooglePlaceEnrichment } from '../../../hooks/useGooglePlaceEnrichment';
 
 const FALLBACK_IMAGE = '/images/feed/feed_29-travel-goa-coastal-road.jpg';
 
@@ -19,8 +18,7 @@ export default function SelectedCard({
   highlight?: boolean;
 }) {
   const [imgFailed, setImgFailed] = useState(false);
-  const enrichment = useGooglePlaceEnrichment(evidence.placeId);
-  const rawImage = enrichment.photoUrl || evidence.image;
+  const rawImage = evidence.image;
   const showImage = !!rawImage;
   const src = imgFailed ? FALLBACK_IMAGE : rawImage;
 

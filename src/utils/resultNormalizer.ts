@@ -65,7 +65,7 @@ function firstString(obj: Record<string, unknown>, keys: string[]): string | und
   return undefined;
 }
 
-const IMAGE_KEYS = ['image', 'image_url', 'thumbnail_url', 'photo_url', 'og_image'];
+const IMAGE_KEYS = ['image', 'image_url', 'thumbnail_url', 'photo_url', 'og_image', 'cdn_url'];
 
 /** Checks several plausible field names/shapes rather than assuming a
  *  single key — real search-result payloads vary (image vs image_url vs
